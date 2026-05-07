@@ -16,20 +16,22 @@ export function UsersClient({ initialUsers }: { initialUsers: AppUser[] }) {
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true); setError('')
-
-    const res = await fetch('/api/users/create', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    })
-    const data = await res.json()
-
-    if (!res.ok) { setError(data.error ?? 'Failed to create user'); setLoading(false); return }
-
-    setUsers(prev => [data.user, ...prev])
-    setForm({ full_name: '', email: '', password: '', role: 'driver' })
-    setShowForm(false)
-    setLoading(false)
+    try {
+      const res = await fetch('/api/users/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error ?? 'Failed to create user'); return }
+      setUsers(prev => [data.user, ...prev])
+      setForm({ full_name: '', email: '', password: '', role: 'driver' })
+      setShowForm(false)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Network error')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const roleVariant = (r: string) => r === 'manager' ? 'teal' : r === 'board' ? 'green' : 'gray'
