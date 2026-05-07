@@ -43,7 +43,12 @@ export async function proxy(request: NextRequest) {
     }
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
+  let user: Awaited<ReturnType<typeof supabase.auth.getUser>>['data']['user'] = null
+  try {
+    ;({ data: { user } } = await supabase.auth.getUser())
+  } catch (err) {
+    console.error('[proxy] supabase.auth.getUser failed:', err)
+  }
   const { pathname } = request.nextUrl
   const isPublic = PUBLIC_ROUTES.some(r => pathname.startsWith(r))
 
