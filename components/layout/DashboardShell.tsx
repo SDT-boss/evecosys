@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { LogOut } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { Logo } from '@/components/ui/Logo'
 import type { AppUser } from '@/types'
 
 interface DashboardShellProps {
@@ -48,7 +49,7 @@ export function DashboardShell({ children, navItems, user, alertBell }: Dashboar
         style={{ background: 'var(--topbar-bg)', borderBottom: '1px solid var(--topbar-border)' }}
       >
         <div className="flex items-center gap-4">
-          <EVEcosysLogo />
+          <Logo width={110} />
           <div style={{ width: 1, height: 28, background: '#333' }} />
           <span className="text-xs" style={{ color: '#888' }}>Fleet Management System</span>
         </div>
@@ -128,17 +129,5 @@ export function DashboardShell({ children, navItems, user, alertBell }: Dashboar
         </div>
       </main>
     </div>
-  )
-}
-
-function EVEcosysLogo() {
-  return (
-    <svg viewBox="0 0 230 54" width="110" xmlns="http://www.w3.org/2000/svg">
-      <rect x="0" y="1" width="74" height="52" rx="9" fill="#7cc242"/>
-      <text x="5" y="42" fontFamily="Arial Black,sans-serif" fontWeight="900" fontSize="37" fill="white">E</text>
-      <text x="26" y="42" fontFamily="Arial Black,sans-serif" fontWeight="900" fontSize="37" fill="white">V</text>
-      <text x="50" y="42" fontFamily="Arial Black,sans-serif" fontWeight="900" fontSize="37" fill="#1a7080">E</text>
-      <text x="82" y="42" fontFamily="Arial Black,sans-serif" fontWeight="900" fontSize="37" fill="white">cosys</text>
-    </svg>
   )
 }

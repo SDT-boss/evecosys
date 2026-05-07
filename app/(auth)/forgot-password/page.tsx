@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ArrowLeft, Loader2, CheckCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { Logo } from '@/components/ui/Logo'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
@@ -33,7 +34,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg)' }}>
       <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
-        <EVEcosysLogo />
+        <Logo />
         <ThemeToggle />
       </div>
 
@@ -112,17 +113,5 @@ export default function ForgotPasswordPage() {
         © 2026 <span style={{ color: '#7cc242', fontWeight: 600 }}>EVEcosys</span> — Fleet Management System
       </div>
     </div>
-  )
-}
-
-function EVEcosysLogo() {
-  return (
-    <svg viewBox="0 0 230 54" width="120" xmlns="http://www.w3.org/2000/svg">
-      <rect x="0" y="1" width="74" height="52" rx="9" fill="#7cc242"/>
-      <text x="5" y="42" fontFamily="Arial Black,sans-serif" fontWeight="900" fontSize="37" fill="white">E</text>
-      <text x="26" y="42" fontFamily="Arial Black,sans-serif" fontWeight="900" fontSize="37" fill="white">V</text>
-      <text x="50" y="42" fontFamily="Arial Black,sans-serif" fontWeight="900" fontSize="37" fill="#1a7080">E</text>
-      <text x="82" y="42" fontFamily="Arial Black,sans-serif" fontWeight="900" fontSize="37" fill="var(--text)">cosys</text>
-    </svg>
   )
 }
