@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --ev-green: #7cc242;
+    --ev-green-dark: #5a9e2f;
+    --ev-green-light: #eaf5d8;
+    --ev-teal: #1a7080;
+    --ev-teal-dark: #0d4e5a;
+    --ev-teal-light: #d2ecf0;
+    --bg: #f2f5f2;
+    --surface: #ffffff;
+    --surface2: #f7f9f7;
+    --border: #e2e8e2;
+    --text: #1a1a1a;
+    --text2: #5a6a5a;
+    --text3: #8a9a8a;
+    --topbar-bg: #1a1a1a;
+    --topbar-border: #333333;
+    --nav-bg: #242424;
+  }
+
+  .dark {
+    --bg: #111412;
+    --surface: #1c201c;
+    --surface2: #242824;
+    --border: #2e362e;
+    --text: #e8f0e8;
+    --text2: #9aaa9a;
+    --text3: #6a7a6a;
+    --topbar-bg: #0d0f0d;
+    --topbar-border: #222622;
+    --nav-bg: #141614;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+}
+
+@layer utilities {
+  .font-barlow { font-family: 'Barlow', sans-serif; }
+  .font-condensed { font-family: 'Barlow Condensed', sans-serif; }
+  .theme-transition { transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
+}
+
+@keyframes livepulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.25); }
+}
+.live-pulse { animation: livepulse 1.6s ease-in-out infinite; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeIn 0.3s ease forwards; }
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+.slide-in-right { animation: slideInRight 0.32s cubic-bezier(0.32,0.72,0,1) forwards; }
