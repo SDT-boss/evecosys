@@ -1,10 +1,10 @@
 import Image from 'next/image'
 
-export function Logo({ width = 120 }: { width?: number }) {
+export function Logo({ width = 120, src = '/EVecosys_dark.png' }: { width?: number; src?: string }) {
   const height = Math.round((width * 204) / 858)
   return (
     <Image
-      src="/EVecosys_dark.png"
+      src={src}
       alt="EVecosys"
       width={width}
       height={height}
