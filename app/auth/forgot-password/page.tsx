@@ -34,7 +34,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg)' }}>
       <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
-        <Logo src="/Evecosys_light.png" />
+  <Logo src="/evecosys-light.png" />
         <ThemeToggle />
       </div>
 

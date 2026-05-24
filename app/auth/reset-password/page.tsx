@@ -34,18 +34,20 @@ function ResetPasswordForm() {
     if (updateError) { setError('Failed to update password. Please try again.'); setLoading(false); return }
 
     // Clear forced reset flag — set next reset date 30 days from now
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
+    const getUserRes = await supabase.auth.getUser()
+    const currentUser = getUserRes?.data?.user
+    if (currentUser) {
       const nextReset = new Date()
       nextReset.setDate(nextReset.getDate() + 30)
-      await supabase.from('users').update({ force_password_reset_at: nextReset.toISOString() }).eq('id', user.id)
+      await supabase.from('users').update({ force_password_reset_at: nextReset.toISOString() }).eq('id', currentUser.id)
     }
 
     setLoading(false)
     setDone(true)
 
     setTimeout(async () => {
-      const { data: profile } = await supabase.from('users').select('role').eq('id', user!.id).single()
+      if (!currentUser) return
+      const { data: profile } = await supabase.from('users').select('role').eq('id', currentUser.id).single()
       const routes: Record<string, string> = { manager: '/manager', board: '/board', driver: '/driver' }
       router.push(routes[profile?.role ?? 'driver'])
     }, 2000)
@@ -54,7 +56,7 @@ function ResetPasswordForm() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg)' }}>
       <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
-        <Logo src="/Evecosys_light.png" />
+  <Logo src="/evecosys-light.png" />
         <ThemeToggle />
       </div>
 
