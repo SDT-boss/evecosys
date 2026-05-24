@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "extensionDependencies": [
-    "your-publisher.linear-connect"
+    "linear.linear-connect"
   ],
   "scripts": {
     "dev": "next dev",
