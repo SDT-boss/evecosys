@@ -208,16 +208,22 @@ export default function LoginPage() {
                 <div className="text-xs" style={{ color: 'var(--text3)' }}>Or</div>
                 <div style={{ height: 1, background: 'var(--border)', flex: 1 }} />
               </div>
-
+              {/* Google SSO */}
               <button
                 type="button"
                 onClick={handleGoogle}
-                className="w-full rounded-lg py-3 text-sm font-600 transition-all duration-150 flex items-center justify-center gap-2"
-                style={{ border: '1px solid var(--border)', background: 'transparent', color: 'var(--text)' }}
+                className="w-full rounded-lg py-3 text-sm font-700 transition-all duration-150 flex items-center justify-center gap-2"
+                style={{ background: '#4285F4', color: 'white', boxShadow: '0 2px 6px rgba(66,133,244,0.25)' }}
                 disabled={loading}
+                aria-label="Continue with Google"
               >
                 {loading ? <Loader2 size={15} className="animate-spin" /> : 'Continue with Google'}
               </button>
+
+              {/* Signup link for users without an account */}
+              <Link href="/auth/signup" className="w-full block text-center mt-3 text-sm font-600 rounded-lg py-3" style={{ color: '#1a7080' }}>
+                Don't have an account? Sign up
+              </Link>
 
             </form>
           </div>
