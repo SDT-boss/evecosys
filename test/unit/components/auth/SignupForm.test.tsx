@@ -1,14 +1,9 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import SignupForm from '@/components/auth/SignupForm'
+import { makeSupabaseMock } from '@/test/utils/supabaseMock'
 
-vi.mock('@/lib/supabase/client', () => ({
-  createClient: () => ({
-    auth: {
-      signUp: vi.fn().mockResolvedValue({ data: null }),
-      signInWithOAuth: vi.fn().mockResolvedValue({}),
-    },
-  }),
-}))
+const mockSupabase = makeSupabaseMock({ auth: { signUp: vi.fn().mockResolvedValue({ data: null }) } })
+vi.mock('@/lib/supabase/client', () => ({ createClient: () => mockSupabase }))
 
 describe('SignupForm', () => {
   it('renders form fields and submits', async () => {
@@ -22,5 +17,6 @@ describe('SignupForm', () => {
     fireEvent.click(submit)
 
     await waitFor(() => expect(submit).toBeDisabled())
+    expect(mockSupabase.auth.signUp).toHaveBeenCalled()
   })
 })

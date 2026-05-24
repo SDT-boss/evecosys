@@ -1,16 +1,9 @@
 import { render, screen } from '@testing-library/react'
-
 import LoginPage from '@/app/auth/login/page'
+import { makeSupabaseMock } from '@/test/utils/supabaseMock'
 
-vi.mock('@/lib/supabase/client', () => ({
-  createClient: () => ({
-    auth: {
-      signInWithPassword: vi.fn(),
-      signInWithOAuth: vi.fn(),
-    },
-    from: () => ({ select: () => ({ single: async () => ({}) }) }),
-  }),
-}))
+const mockSupabase = makeSupabaseMock({ auth: { signInWithOAuth: vi.fn() } })
+vi.mock('@/lib/supabase/client', () => ({ createClient: () => mockSupabase }))
 
 describe('LoginPage', () => {
   it('renders Google SSO button', () => {

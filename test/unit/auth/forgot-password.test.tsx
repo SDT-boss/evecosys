@@ -1,11 +1,8 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import ForgotPasswordPage from '@/app/auth/forgot-password/page'
+import { makeSupabaseMock } from '@/test/utils/supabaseMock'
 
-vi.mock('@/lib/supabase/client', () => ({
-  createClient: () => ({
-    auth: { resetPasswordForEmail: vi.fn().mockResolvedValue({}) },
-  }),
-}))
+vi.mock('@/lib/supabase/client', () => ({ createClient: () => makeSupabaseMock({ auth: { resetPasswordForEmail: vi.fn().mockResolvedValue({}) } }) }))
 
 describe('ForgotPasswordPage', () => {
   it('renders and allows submitting an email', async () => {
