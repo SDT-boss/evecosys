@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -74,7 +74,7 @@ export default function LoginPage() {
         className="flex items-center justify-between px-6 py-4"
         style={{ borderBottom: '1px solid var(--border)' }}
       >
-        <Logo src="/evecosys-light.png" />
+        <Logo src="/Evecosys_light.png" />
         <ThemeToggle />
       </div>
 
