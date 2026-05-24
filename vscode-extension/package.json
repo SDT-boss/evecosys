@@ -15,7 +15,9 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@linear/sdk": "*"
+  },
   "devDependencies": {
     "typescript": "^5.0.0",
     "@types/vscode": "^1.80.0"

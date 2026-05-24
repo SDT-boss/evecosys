@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
-// Using fetch against Linear GraphQL API to avoid depending on @linear/sdk in the extension
-// GraphQL endpoint: https://api.linear.app/graphql
+import { LinearClient } from '@linear/sdk';
 
 // Scopes typically required to read issues and users; adjust as needed
 const LINEAR_SCOPES = ['read', 'issues:read', 'issues:write'];
@@ -16,27 +15,29 @@ export async function activate(context: vscode.ExtensionContext) {
       );
 
       if (session) {
-        console.log('Acquired a Linear API session', { account: session.account });
-
-        // Example: fetch viewer (current user) using Linear GraphQL API
+        // Use the LinearClient from @linear/sdk with the acquired session
         try {
-          const resp = await fetch('https://api.linear.app/graphql', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${session.accessToken}`
-            },
-            body: JSON.stringify({ query: '{ viewer { id name displayName email } }' })
+          const linearClient = new LinearClient({
+            accessToken: session.accessToken,
           });
 
-          const json = await resp.json();
-          const viewer = json?.data?.viewer;
-          vscode.window.showInformationMessage(`Linear session acquired for ${viewer?.displayName ?? 'unknown user'}`);
-          context.globalState.update('linearClientToken', session.accessToken);
-          context.globalState.update('linearViewer', viewer?.id ?? null);
-        } catch (sdkErr: any) {
-          console.error('Linear fetch error', sdkErr);
-          vscode.window.showErrorMessage('Linear API failed to fetch viewer: ' + (sdkErr?.message ?? String(sdkErr)));
+          console.log('Acquired a Linear API session', {
+            account: session.account,
+          });
+
+          // Example usage: fetch viewer
+          try {
+            const viewer = await linearClient.viewer();
+            vscode.window.showInformationMessage(`Linear session acquired for ${viewer?.login ?? 'unknown user'}`);
+            context.globalState.update('linearClientToken', session.accessToken);
+            context.globalState.update('linearViewer', viewer?.id ?? null);
+          } catch (sdkErr: any) {
+            console.error('Linear SDK error', sdkErr);
+            vscode.window.showErrorMessage('Linear SDK failed to fetch viewer: ' + (sdkErr?.message ?? String(sdkErr)));
+          }
+        } catch (errClient: any) {
+          console.error('Could not initialize LinearClient', errClient);
+          vscode.window.showErrorMessage('Failed to initialize Linear client: ' + (errClient?.message ?? String(errClient)));
         }
       } else {
         console.error('Something went wrong, could not acquire a Linear API session.');
