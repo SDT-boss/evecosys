@@ -55,6 +55,15 @@ export default function LoginPage() {
     }
   }
 
+  async function handleGoogle() {
+    setLoading(true)
+    setError('')
+    const supabase = createClient()
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } })
+    setLoading(false)
+    if (oauthError) setError('Google sign-in failed. ' + (oauthError.message ?? ''))
+  }
+
   return (
     <div
       className="min-h-screen flex flex-col"
@@ -192,6 +201,22 @@ export default function LoginPage() {
               >
                 {loading && <Loader2 size={15} className="animate-spin" />}
                 {loading ? 'Signing in…' : 'Sign in'}
+              </button>
+
+              <div className="flex items-center gap-3">
+                <div style={{ height: 1, background: 'var(--border)', flex: 1 }} />
+                <div className="text-xs" style={{ color: 'var(--text3)' }}>Or</div>
+                <div style={{ height: 1, background: 'var(--border)', flex: 1 }} />
+              </div>
+
+              <button
+                type="button"
+                onClick={handleGoogle}
+                className="w-full rounded-lg py-3 text-sm font-600 transition-all duration-150 flex items-center justify-center gap-2"
+                style={{ border: '1px solid var(--border)', background: 'transparent', color: 'var(--text)' }}
+                disabled={loading}
+              >
+                {loading ? <Loader2 size={15} className="animate-spin" /> : 'Continue with Google'}
               </button>
 
             </form>
