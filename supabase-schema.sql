@@ -20,20 +20,46 @@ CREATE TABLE public.users (
   created_at             TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Auto-insert user row on signup (managers create users via admin, so this is a safety net)
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
+DECLARE
+  existing_id UUID;
+  provider_id TEXT;
 BEGIN
-  INSERT INTO public.users (id, email, google_id, full_name, role)
-  VALUES (
-    NEW.id,
-    NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'sub', NEW.raw_user_meta_data->>'provider_id', NULL),
-    COALESCE(NEW.raw_user_meta_data->>'full_name', 'New User'),
-    COALESCE(NEW.raw_user_meta_data->>'role', 'driver')
-  )
-  ON CONFLICT (id) DO NOTHING;
-  RETURN NEW;
+  -- Attempt to extract a provider identifier from the auth provider metadata
+  provider_id := COALESCE(NEW.raw_user_meta_data->>'sub', NEW.raw_user_meta_data->>'provider_id', NULL);
+
+  -- If a users row already exists with the same email, link the new auth user to that row
+  SELECT id INTO existing_id FROM public.users WHERE email = NEW.email LIMIT 1;
+
+  IF FOUND THEN
+    -- Move any dependent references (drivers) to the new auth id before changing the users PK
+    UPDATE public.drivers SET user_id = NEW.id WHERE user_id = existing_id;
+
+    -- Update the existing users row to use the auth user id and merge some metadata
+    UPDATE public.users
+    SET id = NEW.id,
+        google_id = COALESCE(provider_id, google_id),
+        full_name = COALESCE(NEW.raw_user_meta_data->>'full_name', full_name),
+        role = COALESCE(NEW.raw_user_meta_data->>'role', role),
+        avatar_url = COALESCE(NEW.raw_user_meta_data->>'avatar_url', avatar_url)
+    WHERE id = existing_id;
+
+    RETURN NEW;
+  ELSE
+    -- No existing row for this email; insert a fresh users row linked to the new auth user
+    INSERT INTO public.users (id, email, google_id, full_name, role)
+    VALUES (
+      NEW.id,
+      NEW.email,
+      provider_id,
+      COALESCE(NEW.raw_user_meta_data->>'full_name', 'New User'),
+      COALESCE(NEW.raw_user_meta_data->>'role', 'driver')
+    )
+    ON CONFLICT (id) DO NOTHING;
+
+    RETURN NEW;
+  END IF;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
