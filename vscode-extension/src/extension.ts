@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
-import { LinearClient } from '@linear/sdk';
+// Using fetch against Linear GraphQL API to avoid depending on @linear/sdk in the extension
+// GraphQL endpoint: https://api.linear.app/graphql
 
 // Scopes typically required to read issues and users; adjust as needed
 const LINEAR_SCOPES = ['read', 'issues:read', 'issues:write'];
@@ -7,24 +8,40 @@ const LINEAR_SCOPES = ['read', 'issues:read', 'issues:write'];
 export async function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand('extension.requestLinearSession', async () => {
     try {
-      // Request a session from the 'linear' authentication provider registered in VS Code
-      const session = await vscode.authentication.getSession('linear', LINEAR_SCOPES, { createIfNone: true });
-      if (!session) {
-        vscode.window.showErrorMessage('Could not obtain Linear session.');
-        return;
+      // Provided session flow: request a Linear session and initialize LinearClient with accessToken
+      const session = await vscode.authentication.getSession(
+        'linear', // Linear VS Code authentication provider ID
+        ['read'], // OAuth scopes we're requesting
+        { createIfNone: true }
+      );
+
+      if (session) {
+        console.log('Acquired a Linear API session', { account: session.account });
+
+        // Example: fetch viewer (current user) using Linear GraphQL API
+        try {
+          const resp = await fetch('https://api.linear.app/graphql', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${session.accessToken}`
+            },
+            body: JSON.stringify({ query: '{ viewer { id name displayName email } }' })
+          });
+
+          const json = await resp.json();
+          const viewer = json?.data?.viewer;
+          vscode.window.showInformationMessage(`Linear session acquired for ${viewer?.displayName ?? 'unknown user'}`);
+          context.globalState.update('linearClientToken', session.accessToken);
+          context.globalState.update('linearViewer', viewer?.id ?? null);
+        } catch (sdkErr: any) {
+          console.error('Linear fetch error', sdkErr);
+          vscode.window.showErrorMessage('Linear API failed to fetch viewer: ' + (sdkErr?.message ?? String(sdkErr)));
+        }
+      } else {
+        console.error('Something went wrong, could not acquire a Linear API session.');
+        vscode.window.showErrorMessage('Could not acquire a Linear API session.');
       }
-
-      const token = session.accessToken;
-      // Initialize Linear SDK with the token
-      const client = new LinearClient({ apiKey: token });
-
-      // Example usage: fetch viewer (current user)
-      const viewer = await client.viewer();
-      vscode.window.showInformationMessage(`Linear session acquired for ${viewer?.login ?? 'unknown user'}`);
-
-      // store client in the extension context for later use
-      context.globalState.update('linearClientToken', token);
-      context.globalState.update('linearViewer', viewer?.id ?? null);
     } catch (err: any) {
       vscode.window.showErrorMessage('Failed to request Linear session: ' + (err?.message ?? String(err)));
     }
