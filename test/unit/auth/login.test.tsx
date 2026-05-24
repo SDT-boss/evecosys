@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+
 import LoginPage from '@/app/auth/login/page'
 
 vi.mock('@/lib/supabase/client', () => ({
