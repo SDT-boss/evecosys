@@ -2,6 +2,9 @@
   "name": "evecosys",
   "version": "0.1.0",
   "private": true,
+  "extensionDependencies": [
+    "your-publisher.linear-connect"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
