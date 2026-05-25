@@ -38,7 +38,7 @@ export default function SignupPage() {
           {/* Footer note */}
           <p className="text-center text-xs mt-6" style={{ color: 'var(--text3)' }}>
             Already have an account?{' '}
-            <Link href="/login" className="text-xs font-600 transition-colors" style={{ color: 'var(--text2)', fontWeight: 600 }}>
+            <Link href="/auth/login" className="text-xs font-600 transition-colors" style={{ color: 'var(--text2)', fontWeight: 600 }}>
               Sign in
             </Link>
           </p>
