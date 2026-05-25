@@ -7,7 +7,7 @@ const ROLE_ROUTES: Record<string, string> = {
   driver: '/driver',
 }
 
-const PUBLIC_ROUTES = ['/auth/login', '/auth/forgot-password', '/auth/reset-password']
+const PUBLIC_ROUTES = ['/auth/login', '/auth/signup', '/auth/forgot-password', '/auth/reset-password']
 
 async function getProfile(supabase: ReturnType<typeof createServerClient>, userId: string) {
   const { data } = await supabase
@@ -23,7 +23,7 @@ function isForceResetDue(forcePasswordResetAt: string | null): boolean {
   return new Date(forcePasswordResetAt) < new Date()
 }
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -47,7 +47,7 @@ export async function proxy(request: NextRequest) {
   try {
     ;({ data: { user } } = await supabase.auth.getUser())
   } catch (err) {
-    console.error('[proxy] supabase.auth.getUser failed:', err)
+    console.error('[middleware] supabase.auth.getUser failed:', err)
   }
   const { pathname } = request.nextUrl
   const isPublic = PUBLIC_ROUTES.some(r => pathname.startsWith(r))
