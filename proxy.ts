@@ -7,7 +7,7 @@ const ROLE_ROUTES: Record<string, string> = {
   driver: '/driver',
 }
 
-const PUBLIC_ROUTES = ['/auth/login', '/auth/forgot-password', '/auth/reset-password']
+const PUBLIC_ROUTES = ['/auth/login', '/auth/signup', '/auth/forgot-password', '/auth/reset-password']
 
 async function getProfile(supabase: ReturnType<typeof createServerClient>, userId: string) {
   const { data } = await supabase
@@ -25,6 +25,13 @@ function isForceResetDue(forcePasswordResetAt: string | null): boolean {
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
+  const { pathname } = request.nextUrl
+
+  const isPublic = PUBLIC_ROUTES.some(r => pathname.startsWith(r))
+
+  if (isPublic) {
+    return supabaseResponse
+  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -49,39 +56,25 @@ export async function proxy(request: NextRequest) {
   } catch (err) {
     console.error('[proxy] supabase.auth.getUser failed:', err)
   }
-  const { pathname } = request.nextUrl
-  const isPublic = PUBLIC_ROUTES.some(r => pathname.startsWith(r))
 
-  // Not logged in — redirect to login unless on public route
-  if (!user && !isPublic) {
+  if (!user) {
     return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 
-  // Logged in — fetch profile once
-  if (user) {
-    const profile = await getProfile(supabase, user.id)
-    const forceReset = isForceResetDue(profile?.force_password_reset_at ?? null)
+  const profile = await getProfile(supabase, user.id)
+  const forceReset = isForceResetDue(profile?.force_password_reset_at ?? null)
 
-    // Force password reset takes priority over everything
-    if (forceReset && !pathname.startsWith('/auth/reset-password')) {
-      return NextResponse.redirect(new URL('/auth/reset-password?forced=true', request.url))
+  if (forceReset && !pathname.startsWith('/auth/reset-password')) {
+    return NextResponse.redirect(new URL('/auth/reset-password?forced=true', request.url))
+  }
+
+  if (profile?.role) {
+    const allowedPrefix = ROLE_ROUTES[profile.role]
+    if (pathname === '/') {
+      return NextResponse.redirect(new URL(allowedPrefix, request.url))
     }
-
-    // Redirect away from public routes to role dashboard
-    if (isPublic) {
-      const dest = ROLE_ROUTES[profile?.role ?? 'driver'] ?? '/auth/login'
-      return NextResponse.redirect(new URL(dest, request.url))
-    }
-
-    // Role-based route protection
-    if (profile?.role) {
-      const allowedPrefix = ROLE_ROUTES[profile.role]
-      if (pathname === '/') {
-        return NextResponse.redirect(new URL(allowedPrefix, request.url))
-      }
-      if (!pathname.startsWith(allowedPrefix)) {
-        return NextResponse.redirect(new URL(allowedPrefix, request.url))
-      }
+    if (!pathname.startsWith(allowedPrefix) && !pathname.startsWith('/auth')) {
+      return NextResponse.redirect(new URL(allowedPrefix, request.url))
     }
   }
 
@@ -89,5 +82,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|.*\\.png$).*)'],
+  matcher: [
+    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.png$).*)',
+  ],
 }
