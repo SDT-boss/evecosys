@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import LoginPage from '@/app/auth/login/page'
+import LoginPage from '@/app/(auth)/login/page'
 import { makeSupabaseMock } from '@/test/utils/supabaseMock'
 
 const mockSupabase = makeSupabaseMock({ auth: { signInWithOAuth: vi.fn() } })

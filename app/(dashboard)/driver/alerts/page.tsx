@@ -8,7 +8,7 @@ type AlertWithResolvedName = Alert & { resolved_by_name?: string | null }
 export default async function DriverAlertsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/auth/login')
+  if (!user) redirect('/login')
 
   const { data: driver } = await supabase
     .from('drivers')

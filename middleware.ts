@@ -2,12 +2,12 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 const ROLE_ROUTES: Record<string, string> = {
-  manager: '/dashboard/manager',
-  board: '/dashboard/board',
-  driver: '/dashboard/driver',
+  manager: '/manager',
+  board: '/board',
+  driver: '/driver',
 }
 
-const PUBLIC_ROUTES = ['/auth/login', '/auth/signup', '/auth/forgot-password', '/auth/reset-password']
+const PUBLIC_ROUTES = ['/login', '/signup', '/forgot-password', '/reset-password']
 
 async function getProfile(supabase: ReturnType<typeof createServerClient>, userId: string) {
   const { data } = await supabase
@@ -62,7 +62,7 @@ export async function middleware(request: NextRequest) {
 
   // Not logged in — redirect to login
   if (!user) {
-    return NextResponse.redirect(new URL('/auth/login', request.url))
+    return NextResponse.redirect(new URL('/login', request.url))
   }
 
   // Logged in — fetch profile once
@@ -70,8 +70,8 @@ export async function middleware(request: NextRequest) {
   const forceReset = isForceResetDue(profile?.force_password_reset_at ?? null)
 
   // Force password reset takes priority over everything
-  if (forceReset && !pathname.startsWith('/auth/reset-password')) {
-    return NextResponse.redirect(new URL('/auth/reset-password?forced=true', request.url))
+  if (forceReset && !pathname.startsWith('/reset-password')) {
+    return NextResponse.redirect(new URL('/reset-password?forced=true', request.url))
   }
 
   // Role-based route protection
@@ -80,7 +80,7 @@ export async function middleware(request: NextRequest) {
     if (pathname === '/') {
       return NextResponse.redirect(new URL(allowedPrefix, request.url))
     }
-    if (!pathname.startsWith(allowedPrefix) && !pathname.startsWith('/auth')) {
+    if (!pathname.startsWith(allowedPrefix)) {
       return NextResponse.redirect(new URL(allowedPrefix, request.url))
     }
   }

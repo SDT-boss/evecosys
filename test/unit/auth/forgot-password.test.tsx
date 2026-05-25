@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react'
-import ForgotPasswordPage from '@/app/auth/forgot-password/page'
+import ForgotPasswordPage from '@/app/(auth)/forgot-password/page'
 import { makeSupabaseMock } from '@/test/utils/supabaseMock'
 
 vi.mock('@/lib/supabase/client', () => ({ createClient: () => makeSupabaseMock({ auth: { resetPasswordForEmail: vi.fn().mockResolvedValue({}) } }) }))

@@ -6,7 +6,7 @@ import type { Trip } from '@/types'
 export default async function DriverTripsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/auth/login')
+  if (!user) redirect('/login')
 
   const { data: driver } = await supabase
     .from('drivers')

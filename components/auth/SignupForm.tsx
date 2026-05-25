@@ -33,7 +33,7 @@ export default function SignupForm({ onSuccess, showGoogle = true }: SignupFormP
     }
 
     if (onSuccess) return onSuccess()
-    router.push('/auth/login')
+    router.push('/login')
   }
 
   async function handleGoogle() {

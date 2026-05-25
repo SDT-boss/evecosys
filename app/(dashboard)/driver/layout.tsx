@@ -14,7 +14,7 @@ export default async function DriverLayout({ children }: { children: React.React
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) redirect('/auth/login')
+  if (!user) redirect('/login')
 
   const { data: profile } = await supabase
     .from('users')
@@ -22,7 +22,7 @@ export default async function DriverLayout({ children }: { children: React.React
     .eq('id', user.id)
     .single()
 
-  if (!profile || profile.role !== 'driver') redirect('/auth/login')
+  if (!profile || profile.role !== 'driver') redirect('/login')
 
   return (
     <DashboardShell navItems={NAV} user={profile as AppUser} alertBell={<AlertBellWrapper role="driver" />}>

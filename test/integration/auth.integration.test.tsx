@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { makeSupabaseStub } from '@/test/utils/supabaseStub'
-import ResetPasswordPage from '@/app/auth/reset-password/page'
+import ResetPasswordPage from '@/app/(auth)/reset-password/page'
 
 const stub = makeSupabaseStub()
 vi.mock('@/lib/supabase/client', () => ({ createClient: () => stub }))
