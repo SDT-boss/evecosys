@@ -52,6 +52,31 @@ const nextConfig: NextConfig = {
       },
     ]
   },
+  async redirects() {
+    return [
+      // Redirect old auth routes to new /auth-prefixed routes
+      {
+        source: '/login',
+        destination: '/auth/login',
+        permanent: false,
+      },
+      {
+        source: '/signup',
+        destination: '/auth/signup',
+        permanent: false,
+      },
+      {
+        source: '/forgot-password',
+        destination: '/auth/forgot-password',
+        permanent: false,
+      },
+      {
+        source: '/reset-password',
+        destination: '/auth/reset-password',
+        permanent: false,
+      },
+    ]
+  },
 }
 
 export default nextConfig
