@@ -54,27 +54,18 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // Redirect old auth routes to new /auth-prefixed routes
-      {
-        source: '/login',
-        destination: '/auth/login',
-        permanent: false,
-      },
-      {
-        source: '/signup',
-        destination: '/auth/signup',
-        permanent: false,
-      },
-      {
-        source: '/forgot-password',
-        destination: '/auth/forgot-password',
-        permanent: false,
-      },
-      {
-        source: '/reset-password',
-        destination: '/auth/reset-password',
-        permanent: false,
-      },
+      // Backward-compat: old /auth/* paths → new clean paths
+      { source: '/auth/login', destination: '/login', permanent: false },
+      { source: '/auth/signup', destination: '/signup', permanent: false },
+      { source: '/auth/forgot-password', destination: '/forgot-password', permanent: false },
+      { source: '/auth/reset-password', destination: '/reset-password', permanent: false },
+      // Backward-compat: old /dashboard/* paths → new clean paths
+      { source: '/dashboard/board', destination: '/board', permanent: false },
+      { source: '/dashboard/board/:path*', destination: '/board/:path*', permanent: false },
+      { source: '/dashboard/driver', destination: '/driver', permanent: false },
+      { source: '/dashboard/driver/:path*', destination: '/driver/:path*', permanent: false },
+      { source: '/dashboard/manager', destination: '/manager', permanent: false },
+      { source: '/dashboard/manager/:path*', destination: '/manager/:path*', permanent: false },
     ]
   },
 }

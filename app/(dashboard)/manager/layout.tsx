@@ -18,7 +18,7 @@ export default async function ManagerLayout({ children }: { children: React.Reac
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) redirect('/auth/login')
+  if (!user) redirect('/login')
 
   const { data: profile } = await supabase
     .from('users')
@@ -26,7 +26,7 @@ export default async function ManagerLayout({ children }: { children: React.Reac
     .eq('id', user.id)
     .single()
 
-  if (!profile || profile.role !== 'manager') redirect('/auth/login')
+  if (!profile || profile.role !== 'manager') redirect('/login')
 
   return (
     <DashboardShell navItems={NAV} user={profile as AppUser} alertBell={<AlertBellWrapper role="manager" />}>

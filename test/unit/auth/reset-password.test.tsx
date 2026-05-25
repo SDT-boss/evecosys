@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react'
-import ResetPasswordPage from '@/app/auth/reset-password/page'
+import ResetPasswordPage from '@/app/(auth)/reset-password/page'
 import { makeSupabaseMock } from '@/test/utils/supabaseMock'
 
 const mockSupabase = makeSupabaseMock({
