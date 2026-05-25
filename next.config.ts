@@ -75,6 +75,22 @@ const nextConfig: NextConfig = {
         destination: '/auth/reset-password',
         permanent: false,
       },
+      // Redirect old dashboard routes to new /dashboard-prefixed routes
+      {
+        source: '/driver',
+        destination: '/dashboard/driver',
+        permanent: false,
+      },
+      {
+        source: '/manager',
+        destination: '/dashboard/manager',
+        permanent: false,
+      },
+      {
+        source: '/board',
+        destination: '/dashboard/board',
+        permanent: false,
+      },
     ]
   },
 }
