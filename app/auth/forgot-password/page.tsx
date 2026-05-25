@@ -20,7 +20,7 @@ export default function ForgotPasswordPage() {
 
     const supabase = createClient()
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: `${window.location.origin}/auth/reset-password`,
     })
 
     setLoading(false)
@@ -41,7 +41,7 @@ export default function ForgotPasswordPage() {
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-sm fade-in">
           <Link
-            href="/login"
+            href="/auth/login"
             className="inline-flex items-center gap-2 text-xs font-600 mb-8 transition-colors"
             style={{ color: 'var(--text3)', fontWeight: 600 }}
           >

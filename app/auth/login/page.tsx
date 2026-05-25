@@ -40,7 +40,7 @@ export default function LoginPage() {
       if (profile?.force_password_reset_at) {
         const resetDue = new Date(profile.force_password_reset_at) < new Date()
         if (resetDue) {
-          router.push('/reset-password?forced=true')
+          router.push('/auth/reset-password?forced=true')
           return
         }
       }
@@ -50,7 +50,7 @@ export default function LoginPage() {
         board: '/board',
         driver: '/driver',
       }
-      router.push(routes[profile?.role ?? 'driver'] ?? '/login')
+      router.push(routes[profile?.role ?? 'driver'] ?? '/auth/login')
       router.refresh()
     }
   }
@@ -151,7 +151,7 @@ export default function LoginPage() {
                     Password
                   </label>
                   <Link
-                    href="/forgot-password"
+                    href="/auth/forgot-password"
                     className="text-xs font-600 transition-colors"
                     style={{ color: '#1a7080', fontWeight: 600 }}
                   >

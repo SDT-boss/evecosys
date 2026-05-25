@@ -7,7 +7,7 @@ const ROLE_ROUTES: Record<string, string> = {
   driver: '/driver',
 }
 
-const PUBLIC_ROUTES = ['/login', '/forgot-password', '/reset-password']
+const PUBLIC_ROUTES = ['/auth/login', '/auth/forgot-password', '/auth/reset-password']
 
 async function getProfile(supabase: ReturnType<typeof createServerClient>, userId: string) {
   const { data } = await supabase
@@ -54,7 +54,7 @@ export async function proxy(request: NextRequest) {
 
   // Not logged in — redirect to login unless on public route
   if (!user && !isPublic) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 
   // Logged in — fetch profile once
@@ -63,13 +63,13 @@ export async function proxy(request: NextRequest) {
     const forceReset = isForceResetDue(profile?.force_password_reset_at ?? null)
 
     // Force password reset takes priority over everything
-    if (forceReset && !pathname.startsWith('/reset-password')) {
-      return NextResponse.redirect(new URL('/reset-password?forced=true', request.url))
+    if (forceReset && !pathname.startsWith('/auth/reset-password')) {
+      return NextResponse.redirect(new URL('/auth/reset-password?forced=true', request.url))
     }
 
     // Redirect away from public routes to role dashboard
     if (isPublic) {
-      const dest = ROLE_ROUTES[profile?.role ?? 'driver'] ?? '/login'
+      const dest = ROLE_ROUTES[profile?.role ?? 'driver'] ?? '/auth/login'
       return NextResponse.redirect(new URL(dest, request.url))
     }
 

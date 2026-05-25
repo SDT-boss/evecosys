@@ -30,7 +30,7 @@ export function DashboardShell({ children, navItems, user, alertBell }: Dashboar
   async function handleLogout() {
     const supabase = createClient()
     await supabase.auth.signOut()
-    router.push('/login')
+    router.push('/auth/login')
     router.refresh()
   }
 
