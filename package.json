@@ -2,6 +2,9 @@
   "name": "evecosys",
   "version": "0.1.0",
   "private": true,
+  "extensionDependencies": [
+    "linear.linear-connect"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,6 +13,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@linear/sdk": "^86.0.0",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.105.1",
     "@types/leaflet": "^1.9.21",
