@@ -2,9 +2,9 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 const ROLE_ROUTES: Record<string, string> = {
-  manager: '/manager',
-  board: '/board',
-  driver: '/driver',
+  manager: '/dashboard/manager',
+  board: '/dashboard/board',
+  driver: '/dashboard/driver',
 }
 
 const PUBLIC_ROUTES = ['/auth/login', '/auth/signup', '/auth/forgot-password', '/auth/reset-password']

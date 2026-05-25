@@ -48,7 +48,7 @@ function ResetPasswordForm() {
     setTimeout(async () => {
       if (!currentUser) return
       const { data: profile } = await supabase.from('users').select('role').eq('id', currentUser.id).single()
-      const routes: Record<string, string> = { manager: '/manager', board: '/board', driver: '/driver' }
+      const routes: Record<string, string> = { manager: '/dashboard/manager', board: '/dashboard/board', driver: '/dashboard/driver' }
       router.push(routes[profile?.role ?? 'driver'])
     }, 2000)
   }

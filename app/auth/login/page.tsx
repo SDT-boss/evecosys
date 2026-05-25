@@ -46,9 +46,9 @@ export default function LoginPage() {
       }
 
       const routes: Record<string, string> = {
-        manager: '/manager',
-        board: '/board',
-        driver: '/driver',
+        manager: '/dashboard/manager',
+        board: '/dashboard/board',
+        driver: '/dashboard/driver',
       }
       router.push(routes[profile?.role ?? 'driver'] ?? '/auth/login')
       router.refresh()
