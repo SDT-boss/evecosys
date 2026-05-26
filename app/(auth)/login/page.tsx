@@ -55,15 +55,6 @@ export default function LoginPage() {
     }
   }
 
-  async function handleGoogle() {
-    setLoading(true)
-    setError('')
-    const supabase = createClient()
-    const { error: oauthError } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } })
-    setLoading(false)
-    if (oauthError) setError('Google sign-in failed. ' + (oauthError.message ?? ''))
-  }
-
   return (
     <div
       className="min-h-screen flex flex-col"
@@ -201,23 +192,6 @@ export default function LoginPage() {
               >
                 {loading && <Loader2 size={15} className="animate-spin" />}
                 {loading ? 'Signing in…' : 'Sign in'}
-              </button>
-
-              <div className="flex items-center gap-3">
-                <div style={{ height: 1, background: 'var(--border)', flex: 1 }} />
-                <div className="text-xs" style={{ color: 'var(--text3)' }}>Or</div>
-                <div style={{ height: 1, background: 'var(--border)', flex: 1 }} />
-              </div>
-              {/* Google SSO */}
-              <button
-                type="button"
-                onClick={handleGoogle}
-                className="w-full rounded-lg py-3 text-sm font-700 transition-all duration-150 flex items-center justify-center gap-2"
-                style={{ background: '#4285F4', color: 'white', boxShadow: '0 2px 6px rgba(66,133,244,0.25)' }}
-                disabled={loading}
-                aria-label="Continue with Google"
-              >
-                {loading ? <Loader2 size={15} className="animate-spin" /> : 'Continue with Google'}
               </button>
 
               {/* Signup link for users without an account */}

@@ -7,10 +7,9 @@ import { createClient } from '@/lib/supabase/client'
 
 export type SignupFormProps = {
   onSuccess?: () => void
-  showGoogle?: boolean
 }
 
-export default function SignupForm({ onSuccess, showGoogle = true }: SignupFormProps) {
+export default function SignupForm({ onSuccess }: SignupFormProps) {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -34,15 +33,6 @@ export default function SignupForm({ onSuccess, showGoogle = true }: SignupFormP
 
     if (onSuccess) return onSuccess()
     router.push('/login')
-  }
-
-  async function handleGoogle() {
-    setLoading(true)
-    setError('')
-    const supabase = createClient()
-    const { error: oauthError } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } })
-    setLoading(false)
-    if (oauthError) setError('Google sign-in failed. ' + (oauthError.message ?? ''))
   }
 
   return (
@@ -105,25 +95,6 @@ export default function SignupForm({ onSuccess, showGoogle = true }: SignupFormP
           {loading ? 'Creating…' : 'Create account'}
         </button>
 
-        {showGoogle && (
-          <>
-            <div className="flex items-center gap-3">
-              <div style={{ height: 1, background: 'var(--border)', flex: 1 }} />
-              <div className="text-xs" style={{ color: 'var(--text3)' }}>Or</div>
-              <div style={{ height: 1, background: 'var(--border)', flex: 1 }} />
-            </div>
-
-            <button
-              type="button"
-              onClick={handleGoogle}
-              className="w-full rounded-lg py-3 text-sm font-600 transition-all duration-150 flex items-center justify-center gap-2"
-              style={{ border: '1px solid var(--border)', background: 'transparent', color: 'var(--text)' }}
-              disabled={loading}
-            >
-              {loading ? <Loader2 size={15} className="animate-spin" /> : 'Continue with Google'}
-            </button>
-          </>
-        )}
       </form>
     </>
   )
