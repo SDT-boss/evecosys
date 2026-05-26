@@ -6,14 +6,15 @@ const mockRefresh = vi.fn()
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push: mockPush, refresh: mockRefresh }) }))
 
 const mockSignIn = vi.fn()
-let mockFromImpl = () => ({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let mockFromImpl: (...args: any[]) => any = () => ({
   select: () => ({ eq: () => ({ single: async () => ({ data: null, error: null }) }) }),
 })
 
 vi.mock('@/lib/supabase/client', () => ({
   createClient: () => ({
     auth: { signInWithPassword: mockSignIn, signInWithOAuth: vi.fn() },
-    from: (...args: any[]) => mockFromImpl(...args),
+    from: (arg: string) => mockFromImpl(arg),
   }),
 }))
 
