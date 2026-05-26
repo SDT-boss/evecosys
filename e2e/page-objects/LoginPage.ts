@@ -1,0 +1,50 @@
+import type { Page, Locator } from '@playwright/test'
+import { expect } from '@playwright/test'
+
+export class LoginPage {
+  readonly page: Page
+  readonly emailInput: Locator
+  readonly passwordInput: Locator
+  readonly signInButton: Locator
+  readonly errorMessage: Locator
+  readonly forgotPasswordLink: Locator
+  readonly signUpLink: Locator
+  readonly googleButton: Locator
+
+  constructor(page: Page) {
+    this.page = page
+    this.emailInput = page.getByPlaceholder(/you@evecosys.com/i)
+    this.passwordInput = page.getByPlaceholder(/••••••••/)
+    this.signInButton = page.getByRole('button', { name: /sign in/i })
+    this.errorMessage = page.locator('[style*="fdeaea"]') // error div — add data-testid="auth-error" to source
+    this.forgotPasswordLink = page.getByRole('link', { name: /forgot password/i })
+    this.signUpLink = page.getByRole('link', { name: /sign up/i })
+    // Should NOT exist after Google SSO removal
+    this.googleButton = page.getByRole('button', { name: /continue with google/i })
+  }
+
+  async goto() {
+    await this.page.goto('/login')
+    await expect(this.signInButton).toBeVisible()
+  }
+
+  async login(email: string, password: string) {
+    await this.emailInput.fill(email)
+    await this.passwordInput.fill(password)
+    await this.signInButton.click()
+  }
+
+  async expectError(pattern: RegExp | string) {
+    await expect(this.errorMessage).toBeVisible()
+    await expect(this.errorMessage).toContainText(pattern)
+  }
+
+  async expectNoGoogleButton() {
+    await expect(this.googleButton).not.toBeVisible()
+  }
+
+  async expectOnPage() {
+    await expect(this.page).toHaveURL('/login')
+    await expect(this.signInButton).toBeVisible()
+  }
+}
