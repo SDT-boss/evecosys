@@ -2,6 +2,10 @@
   "name": "evecosys",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "app",
+    "design-system"
+  ],
   "extensionDependencies": [
     "linear.linear-connect"
   ],

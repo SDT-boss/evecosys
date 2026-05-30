@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
-/node_modules
+# dependencies (all workspaces)
+**/node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -11,18 +11,20 @@
 !.yarn/versions
 
 # testing
-/coverage
+**/coverage
 
 # next.js
-/.next/
-/out/
+**/.next/
+**/out/
 
 # vscode extension artifacts
 vscode-extension/node_modules/
 vscode-extension/out/
 
-# production
-/build
+# build outputs
+**/dist
+**/build
+**/storybook-static
 
 # misc
 .DS_Store
