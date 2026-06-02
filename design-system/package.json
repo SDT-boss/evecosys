@@ -1,0 +1,20 @@
+{
+  "name": "@evecosys/design-system",
+  "version": "0.0.1",
+  "private": true,
+  "description": "EVEcosys shared component library and design tokens",
+  "main": "./components/index.ts",
+  "types": "./components/index.ts",
+  "scripts": {
+    "build:tokens": "style-dictionary build --config style-dictionary.config.js",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "dependencies": {
+    "style-dictionary": "^3.9.2"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  }
+}
