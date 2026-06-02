@@ -14,7 +14,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest"
+    "test": "vitest",
+    "build:tokens": "npm run build:tokens --workspace=@evecosys/design-system"
   },
   "dependencies": {
     "@linear/sdk": "^86.0.0",
