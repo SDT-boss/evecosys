@@ -2,6 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── shadcn/ui semantic tokens — mapped to EVEcosys brand values ─────────── */
+/* HSL format required by shadcn. --ui-border/-input/-ring avoid collision     */
+/* with the legacy --border hex var used by the existing app chrome.           */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 162 16% 5%;            /* Ink #0B0F0E */
+    --card: 0 0% 100%;
+    --card-foreground: 162 16% 5%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 162 16% 5%;
+    --primary: 176 100% 22%;             /* Cyber Jade Strong #007069 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 180 7% 96%;             /* grey-05 #F3F5F5 */
+    --secondary-foreground: 165 5% 30%;  /* grey-60 #4A5250 */
+    --muted: 180 7% 96%;
+    --muted-foreground: 165 5% 30%;
+    --accent: 84 66% 49%;                /* Volt Green #96D02C */
+    --accent-foreground: 162 16% 5%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --ui-border: 174 5% 78%;             /* grey-20 #C4CBCA */
+    --ui-input: 174 5% 78%;
+    --ui-ring: 179 100% 26%;             /* Cyber Jade #008684 */
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 162 16% 5%;
+    --foreground: 0 0% 100%;
+    --card: 165 5% 11%;
+    --card-foreground: 0 0% 100%;
+    --popover: 165 5% 11%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 179 100% 26%;             /* Cyber Jade #008684 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 165 5% 15%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 165 5% 15%;
+    --muted-foreground: 174 5% 65%;
+    --accent: 84 66% 49%;
+    --accent-foreground: 162 16% 5%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 100%;
+    --ui-border: 165 5% 20%;
+    --ui-input: 165 5% 20%;
+    --ui-ring: 179 100% 26%;
+  }
+}
+/* ─────────────────────────────────────────────────────────────────────────── */
+
 @layer base {
   :root {
     --ev-green: #7cc242;
