@@ -23,14 +23,15 @@ colors:
     on: white
     note: "Use when Volt Green must appear as foreground text on light surfaces — passes WCAG AA"
   tertiary:
-    name: Charge Blue
-    hex: "#1E6FDB"
+    name: Grid Violet
+    hex: "#7C3AED"
     on: white
+    note: "Passes WCAG AA on white (≈ 5.7:1) — suitable for links, accents, and interactive elements"
   tertiary-strong:
-    name: Charge Blue Strong
-    hex: "#1554B0"
+    name: Grid Violet Strong
+    hex: "#5B21B6"
     on: white
-    note: "Passes WCAG AA on white for body-size text"
+    note: "Passes WCAG AAA on white (≈ 9.0:1) — use for body-size foreground text on light surfaces"
   neutral:
     brand-black:
       hex: "#000000"
@@ -137,10 +138,10 @@ EVEcosys reads as premium energy infrastructure — confident enough to anchor a
 - **Volt Green `#96D02C` (`secondary`)** — the energy pop. High-voltage yellow-green that signals action, completion, and live data. Used for the primary CTA button, active/selected data-viz series, and success states. Always paired with ink (`#0B0F0E`) as the label colour — contrast ≈ 10.9:1. Use it sparingly: one dominant CTA per view, one accent bar in a chart. When it appears everywhere, it disappears.
 - **Volt Green Strong `#557A12` (`secondary-strong`)** — the foreground-safe variant. Use only when Volt Green must appear as text itself on a light surface (e.g. a status label reading "Charging Active" in green). Passes WCAG AA on white.
 
-### Informational tier
+### Accent depth
 
-- **Charge Blue `#1E6FDB` (`tertiary`)** — electric blue for information, data visualisation secondary series, and in-body hyperlinks where Jade would compete with navigation chrome. Sits cleanly alongside Jade without fighting it (different hue family) and completes the energy palette: teal for structure, green for action, blue for data.
-- **Charge Blue Strong `#1554B0` (`tertiary-strong`)** — passes WCAG AA for body-size text on white.
+- **Grid Violet `#7C3AED` (`tertiary`)** — electric violet for secondary interactive states, data-visualisation third series, and in-body hyperlinks where Jade would compete with navigation chrome. Sits opposite Jade on the hue wheel (teal vs. violet) so the two never fight. Contrast ≈ 5.7:1 on white — passes WCAG AA for all text sizes. Does not overlap with amber (warning) or red (error), so it is safe as a semantic accent.
+- **Grid Violet Strong `#5B21B6` (`tertiary-strong`)** — deeper violet for foreground text use on light surfaces. Contrast ≈ 9.0:1 on white — passes WCAG AAA. Use for status labels or inline text that must be violet.
 
 ### Neutrals
 
@@ -152,7 +153,7 @@ EVEcosys reads as premium energy infrastructure — confident enough to anchor a
 
 1. Jade and Volt Green never appear as solid fills adjacent to each other — the combination is too loud and loses hierarchy.
 2. No soft pastels, no tinted surface overlays, no colour-on-colour gradients. Colour is used in full-saturation accents against neutral grounds.
-3. Status colours borrow from the palette: success = Volt Green, error = a reserved system red (not defined here — add when the error design is finalised), warning = amber, info = Charge Blue.
+3. Status colours borrow from the palette: success = Volt Green, error = a reserved system red (token TBD), warning = amber, info = Grid Violet.
 
 ---
 
