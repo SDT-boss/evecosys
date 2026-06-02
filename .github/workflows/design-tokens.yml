@@ -1,0 +1,42 @@
+name: Build Design Tokens
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "design-system/tokens/tokens.json"
+      - "design-system/style-dictionary.config.js"
+
+jobs:
+  build-tokens:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build design tokens
+        run: npm run build:tokens
+
+      - name: Commit generated token files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add design-system/tokens/variables.css design-system/tokens/tokens.js
+          if git diff --staged --quiet; then
+            echo "Token output unchanged — nothing to commit"
+          else
+            git commit -m "chore(tokens): regenerate from Style Dictionary [skip ci]"
+            git push
+          fi
