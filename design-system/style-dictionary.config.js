@@ -4,7 +4,7 @@ module.exports = {
     css: {
       transformGroup: "css",
       prefix: "ds",
-      buildPath: "tokens/",
+      buildPath: "../dist/tokens/",
       files: [
         {
           destination: "variables.css",
@@ -16,7 +16,7 @@ module.exports = {
     js: {
       transformGroup: "js",
       prefix: "ds",
-      buildPath: "tokens/",
+      buildPath: "../dist/tokens/",
       files: [
         {
           destination: "tokens.js",
