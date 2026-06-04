@@ -1,6 +1,10 @@
-# EVEcosys Design System — Visual Source of Truth
+# EVEcosys Design System — Pipeline & Token Reference
 
-This file is the canonical record of every design decision made in Claude Design. Anything committed here is the approved visual language for the product. When a decision changes, update this file and `design-system/tokens/tokens.json` together in the same commit.
+> **Full design system documentation** — components, utilisation rules, security protocols, and test coverage — lives in [`docs/DESIGN.md`](docs/DESIGN.md).
+>
+> This file documents the token pipeline and serves as a quick-reference for all current token values.
+
+This file and `design-system/tokens/tokens.json` must always be updated together in the same commit. `tokens.json` is the machine-readable source; this file is the human record. CI regenerates `variables.css` and `tokens.js` automatically on every merge to main.
 
 ---
 
@@ -52,38 +56,36 @@ The page renders all 55 tokens with live swatches, spacing bars, type scale samp
 
 ### Brand palette
 
-| Token | Value | Use |
-|---|---|---|
-| `--ds-color-brand-primary` | `#0F6FFF` | Primary actions, links, focus rings — the electric-blue that anchors the product |
-| `--ds-color-brand-primary-hover` | `#0A5AD4` | Hover / active state for primary actions (~10% darker) |
-| `--ds-color-brand-secondary` | `#10B981` | Confirmations, completed states, EV-positive indicators (battery full, trip complete) |
-| `--ds-color-brand-secondary-hover` | `#059669` | Hover / active state for secondary actions |
-
-**Decision:** Electric blue was chosen over green as the primary because green is already used semantically for positive/success states. Blue reads as "action" without competing with status colour.
+| Token | Value | Name | Use |
+|---|---|---|---|
+| `--ds-color-brand-primary` | `#008684` | Cyber Jade | Navigation, links, focus rings — the structural anchor of the product |
+| `--ds-color-brand-primary-strong` | `#007069` | Cyber Jade Strong | Solid fills with white labels (WCAG AA ≈ 5.9:1) |
+| `--ds-color-brand-secondary` | `#96D02C` | Volt Green | Primary CTA, success states — always with ink (`#0B0F0E`) labels (contrast ≈ 10.9:1) |
+| `--ds-color-brand-secondary-strong` | `#557A12` | Volt Green Strong | CTA hover state; Volt Green as foreground text on light surfaces (WCAG AA) |
+| `--ds-color-brand-tertiary` | `#7C3AED` | Grid Violet | Secondary interactive states, data-viz third series (WCAG AA ≈ 5.7:1) |
+| `--ds-color-brand-tertiary-strong` | `#5B21B6` | Grid Violet Strong | Violet foreground text on light surfaces (WCAG AAA ≈ 9.0:1) |
 
 ### Neutral scale
 
 | Token | Value | Use |
 |---|---|---|
-| `--ds-color-neutral-50` | `#F9FAFB` | Page backgrounds |
-| `--ds-color-neutral-100` | `#F3F4F6` | Card and panel surfaces |
-| `--ds-color-neutral-200` | `#E5E7EB` | Borders, dividers |
-| `--ds-color-neutral-300` | `#D1D5DB` | Disabled borders |
-| `--ds-color-neutral-400` | `#9CA3AF` | Placeholder text |
-| `--ds-color-neutral-500` | `#6B7280` | Secondary text, captions |
-| `--ds-color-neutral-600` | `#4B5563` | Body text on light backgrounds |
-| `--ds-color-neutral-700` | `#374151` | Strong body text |
-| `--ds-color-neutral-800` | `#1F2937` | Headings |
-| `--ds-color-neutral-900` | `#111827` | Maximum contrast text |
+| `--ds-color-neutral-black` | `#000000` | Brand Black — wordmark, max-weight iconography only |
+| `--ds-color-neutral-ink` | `#0B0F0E` | All body text and headings (near-black with cool cast) |
+| `--ds-color-neutral-grey-80` | `#1C2120` | Secondary headings, strong secondary text |
+| `--ds-color-neutral-grey-60` | `#4A5250` | Subdued body copy, captions, disabled labels |
+| `--ds-color-neutral-grey-40` | `#8A9290` | Placeholder text, decorative icon fills |
+| `--ds-color-neutral-grey-20` | `#C4CBCA` | Borders, dividers, inactive states |
+| `--ds-color-neutral-grey-10` | `#E6EAEA` | Hover backgrounds, disabled fills |
+| `--ds-color-neutral-grey-05` | `#F3F5F5` | Page backgrounds, card fills |
 
 ### Status colours
 
 | Token | Value | Use |
 |---|---|---|
-| `--ds-color-status-success` | `#10B981` | Battery healthy, trip complete, user active |
+| `--ds-color-status-success` | `#96D02C` | Battery healthy, trip complete, user active — matches Volt Green |
 | `--ds-color-status-warning` | `#F59E0B` | Battery low, maintenance due |
 | `--ds-color-status-error` | `#EF4444` | Geofence breach, vehicle offline, failed action |
-| `--ds-color-status-info` | `#3B82F6` | Informational banners, help text |
+| `--ds-color-status-info` | `#7C3AED` | Informational banners, help text — matches Grid Violet |
 
 ---
 
