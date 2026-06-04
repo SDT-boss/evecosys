@@ -17,11 +17,11 @@ Claude Design (explore & prototype)
   DESIGN.md  ◄── you are here (human-readable canonical record)
         │
         ▼
- tokens/tokens.json  (machine-readable source — same values as above)
+ design-system/tokens/tokens.json  (machine-readable source — same values as above)
         │
         ▼  Style Dictionary (runs on every merge to main via CI)
-        ├── tokens/variables.css   ← CSS custom properties  ──► Storybook + Next.js app
-        └── tokens/tokens.js       ← ES6 token constants   ──► anywhere JS needs token values
+        ├── dist/tokens/variables.css   ← CSS custom properties  ──► Storybook + Next.js app
+        └── dist/tokens/tokens.js       ← ES6 token constants   ──► anywhere JS needs token values
 ```
 
 **The contract**: The Next.js app is only allowed to use `var(--ds-*)` tokens and components from `/design-system/components`. No inline `style={{ color: '#333' }}`. No hardcoded Tailwind hex values. If a new UI pattern appears more than once in the app, it graduates into the design system — gets a story in Storybook, and the app imports it from there.
