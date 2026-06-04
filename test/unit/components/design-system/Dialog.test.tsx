@@ -45,10 +45,10 @@ describe('Dialog', () => {
 
   // ─── Token usage ──────────────────────────────────────────────────────────
 
-  it('panel carries --ds-radius-xl token (modal radius, 12px)', () => {
+  it('panel carries --ds-radius-lg token (16px)', () => {
     const { baseElement } = renderDialog()
     const panel = baseElement.querySelector('[role="dialog"]') as HTMLElement
-    expect(panel.className).toContain('--ds-radius-xl')
+    expect(panel.className).toContain('--ds-radius-lg')
   })
 
   it('panel carries --ds-shadow-lg token', () => {
@@ -63,10 +63,10 @@ describe('Dialog', () => {
     expect(panel.className).toContain('--ds-color-neutral-grey-20')
   })
 
-  it('does NOT use --ds-radius-lg (card radius) on the modal panel', () => {
+  it('does NOT use --ds-radius-xl on the modal panel', () => {
     const { baseElement } = renderDialog()
     const panel = baseElement.querySelector('[role="dialog"]') as HTMLElement
-    expect(panel.className).not.toContain('--ds-radius-lg')
+    expect(panel.className).not.toContain('--ds-radius-xl')
   })
 
   // ─── Closed state ─────────────────────────────────────────────────────────

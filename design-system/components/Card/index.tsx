@@ -6,7 +6,7 @@
  *
  * Uses a 1px grey-20 border, white background, and a sm shadow
  * (--ds-shadow-sm) to lift cleanly from the grey-05 page background.
- * Border radius is --ds-radius-lg (8px) per the EVEcosys card spec.
+ * Border radius is --ds-radius-lg (16px) per the EVEcosys card spec.
  *
  * Sub-components:
  *   CardHeader       — flex column, 24px padding, 6px internal gap

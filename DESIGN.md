@@ -121,10 +121,9 @@ A base-4 scale. All spacing in the app must use these tokens.
 | Token | Value | Use |
 |---|---|---|
 | `--ds-radius-none` | `0px` | Tables, full-bleed panels |
-| `--ds-radius-sm` | `2px` | Badges, tags |
-| `--ds-radius-md` | `6px` | Inputs, buttons |
-| `--ds-radius-lg` | `8px` | Cards |
-| `--ds-radius-xl` | `12px` | Modals, sheets |
+| `--ds-radius-sm` | `4px` | Badges, tags |
+| `--ds-radius-md` | `8px` | Inputs, buttons |
+| `--ds-radius-lg` | `16px` | Cards, modals, sheets |
 | `--ds-radius-full` | `9999px` | Pills, avatar rings |
 
 ---

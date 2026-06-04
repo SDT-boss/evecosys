@@ -8,7 +8,7 @@
  *
  * Do NOT use Dialog for destructive confirmations — use AlertDialog instead.
  *
- * Overlay: black/80 scrim. Panel: white, ds-radius-xl (12px), ds-shadow-lg.
+ * Overlay: black/80 scrim. Panel: white, ds-radius-lg (16px), ds-shadow-lg.
  * Max width: 512px (max-w-lg). Close button: top-right, ghost X icon.
  * Focus ring on close: Jade (#008684).
  *
@@ -59,7 +59,7 @@ const DialogContent = React.forwardRef<
         "fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg",
         "-translate-x-1/2 -translate-y-1/2",
         "gap-[var(--ds-space-md)] p-[var(--ds-space-lg)]",
-        "rounded-[var(--ds-radius-xl)]",
+        "rounded-[var(--ds-radius-lg)]",
         "border border-[var(--ds-color-neutral-grey-20)]",
         "bg-white text-[var(--ds-color-neutral-ink)]",
         "[box-shadow:var(--ds-shadow-lg)]",
