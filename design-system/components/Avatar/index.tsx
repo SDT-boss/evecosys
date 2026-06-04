@@ -60,7 +60,8 @@ const AvatarFallback = React.forwardRef<
       "flex h-full w-full items-center justify-center",
       "rounded-[var(--ds-radius-full)]",
       "bg-[var(--ds-color-neutral-grey-10)]",
-      "text-[var(--ds-color-neutral-grey-60)]",
+      // Use explicit CSS property notation to avoid twMerge collapsing text-color and text-size
+      "[color:var(--ds-color-neutral-grey-60)]",
       "text-[var(--ds-font-size-sm)] font-[var(--ds-font-weight-medium)]",
       className
     )}
