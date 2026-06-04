@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EVEcosys Design Tokens</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ds-color-brand-primary: #008684;
+    --ds-color-brand-primary-strong: #007069;
+    --ds-color-brand-secondary: #96d02c;
+    --ds-color-brand-secondary-strong: #557a12;
+    --ds-color-brand-tertiary: #7c3aed;
+    --ds-color-brand-tertiary-strong: #5b21b6;
+    --ds-color-neutral-black: #000000;
+    --ds-color-neutral-ink: #0b0f0e;
+    --ds-color-neutral-grey-80: #1c2120;
+    --ds-color-neutral-grey-60: #4a5250;
+    --ds-color-neutral-grey-40: #8a9290;
+    --ds-color-neutral-grey-20: #c4cbca;
+    --ds-color-neutral-grey-10: #e6eaea;
+    --ds-color-neutral-grey-05: #f3f5f5;
+    --ds-color-status-success: #96d02c;
+    --ds-color-status-warning: #f59e0b;
+    --ds-color-status-error: #ef4444;
+    --ds-color-status-info: #7c3aed;
+    --ds-space-none: 0px;
+    --ds-space-xs: 4px;
+    --ds-space-sm: 8px;
+    --ds-space-md: 16px;
+    --ds-space-lg: 24px;
+    --ds-space-xl: 32px;
+    --ds-space-2xl: 48px;
+    --ds-space-3xl: 64px;
+    --ds-font-family-sans: Geist, Inter, ui-sans-serif, system-ui, sans-serif;
+    --ds-font-family-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --ds-font-size-xs: 0.75rem;
+    --ds-font-size-sm: 0.875rem;
+    --ds-font-size-base: 1rem;
+    --ds-font-size-lg: 1.125rem;
+    --ds-font-size-xl: 1.25rem;
+    --ds-font-size-2xl: 1.5rem;
+    --ds-font-size-3xl: 1.875rem;
+    --ds-font-weight-normal: 400;
+    --ds-font-weight-medium: 500;
+    --ds-font-weight-semibold: 600;
+    --ds-font-weight-bold: 700;
+    --ds-font-line-height-tight: 1.25;
+    --ds-font-line-height-snug: 1.375;
+    --ds-font-line-height-normal: 1.5;
+    --ds-font-line-height-relaxed: 1.625;
+    --ds-radius-none: 0px;
+    --ds-radius-sm: 4px;
+    --ds-radius-md: 8px;
+    --ds-radius-lg: 16px;
+    --ds-radius-full: 9999px;
+    --ds-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --ds-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --ds-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --ds-motion-duration-fast: 100ms;
+    --ds-motion-duration-base: 200ms;
+    --ds-motion-duration-slow: 400ms;
+    --ds-motion-easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  body {
+    font-family: var(--ds-font-family-sans);
+    background: var(--ds-color-neutral-grey-05);
+    color: var(--ds-color-neutral-ink);
+    line-height: var(--ds-font-line-height-normal);
+    padding: var(--ds-space-3xl) var(--ds-space-xl);
+  }
+
+  /* ─── Header ─────────────────────────────────────────────────── */
+  .page-header {
+    max-width: 960px;
+    margin: 0 auto var(--ds-space-3xl);
+  }
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-sm);
+    margin-bottom: var(--ds-space-md);
+  }
+  .wordmark-dot {
+    width: 12px; height: 12px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-color-brand-primary);
+  }
+  .wordmark-text {
+    font-size: var(--ds-font-size-sm);
+    font-weight: var(--ds-font-weight-semibold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ds-color-neutral-grey-60);
+  }
+  h1 {
+    font-size: var(--ds-font-size-3xl);
+    font-weight: var(--ds-font-weight-bold);
+    line-height: var(--ds-font-line-height-tight);
+    color: var(--ds-color-neutral-ink);
+    margin-bottom: var(--ds-space-xs);
+  }
+  .subtitle {
+    font-size: var(--ds-font-size-base);
+    color: var(--ds-color-neutral-grey-60);
+  }
+  .subtitle code {
+    font-family: var(--ds-font-family-mono);
+    font-size: var(--ds-font-size-sm);
+    background: var(--ds-color-neutral-grey-10);
+    padding: 1px 6px;
+    border-radius: var(--ds-radius-sm);
+  }
+
+  /* ─── Layout ─────────────────────────────────────────────────── */
+  .sections { max-width: 960px; margin: 0 auto; display: grid; gap: var(--ds-space-2xl); }
+
+  .section-card {
+    background: white;
+    border: 1px solid var(--ds-color-neutral-grey-20);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-sm);
+    overflow: hidden;
+  }
+  .section-header {
+    padding: var(--ds-space-md) var(--ds-space-lg);
+    border-bottom: 1px solid var(--ds-color-neutral-grey-10);
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-sm);
+  }
+  .section-icon {
+    width: 28px; height: 28px;
+    border-radius: var(--ds-radius-md);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-size: var(--ds-font-size-base);
+    font-weight: var(--ds-font-weight-semibold);
+    color: var(--ds-color-neutral-ink);
+  }
+  .section-count {
+    margin-left: auto;
+    font-size: var(--ds-font-size-xs);
+    color: var(--ds-color-neutral-grey-40);
+    font-family: var(--ds-font-family-mono);
+  }
+  .section-body { padding: var(--ds-space-lg); }
+
+  /* ─── Token row ──────────────────────────────────────────────── */
+  .token-grid { display: grid; gap: var(--ds-space-xs); }
+  .token-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+    gap: var(--ds-space-md);
+    padding: var(--ds-space-sm) 0;
+    border-bottom: 1px solid var(--ds-color-neutral-grey-05);
+  }
+  .token-row:last-child { border-bottom: none; }
+  .token-name {
+    font-family: var(--ds-font-family-mono);
+    font-size: var(--ds-font-size-xs);
+    color: var(--ds-color-brand-primary);
+  }
+  .token-value {
+    font-family: var(--ds-font-family-mono);
+    font-size: var(--ds-font-size-xs);
+    color: var(--ds-color-neutral-grey-60);
+  }
+  .token-desc {
+    font-size: var(--ds-font-size-xs);
+    color: var(--ds-color-neutral-grey-40);
+  }
+
+  /* ─── Colour swatches ────────────────────────────────────────── */
+  .color-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: var(--ds-space-md); }
+  .color-swatch {
+    border-radius: var(--ds-radius-md);
+    overflow: hidden;
+    border: 1px solid var(--ds-color-neutral-grey-10);
+  }
+  .swatch-block { height: 64px; }
+  .swatch-info { padding: var(--ds-space-sm); background: white; }
+  .swatch-label {
+    font-size: var(--ds-font-size-xs);
+    font-weight: var(--ds-font-weight-medium);
+    color: var(--ds-color-neutral-ink);
+    margin-bottom: 2px;
+  }
+  .swatch-hex {
+    font-family: var(--ds-font-family-mono);
+    font-size: var(--ds-font-size-xs);
+    color: var(--ds-color-neutral-grey-40);
+  }
+
+  .swatch-group-label {
+    font-size: var(--ds-font-size-xs);
+    font-weight: var(--ds-font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ds-color-neutral-grey-40);
+    margin-bottom: var(--ds-space-sm);
+    margin-top: var(--ds-space-md);
+  }
+  .swatch-group-label:first-child { margin-top: 0; }
+
+  /* ─── Spacing ────────────────────────────────────────────────── */
+  .space-row {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-md);
+    padding: var(--ds-space-sm) 0;
+    border-bottom: 1px solid var(--ds-color-neutral-grey-05);
+  }
+  .space-row:last-child { border-bottom: none; }
+  .space-bar-wrap { width: 200px; flex-shrink: 0; }
+  .space-bar {
+    height: 16px;
+    background: var(--ds-color-brand-primary);
+    border-radius: var(--ds-radius-sm);
+    opacity: 0.15;
+    position: relative;
+  }
+  .space-bar::after {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--ds-color-brand-primary);
+    border-radius: 1px;
+    opacity: 0.6;
+  }
+  .space-meta { display: flex; flex-direction: column; gap: 2px; }
+
+  /* ─── Radius ─────────────────────────────────────────────────── */
+  .radius-grid { display: flex; flex-wrap: wrap; gap: var(--ds-space-lg); align-items: flex-end; }
+  .radius-item { display: flex; flex-direction: column; align-items: center; gap: var(--ds-space-sm); }
+  .radius-box {
+    width: 64px; height: 64px;
+    background: var(--ds-color-brand-primary);
+    opacity: 0.12;
+    border: 2px solid var(--ds-color-brand-primary);
+  }
+  .radius-label { font-size: var(--ds-font-size-xs); color: var(--ds-color-neutral-grey-60); text-align: center; }
+  .radius-token { font-family: var(--ds-font-family-mono); font-size: 10px; color: var(--ds-color-neutral-grey-40); }
+
+  /* ─── Shadows ────────────────────────────────────────────────── */
+  .shadow-grid { display: flex; gap: var(--ds-space-xl); flex-wrap: wrap; }
+  .shadow-item { display: flex; flex-direction: column; gap: var(--ds-space-sm); }
+  .shadow-box {
+    width: 120px; height: 80px;
+    background: white;
+    border-radius: var(--ds-radius-md);
+    border: 1px solid var(--ds-color-neutral-grey-10);
+  }
+  .shadow-box-sm { box-shadow: var(--ds-shadow-sm); }
+  .shadow-box-md { box-shadow: var(--ds-shadow-md); }
+  .shadow-box-lg { box-shadow: var(--ds-shadow-lg); }
+  .shadow-label { font-size: var(--ds-font-size-xs); color: var(--ds-color-neutral-grey-60); font-weight: var(--ds-font-weight-medium); }
+  .shadow-token { font-family: var(--ds-font-family-mono); font-size: 10px; color: var(--ds-color-neutral-grey-40); }
+
+  /* ─── Typography ─────────────────────────────────────────────── */
+  .type-scale { display: grid; gap: var(--ds-space-md); }
+  .type-row { display: flex; align-items: baseline; gap: var(--ds-space-md); padding: var(--ds-space-xs) 0; border-bottom: 1px solid var(--ds-color-neutral-grey-05); }
+  .type-row:last-child { border-bottom: none; }
+  .type-sample { flex: 1; color: var(--ds-color-neutral-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .type-meta { text-align: right; flex-shrink: 0; }
+
+  .weight-grid { display: flex; gap: var(--ds-space-xl); flex-wrap: wrap; margin-top: var(--ds-space-md); padding-top: var(--ds-space-md); border-top: 1px solid var(--ds-color-neutral-grey-10); }
+  .weight-item { display: flex; flex-direction: column; gap: 4px; }
+  .weight-sample { font-size: var(--ds-font-size-xl); color: var(--ds-color-neutral-ink); }
+  .weight-label { font-size: var(--ds-font-size-xs); color: var(--ds-color-neutral-grey-40); font-family: var(--ds-font-family-mono); }
+
+  /* ─── Motion ─────────────────────────────────────────────────── */
+  .motion-grid { display: flex; gap: var(--ds-space-xl); flex-wrap: wrap; }
+  .motion-item { display: flex; flex-direction: column; gap: var(--ds-space-sm); }
+  .motion-dot-wrap { height: 48px; position: relative; width: 180px; }
+  .motion-track { position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: var(--ds-color-neutral-grey-10); transform: translateY(-50%); border-radius: 1px; }
+  .motion-dot {
+    width: 16px; height: 16px;
+    border-radius: var(--ds-radius-full);
+    background: var(--ds-color-brand-primary);
+    position: absolute; top: 50%; left: 0;
+    transform: translateY(-50%);
+    animation: slide 2s var(--ds-motion-easing-standard) infinite;
+  }
+  .motion-dot-fast { animation-duration: calc(var(--ds-motion-duration-fast) * 6); }
+  .motion-dot-base { animation-duration: calc(var(--ds-motion-duration-base) * 6); }
+  .motion-dot-slow { animation-duration: calc(var(--ds-motion-duration-slow) * 6); }
+  @keyframes slide {
+    0%   { left: 0; opacity: 1; }
+    45%  { left: calc(100% - 16px); opacity: 1; }
+    50%  { left: calc(100% - 16px); opacity: 0; }
+    51%  { left: 0; opacity: 0; }
+    55%  { left: 0; opacity: 1; }
+    100% { left: 0; opacity: 1; }
+  }
+  .motion-label { font-size: var(--ds-font-size-xs); color: var(--ds-color-neutral-grey-60); font-weight: var(--ds-font-weight-medium); }
+  .motion-token { font-family: var(--ds-font-family-mono); font-size: 10px; color: var(--ds-color-neutral-grey-40); }
+
+  /* ─── Pipeline badge ─────────────────────────────────────────── */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-sm);
+    flex-wrap: wrap;
+    padding: var(--ds-space-md);
+    background: var(--ds-color-neutral-grey-05);
+    border-radius: var(--ds-radius-md);
+    border: 1px solid var(--ds-color-neutral-grey-10);
+    margin-top: var(--ds-space-md);
+    font-size: var(--ds-font-size-xs);
+  }
+  .pipeline-step {
+    padding: 4px 10px;
+    border-radius: var(--ds-radius-sm);
+    font-family: var(--ds-font-family-mono);
+    background: white;
+    border: 1px solid var(--ds-color-neutral-grey-20);
+    color: var(--ds-color-neutral-grey-60);
+  }
+  .pipeline-step.source { border-color: var(--ds-color-brand-primary); color: var(--ds-color-brand-primary); background: #f0fafa; }
+  .pipeline-step.output { border-color: var(--ds-color-brand-secondary-strong); color: var(--ds-color-brand-secondary-strong); background: #f7fce8; }
+  .pipeline-arrow { color: var(--ds-color-neutral-grey-40); font-size: 10px; }
+
+  /* ─── Font family showcase ───────────────────────────────────── */
+  .font-pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--ds-space-lg); margin-top: var(--ds-space-sm); }
+  .font-card { padding: var(--ds-space-md); background: var(--ds-color-neutral-grey-05); border-radius: var(--ds-radius-md); }
+  .font-preview-sans { font-family: var(--ds-font-family-sans); font-size: var(--ds-font-size-xl); font-weight: var(--ds-font-weight-semibold); color: var(--ds-color-neutral-ink); margin-bottom: 4px; }
+  .font-preview-mono { font-family: var(--ds-font-family-mono); font-size: var(--ds-font-size-base); color: var(--ds-color-neutral-grey-60); margin-bottom: 4px; }
+  .font-stack { font-family: var(--ds-font-family-mono); font-size: 10px; color: var(--ds-color-neutral-grey-40); }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="wordmark">
+    <div class="wordmark-dot"></div>
+    <span class="wordmark-text">EVEcosys</span>
+  </div>
+  <h1>Design Token Reference</h1>
+  <p class="subtitle">55 tokens · source <code>design-system/tokens/tokens.json</code> · built to <code>dist/tokens/</code></p>
+
+  <div class="pipeline">
+    <span class="pipeline-step source">DESIGN.md</span>
+    <span class="pipeline-arrow">→</span>
+    <span class="pipeline-step source">tokens.json</span>
+    <span class="pipeline-arrow">→</span>
+    <span class="pipeline-step">Style Dictionary</span>
+    <span class="pipeline-arrow">→</span>
+    <span class="pipeline-step output">variables.css</span>
+    <span class="pipeline-arrow">+</span>
+    <span class="pipeline-step output">tokens.js</span>
+  </div>
+</header>
+
+<div class="sections">
+
+  <!-- ─── COLOUR ──────────────────────────────────────────────── -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon" style="background:#f0fafa;">🎨</div>
+      <span class="section-title">Colour</span>
+      <span class="section-count">18 tokens</span>
+    </div>
+    <div class="section-body">
+
+      <div class="swatch-group-label">Brand</div>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="swatch-block" style="background:#008684;"></div>
+          <div class="swatch-info">
+            <div class="swatch-label">Primary</div>
+            <div class="swatch-hex">Cyber Jade · #008684</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-block" style="background:#007069;"></div>
+          <div class="swatch-info">
+            <div class="swatch-label">Primary Strong</div>
+            <div class="swatch-hex">Jade Strong · #007069</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-block" style="background:#96d02c;"></div>
+          <div class="swatch-info">
+            <div class="swatch-label">Secondary</div>
+            <div class="swatch-hex">Volt Green · #96D02C</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-block" style="background:#557a12;"></div>
+          <div class="swatch-info">
+            <div class="swatch-label">Secondary Strong</div>
+            <div class="swatch-hex">Volt Strong · #557A12</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-block" style="background:#7c3aed;"></div>
+          <div class="swatch-info">
+            <div class="swatch-label">Tertiary</div>
+            <div class="swatch-hex">Grid Violet · #7C3AED</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-block" style="background:#5b21b6;"></div>
+          <div class="swatch-info">
+            <div class="swatch-label">Tertiary Strong</div>
+            <div class="swatch-hex">Violet Strong · #5B21B6</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swatch-group-label" style="margin-top:20px;">Neutral</div>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="swatch-block" style="background:#000000;"></div>
+          <div class="swatch-info"><div class="swatch-label">Black</div><div class="swatch-hex">#000000</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-block" style="background:#0b0f0e;"></div>
+          <div class="swatch-info"><div class="swatch-label">Ink</div><div class="swatch-hex">#0B0F0E</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-block" style="background:#1c2120;"></div>
+          <div class="swatch-info"><div class="swatch-label">Grey 80</div><div class="swatch-hex">#1C2120</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-block" style="background:#4a5250;"></div>
+          <div class="swatch-info"><div class="swatch-label">Grey 60</div><div class="swatch-hex">#4A5250</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-block" style="background:#8a9290;"></div>
+          <div class="swatch-info"><div class="swatch-label">Grey 40</div><div class="swatch-hex">#8A9290</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-block" style="background:#c4cbca;"></div>
+          <div class="swatch-info"><div class="swatch-label">Grey 20</div><div class="swatch-hex">#C4CBCA</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-block" style="background:#e6eaea;"></div>
+          <div class="swatch-info"><div class="swatch-label">Grey 10</div><div class="swatch-hex">#E6EAEA</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-block" style="background:#f3f5f5; border-bottom:1px solid #e6eaea;"></div>
+          <div class="swatch-info"><div class="swatch-label">Grey 05</div><div class="swatch-hex">#F3F5F5</div></div>
+        </div>
+      </div>
+
+      <div class="swatch-group-label" style="margin-top:20px;">Status</div>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="swatch-block" style="background:#96d02c;"></div>
+          <div class="swatch-info"><div class="swatch-label">Success</div><div class="swatch-hex">#96D02C</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-block" style="background:#f59e0b;"></div>
+          <div class="swatch-info"><div class="swatch-label">Warning</div><div class="swatch-hex">#F59E0B</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-block" style="background:#ef4444;"></div>
+          <div class="swatch-info"><div class="swatch-label">Error</div><div class="swatch-hex">#EF4444</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-block" style="background:#7c3aed;"></div>
+          <div class="swatch-info"><div class="swatch-label">Info</div><div class="swatch-hex">#7C3AED</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SPACING ──────────────────────────────────────────────── -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon" style="background:#f7fce8;">📐</div>
+      <span class="section-title">Spacing</span>
+      <span class="section-count">8 tokens · base-4 scale</span>
+    </div>
+    <div class="section-body">
+      <div class="token-grid">
+
+        <div class="space-row">
+          <div class="space-bar-wrap"><div class="space-bar" style="width:0px; opacity:0.4; border: 1px dashed var(--ds-color-brand-primary);height:16px;border-radius:var(--ds-radius-sm);"></div></div>
+          <div class="space-meta">
+            <div class="token-name">--ds-space-none</div>
+            <div class="token-value">0px</div>
+          </div>
+          <div class="token-desc">Reset / explicit zero</div>
+        </div>
+
+        <div class="space-row">
+          <div class="space-bar-wrap"><div class="space-bar" style="width:4px;"></div></div>
+          <div class="space-meta">
+            <div class="token-name">--ds-space-xs</div>
+            <div class="token-value">4px</div>
+          </div>
+          <div class="token-desc">Icon padding, tight gaps</div>
+        </div>
+
+        <div class="space-row">
+          <div class="space-bar-wrap"><div class="space-bar" style="width:8px;"></div></div>
+          <div class="space-meta">
+            <div class="token-name">--ds-space-sm</div>
+            <div class="token-value">8px</div>
+          </div>
+          <div class="token-desc">Label → input, related items</div>
+        </div>
+
+        <div class="space-row">
+          <div class="space-bar-wrap"><div class="space-bar" style="width:16px;"></div></div>
+          <div class="space-meta">
+            <div class="token-name">--ds-space-md</div>
+            <div class="token-value">16px</div>
+          </div>
+          <div class="token-desc">Card padding, section gaps</div>
+        </div>
+
+        <div class="space-row">
+          <div class="space-bar-wrap"><div class="space-bar" style="width:24px;"></div></div>
+          <div class="space-meta">
+            <div class="token-name">--ds-space-lg</div>
+            <div class="token-value">24px</div>
+          </div>
+          <div class="token-desc">Between cards</div>
+        </div>
+
+        <div class="space-row">
+          <div class="space-bar-wrap"><div class="space-bar" style="width:32px;"></div></div>
+          <div class="space-meta">
+            <div class="token-name">--ds-space-xl</div>
+            <div class="token-value">32px</div>
+          </div>
+          <div class="token-desc">Between major sections</div>
+        </div>
+
+        <div class="space-row">
+          <div class="space-bar-wrap"><div class="space-bar" style="width:48px;"></div></div>
+          <div class="space-meta">
+            <div class="token-name">--ds-space-2xl</div>
+            <div class="token-value">48px</div>
+          </div>
+          <div class="token-desc">Page vertical rhythm</div>
+        </div>
+
+        <div class="space-row">
+          <div class="space-bar-wrap"><div class="space-bar" style="width:64px;"></div></div>
+          <div class="space-meta">
+            <div class="token-name">--ds-space-3xl</div>
+            <div class="token-value">64px</div>
+          </div>
+          <div class="token-desc">Hero / full-bleed sections</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── TYPOGRAPHY ───────────────────────────────────────────── -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon" style="background:#f5f0ff;">Aa</div>
+      <span class="section-title">Typography</span>
+      <span class="section-count">15 tokens</span>
+    </div>
+    <div class="section-body">
+
+      <div class="font-pair">
+        <div class="font-card">
+          <div class="font-preview-sans">EVEcosys Fleet</div>
+          <div class="font-stack">--ds-font-family-sans</div>
+          <div style="font-size:10px; color: var(--ds-color-neutral-grey-40); margin-top:4px; font-family: var(--ds-font-family-mono);">Geist, Inter, ui-sans-serif</div>
+        </div>
+        <div class="font-card">
+          <div class="font-preview-mono">EV-001 · 4.2 mi/kWh</div>
+          <div class="font-stack">--ds-font-family-mono</div>
+          <div style="font-size:10px; color: var(--ds-color-neutral-grey-40); margin-top:4px; font-family: var(--ds-font-family-mono);">JetBrains Mono, ui-monospace</div>
+        </div>
+      </div>
+
+      <div style="margin-top: var(--ds-space-lg);">
+        <div class="type-scale">
+          <div class="token-row" style="grid-template-columns: 2fr 1fr 1fr; border-bottom: 1px solid var(--ds-color-neutral-grey-10); padding-bottom: var(--ds-space-xs); margin-bottom: var(--ds-space-xs);">
+            <span style="font-size:var(--ds-font-size-xs); color: var(--ds-color-neutral-grey-40); font-weight: var(--ds-font-weight-semibold);">Sample</span>
+            <span style="font-size:var(--ds-font-size-xs); color: var(--ds-color-neutral-grey-40); font-weight: var(--ds-font-weight-semibold);">Token</span>
+            <span style="font-size:var(--ds-font-size-xs); color: var(--ds-color-neutral-grey-40); font-weight: var(--ds-font-weight-semibold);">Value</span>
+          </div>
+          <div class="type-row" style="grid-template-columns: 2fr 1fr 1fr; display: grid;">
+            <span class="type-sample" style="font-size:1.875rem;">Fleet overview</span>
+            <span class="token-name" style="font-size: var(--ds-font-size-xs);">--ds-font-size-3xl</span>
+            <span class="token-value">1.875rem</span>
+          </div>
+          <div class="type-row" style="grid-template-columns: 2fr 1fr 1fr; display: grid;">
+            <span class="type-sample" style="font-size:1.5rem;">Active vehicles</span>
+            <span class="token-name" style="font-size: var(--ds-font-size-xs);">--ds-font-size-2xl</span>
+            <span class="token-value">1.5rem</span>
+          </div>
+          <div class="type-row" style="grid-template-columns: 2fr 1fr 1fr; display: grid;">
+            <span class="type-sample" style="font-size:1.25rem;">Battery status</span>
+            <span class="token-name" style="font-size: var(--ds-font-size-xs);">--ds-font-size-xl</span>
+            <span class="token-value">1.25rem</span>
+          </div>
+          <div class="type-row" style="grid-template-columns: 2fr 1fr 1fr; display: grid;">
+            <span class="type-sample" style="font-size:1.125rem;">Card subheading</span>
+            <span class="token-name" style="font-size: var(--ds-font-size-xs);">--ds-font-size-lg</span>
+            <span class="token-value">1.125rem</span>
+          </div>
+          <div class="type-row" style="grid-template-columns: 2fr 1fr 1fr; display: grid;">
+            <span class="type-sample" style="font-size:1rem;">Primary body text</span>
+            <span class="token-name" style="font-size: var(--ds-font-size-xs);">--ds-font-size-base</span>
+            <span class="token-value">1rem</span>
+          </div>
+          <div class="type-row" style="grid-template-columns: 2fr 1fr 1fr; display: grid;">
+            <span class="type-sample" style="font-size:0.875rem;">Secondary table cells</span>
+            <span class="token-name" style="font-size: var(--ds-font-size-xs);">--ds-font-size-sm</span>
+            <span class="token-value">0.875rem</span>
+          </div>
+          <div class="type-row" style="grid-template-columns: 2fr 1fr 1fr; display: grid;">
+            <span class="type-sample" style="font-size:0.75rem;">Label · Badge · Timestamp</span>
+            <span class="token-name" style="font-size: var(--ds-font-size-xs);">--ds-font-size-xs</span>
+            <span class="token-value">0.75rem</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="weight-grid">
+        <div class="weight-item">
+          <span class="weight-sample" style="font-weight:400;">Fleet</span>
+          <span class="weight-label">--ds-font-weight-normal · 400</span>
+        </div>
+        <div class="weight-item">
+          <span class="weight-sample" style="font-weight:500;">Fleet</span>
+          <span class="weight-label">--ds-font-weight-medium · 500</span>
+        </div>
+        <div class="weight-item">
+          <span class="weight-sample" style="font-weight:600;">Fleet</span>
+          <span class="weight-label">--ds-font-weight-semibold · 600</span>
+        </div>
+        <div class="weight-item">
+          <span class="weight-sample" style="font-weight:700;">Fleet</span>
+          <span class="weight-label">--ds-font-weight-bold · 700</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── BORDER RADIUS ────────────────────────────────────────── -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon" style="background:#f3f4f6;">◻</div>
+      <span class="section-title">Border Radius</span>
+      <span class="section-count">5 tokens</span>
+    </div>
+    <div class="section-body">
+      <div class="radius-grid">
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius:0px;"></div>
+          <div class="radius-label">None</div>
+          <div class="radius-token">--ds-radius-none · 0px</div>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius:4px;"></div>
+          <div class="radius-label">Small</div>
+          <div class="radius-token">--ds-radius-sm · 4px</div>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius:8px;"></div>
+          <div class="radius-label">Medium</div>
+          <div class="radius-token">--ds-radius-md · 8px</div>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius:16px;"></div>
+          <div class="radius-label">Large</div>
+          <div class="radius-token">--ds-radius-lg · 16px</div>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius:9999px; width:64px; height:64px;"></div>
+          <div class="radius-label">Full</div>
+          <div class="radius-token">--ds-radius-full · 9999px</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SHADOWS ──────────────────────────────────────────────── -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon" style="background:#f9fafb;">◫</div>
+      <span class="section-title">Shadows</span>
+      <span class="section-count">3 tokens</span>
+    </div>
+    <div class="section-body">
+      <div class="shadow-grid">
+        <div class="shadow-item">
+          <div class="shadow-box shadow-box-sm"></div>
+          <div class="shadow-label">--ds-shadow-sm</div>
+          <div class="shadow-token">Subtle card lift</div>
+        </div>
+        <div class="shadow-item">
+          <div class="shadow-box shadow-box-md"></div>
+          <div class="shadow-label">--ds-shadow-md</div>
+          <div class="shadow-token">Dropdowns, popovers</div>
+        </div>
+        <div class="shadow-item">
+          <div class="shadow-box shadow-box-lg"></div>
+          <div class="shadow-label">--ds-shadow-lg</div>
+          <div class="shadow-token">Modals</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── MOTION ───────────────────────────────────────────────── -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon" style="background:#fff8e6;">⚡</div>
+      <span class="section-title">Motion</span>
+      <span class="section-count">4 tokens</span>
+    </div>
+    <div class="section-body">
+      <div class="motion-grid">
+        <div class="motion-item">
+          <div class="motion-dot-wrap">
+            <div class="motion-track"></div>
+            <div class="motion-dot motion-dot-fast"></div>
+          </div>
+          <div class="motion-label">--ds-motion-duration-fast</div>
+          <div class="motion-token">100ms · micro-interactions</div>
+        </div>
+        <div class="motion-item">
+          <div class="motion-dot-wrap">
+            <div class="motion-track"></div>
+            <div class="motion-dot motion-dot-base"></div>
+          </div>
+          <div class="motion-label">--ds-motion-duration-base</div>
+          <div class="motion-token">200ms · default transitions</div>
+        </div>
+        <div class="motion-item">
+          <div class="motion-dot-wrap">
+            <div class="motion-track"></div>
+            <div class="motion-dot motion-dot-slow" style="background: var(--ds-color-brand-tertiary);"></div>
+          </div>
+          <div class="motion-label">--ds-motion-duration-slow</div>
+          <div class="motion-token">400ms · page transitions</div>
+        </div>
+        <div class="motion-item" style="justify-content: center;">
+          <div style="padding: 12px 16px; background: var(--ds-color-neutral-grey-05); border-radius: var(--ds-radius-md); border: 1px solid var(--ds-color-neutral-grey-10);">
+            <div class="motion-token" style="font-size: var(--ds-font-size-xs);">--ds-motion-easing-standard</div>
+            <div class="motion-token" style="margin-top:4px;">cubic-bezier(0.4, 0, 0.2, 1)</div>
+          </div>
+          <div class="motion-label">Easing standard</div>
+          <div class="motion-token">Material ease-in-out</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer style="max-width:960px; margin: var(--ds-space-3xl) auto 0; padding-top: var(--ds-space-lg); border-top: 1px solid var(--ds-color-neutral-grey-20); display:flex; justify-content:space-between; align-items:center;">
+  <span style="font-size: var(--ds-font-size-xs); color: var(--ds-color-neutral-grey-40); font-family: var(--ds-font-family-mono);">Generated from dist/tokens/variables.css</span>
+  <span style="font-size: var(--ds-font-size-xs); color: var(--ds-color-neutral-grey-40);">Run <code style="font-family: var(--ds-font-family-mono); background: var(--ds-color-neutral-grey-05); padding: 1px 6px; border-radius: var(--ds-radius-sm);">npm run build:tokens</code> to regenerate</span>
+</footer>
+
+</body>
+</html>

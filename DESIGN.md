@@ -28,6 +28,30 @@ Claude Design (explore & prototype)
 
 ---
 
+## Viewing the token reference
+
+A visual, browser-ready reference of every token lives at:
+
+```
+public/design-tokens.html
+```
+
+Open it locally with:
+
+```bash
+open public/design-tokens.html
+```
+
+Or, when the dev server is running, navigate to:
+
+```
+http://localhost:3000/design-tokens.html
+```
+
+The page renders all 55 tokens with live swatches, spacing bars, type scale samples, radius previews, shadow cards, and animated motion examples — all driven directly by the `dist/tokens/variables.css` custom properties. No build step is needed to view it; regenerate the underlying tokens with `npm run build:tokens` whenever `tokens.json` changes.
+
+---
+
 ## Colour
 
 ### Brand palette
