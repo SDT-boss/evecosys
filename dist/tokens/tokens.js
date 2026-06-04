@@ -1,6 +1,6 @@
 /**
  * Do not edit directly
- * Generated on Thu, 04 Jun 2026 14:36:37 GMT
+ * Generated on Thu, 04 Jun 2026 14:49:06 GMT
  */
 
 export const DsColorBrandPrimary = "#008684"; // Cyber Jade — structural anchor, navigation, links, focus rings
@@ -47,11 +47,10 @@ export const DsFontLineHeightSnug = "1.375";
 export const DsFontLineHeightNormal = "1.5";
 export const DsFontLineHeightRelaxed = "1.625";
 export const DsRadiusNone = "0px";
-export const DsRadiusSm = "2px"; // Badges, tags
-export const DsRadiusMd = "6px"; // Inputs, buttons
-export const DsRadiusLg = "8px"; // Cards
-export const DsRadiusXl = "12px"; // Modals, sheets
-export const DsRadiusFull = "9999px"; // Pills, avatar rings
+export const DsRadiusSm = "4px";
+export const DsRadiusMd = "8px";
+export const DsRadiusLg = "16px";
+export const DsRadiusFull = "9999px";
 export const DsShadowSm = "0 1px 2px 0 rgb(0 0 0 / 0.05)";
 export const DsShadowMd = "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)";
 export const DsShadowLg = "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)";

@@ -14,7 +14,7 @@
  * Panel: ink bg (#0B0F0E), white text — inverted from the UI surface for
  * clear separation. This follows Apple HIG tooltip conventions: dark label,
  * high contrast, no border, small shadow.
- * Border radius: ds-radius-sm (2px) — tighter than cards/modals.
+ * Border radius: ds-radius-sm (4px) — tighter than cards/modals.
  * Animation: fade + zoom via tailwindcss-animate.
  *
  * Always wrap the app in <TooltipProvider> (typically at root layout level).
