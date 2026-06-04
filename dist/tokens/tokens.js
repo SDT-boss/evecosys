@@ -1,6 +1,6 @@
 /**
  * Do not edit directly
- * Generated on Thu, 04 Jun 2026 14:49:06 GMT
+ * Generated on Thu, 04 Jun 2026 15:15:25 GMT
  */
 
 export const DsColorBrandPrimary = "#008684"; // Cyber Jade — structural anchor, navigation, links, focus rings
