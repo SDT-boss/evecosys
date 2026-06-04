@@ -1,0 +1,60 @@
+/**
+ * Do not edit directly
+ * Generated on Thu, 04 Jun 2026 14:49:06 GMT
+ */
+
+export const DsColorBrandPrimary = "#008684"; // Cyber Jade — structural anchor, navigation, links, focus rings
+export const DsColorBrandPrimaryStrong = "#007069"; // Cyber Jade Strong — solid fills with white labels (WCAG AA ≈5.9:1)
+export const DsColorBrandSecondary = "#96d02c"; // Volt Green — primary CTA, active states, success. Always use with ink label.
+export const DsColorBrandSecondaryStrong = "#557a12"; // Volt Green Strong — hover state for CTA; also foreground text on light surfaces (WCAG AA)
+export const DsColorBrandTertiary = "#7c3aed"; // Grid Violet — secondary interactive states, data-viz third series (WCAG AA ≈5.7:1)
+export const DsColorBrandTertiaryStrong = "#5b21b6"; // Grid Violet Strong — foreground text on light surfaces (WCAG AAA ≈9.0:1)
+export const DsColorNeutralBlack = "#000000"; // Brand black — wordmark and max-weight chrome only
+export const DsColorNeutralInk = "#0b0f0e"; // Near-black with cool cast — all body text and headings
+export const DsColorNeutralGrey80 = "#1c2120";
+export const DsColorNeutralGrey60 = "#4a5250"; // Subdued text, captions, disabled labels
+export const DsColorNeutralGrey40 = "#8a9290"; // Placeholder text, decorative icon fills
+export const DsColorNeutralGrey20 = "#c4cbca"; // Borders, dividers, inactive states
+export const DsColorNeutralGrey10 = "#e6eaea"; // Hover backgrounds, subtle tints
+export const DsColorNeutralGrey05 = "#f3f5f5"; // Page backgrounds, card fills, disabled input bg
+export const DsColorStatusSuccess = "#96d02c"; // Matches Volt Green — battery healthy, trip complete
+export const DsColorStatusWarning = "#f59e0b";
+export const DsColorStatusError = "#ef4444";
+export const DsColorStatusInfo = "#7c3aed"; // Matches Grid Violet
+export const DsSpaceNone = "0px";
+export const DsSpaceXs = "4px";
+export const DsSpaceSm = "8px";
+export const DsSpaceMd = "16px";
+export const DsSpaceLg = "24px";
+export const DsSpaceXl = "32px";
+export const DsSpace2xl = "48px";
+export const DsSpace3xl = "64px";
+export const DsFontFamilySans = "Geist, Inter, ui-sans-serif, system-ui, sans-serif";
+export const DsFontFamilyMono = "'JetBrains Mono', ui-monospace, monospace";
+export const DsFontSizeXs = "0.75rem";
+export const DsFontSizeSm = "0.875rem";
+export const DsFontSizeBase = "1rem";
+export const DsFontSizeLg = "1.125rem";
+export const DsFontSizeXl = "1.25rem";
+export const DsFontSize2xl = "1.5rem";
+export const DsFontSize3xl = "1.875rem";
+export const DsFontWeightNormal = "400";
+export const DsFontWeightMedium = "500";
+export const DsFontWeightSemibold = "600";
+export const DsFontWeightBold = "700";
+export const DsFontLineHeightTight = "1.25";
+export const DsFontLineHeightSnug = "1.375";
+export const DsFontLineHeightNormal = "1.5";
+export const DsFontLineHeightRelaxed = "1.625";
+export const DsRadiusNone = "0px";
+export const DsRadiusSm = "4px";
+export const DsRadiusMd = "8px";
+export const DsRadiusLg = "16px";
+export const DsRadiusFull = "9999px";
+export const DsShadowSm = "0 1px 2px 0 rgb(0 0 0 / 0.05)";
+export const DsShadowMd = "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)";
+export const DsShadowLg = "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)";
+export const DsMotionDurationFast = "100ms";
+export const DsMotionDurationBase = "200ms";
+export const DsMotionDurationSlow = "400ms";
+export const DsMotionEasingStandard = "cubic-bezier(0.4, 0, 0.2, 1)";

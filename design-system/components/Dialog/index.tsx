@@ -8,7 +8,7 @@
  *
  * Do NOT use Dialog for destructive confirmations — use AlertDialog instead.
  *
- * Overlay: black/80 scrim. Panel: white, ds-radius-lg, ds-shadow-lg.
+ * Overlay: black/80 scrim. Panel: white, ds-radius-lg (16px), ds-shadow-lg.
  * Max width: 512px (max-w-lg). Close button: top-right, ghost X icon.
  * Focus ring on close: Jade (#008684).
  *

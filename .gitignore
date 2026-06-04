@@ -22,7 +22,9 @@ vscode-extension/node_modules/
 vscode-extension/out/
 
 # build outputs
-**/dist
+/dist/*
+!/dist/tokens
+*/dist
 **/build
 **/storybook-static
 
