@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { ThemeProvider } from '@/components/layout/ThemeProvider'
 import './globals.css'
+import '../dist/tokens/variables.css'
 
 export const metadata: Metadata = {
   title: 'EVEcosys — Fleet Management System',
