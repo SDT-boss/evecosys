@@ -101,7 +101,7 @@ export default defineConfig({
 
   webServer: process.env.CI
     ? {
-        command: 'npm run start',
+        command: 'node .next/standalone/server.js',
         url: BASE_URL,
         reuseExistingServer: false,
         timeout: 120_000,
