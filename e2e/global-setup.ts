@@ -41,6 +41,7 @@ async function ensureTestUser(role: keyof typeof TEST_USERS): Promise<string> {
 export default async function globalSetup(config: FullConfig) {
   console.log('\n[E2E] Global setup — ensuring test users and auth state...')
 
+  const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? config.projects[0]?.use?.baseURL ?? 'http://localhost:3000'
   const browser = await chromium.launch()
 
   try {
@@ -54,7 +55,7 @@ export default async function globalSetup(config: FullConfig) {
     // Generate auth state for each role in parallel
     await Promise.all(
       (['manager', 'driver', 'board'] as const).map(async (role) => {
-        const ctx = await browser.newContext()
+        const ctx = await browser.newContext({ baseURL })
         const page = await ctx.newPage()
         try {
           await loginViaAPI(page, role)
