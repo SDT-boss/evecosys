@@ -34,7 +34,7 @@ export function UsersClient({ initialUsers }: { initialUsers: AppUser[] }) {
     }
   }
 
-  const roleVariant = (r: string) => r === 'manager' ? 'teal' : r === 'board' ? 'green' : 'gray'
+  const roleVariant = (r: string): 'teal' | 'green' | 'gray' => r === 'manager' ? 'teal' : r === 'board' ? 'green' : 'gray'
   const roleLabel = (r: string) => r === 'manager' ? 'Fleet Manager' : r === 'board' ? 'Board Member' : 'Driver'
 
   return (
@@ -75,7 +75,7 @@ export function UsersClient({ initialUsers }: { initialUsers: AppUser[] }) {
                     type={f.type}
                     required
                     placeholder={f.placeholder}
-                    value={(form as any)[f.key]}
+                    value={(form as Record<string, string>)[f.key]}
                     onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
                     className="w-full rounded-lg px-4 py-2.5 text-sm outline-none"
                     style={{ background: 'var(--surface2)', border: '1px solid var(--border)', color: 'var(--text)' }}
@@ -137,7 +137,7 @@ export function UsersClient({ initialUsers }: { initialUsers: AppUser[] }) {
           <div className="text-center py-16">
             <div className="text-4xl mb-3">👥</div>
             <p className="font-semibold mb-1" style={{ color: 'var(--text)' }}>No users found</p>
-            <p className="text-sm" style={{ color: 'var(--text3)' }}>Click "Add User" to create the first account.</p>
+            <p className="text-sm" style={{ color: 'var(--text3)' }}>Click &quot;Add User&quot; to create the first account.</p>
           </div>
         ) : (
           <table className="w-full text-xs">
@@ -162,7 +162,7 @@ export function UsersClient({ initialUsers }: { initialUsers: AppUser[] }) {
                   </td>
                   <td className="px-4 py-3" style={{ color: 'var(--text2)' }}>{u.email}</td>
                   <td className="px-4 py-3">
-                    <Badge variant={roleVariant(u.role) as any}>{roleLabel(u.role)}</Badge>
+                    <Badge variant={roleVariant(u.role)}>{roleLabel(u.role)}</Badge>
                   </td>
                   <td className="px-4 py-3" style={{ color: 'var(--text3)' }}>
                     {new Date(u.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}

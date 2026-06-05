@@ -13,6 +13,21 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  // Relax rules for test and infrastructure files that legitimately use any.
+  {
+    files: ["test/**/*.{ts,tsx}", "e2e/**/*.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      // Playwright fixtures use a `use` function that is not a React hook.
+      "react-hooks/rules-of-hooks": "off",
+    },
+  },
+  {
+    files: ["vscode-extension/**/*.{ts,d.ts}"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

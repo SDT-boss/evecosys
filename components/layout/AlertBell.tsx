@@ -16,12 +16,14 @@ export async function AlertBell({ role }: { role: 'manager' | 'driver' | 'board'
   if (role === 'board') return <StaticBell />
 
   let count = 0
+  let fallback = false
+
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return <StaticBell />
-
-    if (role === 'manager') {
+    if (!user) {
+      fallback = true
+    } else if (role === 'manager') {
       const { count: c } = await supabase
         .from('alerts')
         .select('*', { count: 'exact', head: true })
@@ -43,8 +45,10 @@ export async function AlertBell({ role }: { role: 'manager' | 'driver' | 'board'
       }
     }
   } catch {
-    return <StaticBell />
+    fallback = true
   }
+
+  if (fallback) return <StaticBell />
 
   return (
     <button

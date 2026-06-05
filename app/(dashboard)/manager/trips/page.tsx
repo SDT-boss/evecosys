@@ -10,7 +10,7 @@ export default async function TripsPage() {
     .order('started_at', { ascending: false })
     .limit(100)
 
-  const tList = (trips ?? []) as (Trip & { vehicle?: any; driver?: any })[]
+  const tList = (trips ?? []) as Trip[]
 
   const totalKm = tList.reduce((s, t) => s + (t.distance_km ?? 0), 0)
   const totalKwh = tList.reduce((s, t) => s + (t.energy_kwh ?? 0), 0)

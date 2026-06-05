@@ -58,8 +58,8 @@ export default async function ManagerOverviewPage() {
   ])
 
   const vList = (vehicles ?? []) as Vehicle[]
-  const aList = (alerts ?? []) as (Alert & { vehicle?: any })[]
-  const dList = (drivers ?? []) as (Driver & { user?: any })[]
+  const aList = (alerts ?? []) as Alert[]
+  const dList = (drivers ?? []) as Driver[]
   const tList = (trips ?? []) as Trip[]
 
   const totalKm = vList.reduce((s, v) => s + v.odometer, 0)

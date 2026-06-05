@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import type { Vehicle, Alert, Driver } from '@/types'
 
 // ── Shared sub-components ────────────────────────────────────────────────────
 
@@ -94,10 +95,10 @@ interface TripRow {
 
 export interface BoardData {
   // Overview
-  vList: any[]
-  aList: any[]
+  vList: Vehicle[]
+  aList: Alert[]
   tList: TripRow[]
-  dList: any[]
+  dList: Driver[]
   health: { score: number; color: string; label: string; grade: string; breakdown: { batteryHealth: number; availability: number; alertLoad: number } }
   totalKm: number
   avgSoc: number
@@ -236,7 +237,7 @@ function OverviewTab({ d }: { d: BoardData }) {
             </div>
           ))}
           <div className="mt-4 pt-4 grid grid-cols-2 gap-2" style={{ borderTop: '1px solid var(--border)' }}>
-            {d.vList.map((v: any) => (
+            {d.vList.map((v: Vehicle) => (
               <div key={v.id} className="flex items-center gap-2 text-xs">
                 <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: v.status === 'Moving' ? '#7cc242' : v.status === 'Maintenance' ? '#c02020' : '#c07800' }} />
                 <span className="truncate" style={{ color: 'var(--text2)' }}>{v.plate_no}</span>
