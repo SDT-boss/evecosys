@@ -117,16 +117,16 @@ export const AllStatesFormField: Story = {
   },
   render: () => (
     <div className="flex flex-col gap-6 w-[340px]">
-      <FormField id="ff-default" label="Driver email" helperText="We'll send login instructions here.">
+      <FormField htmlFor="ff-default" label="Driver email" helper="We'll send login instructions here.">
         <Input id="ff-default" placeholder="driver@company.com" />
       </FormField>
 
-      <FormField id="ff-filled" label="Driver email">
+      <FormField htmlFor="ff-filled" label="Driver email">
         <Input id="ff-filled" defaultValue="jane@evecosys.com" />
       </FormField>
 
       <FormField
-        id="ff-error"
+        htmlFor="ff-error"
         label="Vehicle plate"
         required
         error="Plate number is required"
@@ -134,7 +134,7 @@ export const AllStatesFormField: Story = {
         <Input id="ff-error" aria-invalid="true" aria-describedby="ff-plate-error" placeholder="EV-001-JKT" />
       </FormField>
 
-      <FormField id="ff-disabled" label="Organisation ID">
+      <FormField htmlFor="ff-disabled" label="Organisation ID">
         <Input id="ff-disabled" defaultValue="ORG-42" disabled />
       </FormField>
     </div>
