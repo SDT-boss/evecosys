@@ -1,0 +1,11 @@
+.git
+.next
+node_modules
+.env*
+!.env.example
+*.md
+.github
+e2e
+test
+coverage
+npm-install-output.log
