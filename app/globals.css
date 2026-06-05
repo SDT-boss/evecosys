@@ -71,6 +71,13 @@
     --topbar-bg: #1a1a1a;
     --topbar-border: #333333;
     --nav-bg: #242424;
+
+    /* Soft status pill tokens (light fill / dark text / matching border) */
+    --pill-green-bg: #eaf5d8; --pill-green-fg: #3a7010; --pill-green-bd: #c0dfa0;
+    --pill-teal-bg:  #d2ecf0; --pill-teal-fg:  #0d4e5a; --pill-teal-bd:  #a0d0dc;
+    --pill-amber-bg: #fef3dc; --pill-amber-fg: #8a5500; --pill-amber-bd: #f0d080;
+    --pill-red-bg:   #fdeaea; --pill-red-fg:   #8a1010; --pill-red-bd:   #f5c0c0;
+    --pill-grey-bg:  var(--surface2); --pill-grey-fg: var(--text3); --pill-grey-bd: var(--border);
   }
 
   .dark {
@@ -126,3 +133,8 @@
   to { transform: translateX(0); }
 }
 .slide-in-right { animation: slideInRight 0.32s cubic-bezier(0.32,0.72,0,1) forwards; }
+
+/* Table horizontal scroll — prevents columns from crushing on mobile.
+   Apply .table-scroll to the wrapper div and let the inner table set a min-width. */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table-scroll table { min-width: 640px; }
