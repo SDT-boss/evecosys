@@ -92,7 +92,7 @@ export async function createTestVehicle(overrides: Partial<{
     plate_no: overrides.plate_no ?? `TEST-${Date.now()}`,
     soc: overrides.soc ?? 75,
     soh: overrides.soh ?? 88,
-    status: overrides.status ?? 'Active',
+    status: overrides.status ?? 'Parked',
     location_name: 'Test Location',
     location_detail: 'Test Detail',
     coordinates: '3.140853,101.686855',

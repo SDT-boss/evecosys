@@ -26,7 +26,17 @@ async function ensureTestUser(role: keyof typeof TEST_USERS): Promise<string> {
     .eq('email', user.email)
     .single()
 
-  if (existing) return existing.id
+  if (existing) {
+    // Always reset force_password_reset_at to 30 days from now so a previous
+    // test run that expired it doesn't cause login-redirect failures.
+    const nextReset = new Date()
+    nextReset.setDate(nextReset.getDate() + 30)
+    await adminClient
+      .from('users')
+      .update({ force_password_reset_at: nextReset.toISOString() })
+      .eq('id', existing.id)
+    return existing.id
+  }
 
   // Create fresh
   const created = await createTestUser({

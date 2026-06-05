@@ -93,7 +93,7 @@ test.describe.serial('Forced password reset flow', () => {
 
     // May succeed or fail depending on session state — check for either outcome
     const success = page.getByText(/password updated/i)
-    const error = page.locator('[style*="fdeaea"]')
+    const error = page.getByTestId('auth-error')
     await Promise.race([
       success.waitFor({ timeout: 8_000 }),
       error.waitFor({ timeout: 8_000 }),
