@@ -83,13 +83,14 @@ export async function loginViaAPI(page: Page, role: RoleKey): Promise<void> {
 
   const { access_token, refresh_token } = await res.json()
 
-  // Navigate to the app so cookies are set in the correct origin
+  // Navigate to the app so localStorage is set in the correct origin
   await page.goto('/login')
 
-  // Inject the session via Supabase client JS
+  // Inject the session — key must be derived from the Supabase project URL,
+  // not the app URL (e.g. 'abcdef' from 'abcdef.supabase.co', not 'localhost')
   await page.evaluate(
-    ({ accessToken, refreshToken }) => {
-      const projectRef = new URL(window.location.href).hostname.split('.')[0]
+    ({ accessToken, refreshToken, supabaseUrl }) => {
+      const projectRef = new URL(supabaseUrl).hostname.split('.')[0]
       const storageKey = `sb-${projectRef}-auth-token`
       const session = {
         access_token: accessToken,
@@ -100,7 +101,7 @@ export async function loginViaAPI(page: Page, role: RoleKey): Promise<void> {
       }
       localStorage.setItem(storageKey, JSON.stringify(session))
     },
-    { accessToken: access_token, refreshToken: refresh_token }
+    { accessToken: access_token, refreshToken: refresh_token, supabaseUrl }
   )
 
   // Reload so Next.js picks up the session via SSR

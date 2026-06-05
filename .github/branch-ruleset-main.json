@@ -34,7 +34,8 @@
           { "context": "CI / Unit tests" },
           { "context": "CI / Design tokens" },
           { "context": "CI / Build & startup check" },
-          { "context": "CI / Dependency audit" }
+          { "context": "CI / Dependency audit" },
+          { "context": "E2E / Playwright E2E" }
         ]
       }
     }

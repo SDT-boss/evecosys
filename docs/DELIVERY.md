@@ -33,7 +33,8 @@ evecosys/                       ← monorepo root
 │   └── migrations/             ← Versioned SQL migration files
 │       └── YYYYMMDDHHMMSS_description.sql
 ├── .github/workflows/
-│   ├── ci.yml                  ← PR quality gate
+│   ├── ci.yml                  ← PR quality gate (5 parallel jobs)
+│   ├── e2e.yml                 ← PR E2E test suite (Playwright)
 │   ├── deploy-staging.yml      ← main → staging
 │   └── deploy-prod.yml         ← release/dispatch → production
 └── .env.example                ← Required env var reference (no values)
@@ -69,44 +70,58 @@ The initial migration (`20240101000000_initial_schema.sql`) represents the schem
 PR opened / updated
         │
         ▼
-┌──────────────────────────────────┐
-│  Stage 1 — Quality Gate (CI)    │  ← .github/workflows/ci.yml
-│  lint → typecheck → unit tests  │
-│  → build check                  │
-│  Blocks merge if any step fails │
-└──────────────────────────────────┘
+┌────────────────────────────────────────────────────┐
+│  Stage 1 — Quality Gate (CI)                       │  ← ci.yml + e2e.yml
+│  lint │ typecheck │ unit tests │ build check │      │
+│  token drift │ dep audit │ Playwright E2E           │
+│  All 6 jobs must pass before merge                 │
+└────────────────────────────────────────────────────┘
         │  merge to main
         ▼
-┌──────────────────────────────────┐
-│  Stage 2 — Staging Deploy       │  ← .github/workflows/deploy-staging.yml
-│  migrate (staging DB)           │
-│  → deploy (Vercel preview env)  │
-│  → smoke test                   │
-└──────────────────────────────────┘
+┌────────────────────────────────────────────────────┐
+│  Stage 2 — Staging Deploy                          │  ← deploy-staging.yml
+│  migrate (staging DB)                              │
+│  → Docker build & push (ghcr.io)                   │
+│  → SSH deploy to staging server                    │
+│  → E2E suite against live staging URL              │
+└────────────────────────────────────────────────────┘
         │  GitHub Release published
         │  OR manual workflow_dispatch
         ▼
-┌──────────────────────────────────┐
-│  Stage 3 — Production Deploy    │  ← .github/workflows/deploy-prod.yml
-│  [approval gate — 1 reviewer]   │
-│  migrate (production DB)        │
-│  → deploy (Vercel --prod)       │
-│  → smoke test                   │
-└──────────────────────────────────┘
+┌────────────────────────────────────────────────────┐
+│  Stage 3 — Production Deploy                       │  ← deploy-prod.yml
+│  [approval gate — 1 reviewer]                      │
+│  migrate (production DB)                           │
+│  → Docker build & push (ghcr.io)                   │
+│  → SSH deploy to production server                 │
+└────────────────────────────────────────────────────┘
 ```
 
 ### Stage 1: Quality Gate
 
-Runs on every PR targeting `main`. All steps must pass before merge is allowed.
+Runs on every PR targeting `main`. All jobs must pass before merge is allowed.
 
-| Step | Tool | Failure means |
+**`ci.yml` — 5 parallel jobs:**
+
+| Job | Tool | Failure means |
 |---|---|---|
-| Lint | ESLint | Code style violation; fix and push |
-| Type check | `tsc --noEmit` | Type error introduced; fix before merge |
+| Lint & type check | ESLint + `tsc --noEmit` | Style violation or type error; fix and push |
 | Unit tests | Vitest | Regression in component/logic layer |
-| Build check | `next build` | App would not compile for deployment |
+| Design tokens | Style Dictionary + `git diff` | Token drift — run `make tokens` and commit output |
+| Build & startup check | `next build` + `next start` | App would not compile or start; fix before merge |
+| Dependency audit | `npm audit --audit-level=high` | High-severity vulnerability in dependency tree |
 
-The build check uses placeholder Supabase credentials. It validates that the Next.js build graph is intact, not that the app connects to a real database.
+The build job uses placeholder Supabase credentials. It validates that the Next.js build graph is intact and the standalone server starts, not that the app connects to a real database.
+
+**`e2e.yml` — Playwright E2E:**
+
+| Step | What it does |
+|---|---|
+| Build app | `next build` with real staging Supabase credentials (baked into bundle) |
+| Run Playwright | Full browser suite against `http://localhost:3000`; uses staging Supabase for data |
+| Upload report | HTML report + traces uploaded as CI artifact on every run |
+
+The E2E job uses the `staging` GitHub Environment for secrets. It runs against a locally built and started app, not the deployed staging server, which means it validates the code on the PR branch rather than what is already deployed.
 
 ### Stage 2: Staging Deploy
 
@@ -136,11 +151,11 @@ There is no automated rollback. Automated rollback on a failed smoke test is a f
 
 ### Environments
 
-| Environment | Purpose | Supabase project | Vercel target | Who accesses |
+| Environment | Purpose | Supabase project | App server | Who accesses |
 |---|---|---|---|---|
-| `local` | Developer workstation | `supabase start` (Docker) | `next dev` | Individual engineers |
-| `staging` | Integration testing; QA; design review | Dedicated staging project | Vercel preview environment | Team + stakeholders |
-| `production` | Live system | Dedicated production project | Vercel production | End users |
+| `local` | Developer workstation | `supabase start` (Docker) | `next dev` on localhost | Individual engineers |
+| `staging` | Integration testing; QA; design review | Dedicated staging project | Docker container on staging server | Team + stakeholders |
+| `production` | Live system | Dedicated production project | Docker container on production server | End users |
 
 ### Local development
 
@@ -194,16 +209,19 @@ This is not built yet. It is the documented escalation path.
 | Secret | Where stored | Used by | Scope |
 |---|---|---|---|
 | `SUPABASE_DB_URL` | GitHub Environment (staging / production) | Migration job in CI | Short-lived CI runner only |
-| `SUPABASE_URL` | GitHub Environment (staging / production) | Docker build args | Baked into JS bundle at image build time |
-| `SUPABASE_ANON_KEY` | GitHub Environment (staging / production) | Docker build args | Baked into JS bundle at image build time |
-| `SUPABASE_SERVICE_ROLE_KEY` | Server env file (`/etc/evecosys/*.env`) | Next.js server at runtime | Never passes through CI |
+| `SUPABASE_URL` | GitHub Environment (staging / production) | Docker build args + E2E job | Baked into JS bundle at image build time |
+| `SUPABASE_ANON_KEY` | GitHub Environment (staging / production) | Docker build args + E2E job | Baked into JS bundle at image build time |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server env file (`/etc/evecosys/*.env`) + staging GitHub Environment | Next.js server at runtime; E2E admin operations | Never baked into image |
 | `NEXT_PUBLIC_SUPABASE_URL` | Server env file | Runtime env (redundant with build-arg; kept for SSR path) | Same value as build arg |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Server env file | Runtime env | Same value as build arg |
 | `DEPLOY_HOST` | GitHub Environment (staging / production) | SSH deploy job | IP or hostname of target server |
 | `DEPLOY_USER` | GitHub Environment (staging / production) | SSH deploy job | SSH user on target server |
 | `DEPLOY_SSH_KEY` | GitHub Environment (staging / production) | SSH deploy job | Private key; rotated quarterly |
-| `STAGING_URL` / `PROD_URL` | GitHub Environment | E2E / smoke test jobs | Base URL of the deployed environment |
-| E2E credentials (6 secrets) | GitHub Environment (staging) | Playwright E2E suite | Test-only accounts; no access to production data |
+| `STAGING_URL` / `PROD_URL` | GitHub Environment | Post-deploy E2E job in `deploy-staging.yml` | Base URL of the deployed environment |
+| `E2E_MANAGER_EMAIL` | GitHub Environment (staging) | Playwright E2E suite | Test account; no production data access |
+| `E2E_DRIVER_EMAIL` | GitHub Environment (staging) | Playwright E2E suite | Test account |
+| `E2E_BOARD_EMAIL` | GitHub Environment (staging) | Playwright E2E suite | Test account |
+| `E2E_TEST_PASSWORD` | GitHub Environment (staging) | Playwright E2E suite | Shared password for all three test accounts |
 
 ### How to set up GitHub Environments
 
@@ -239,7 +257,7 @@ The following checks are enforced and block merge or deployment if they fail.
 |---|---|---|
 | Linting | ESLint | `eslint.config.mjs` |
 | Type safety | TypeScript strict | `tsconfig.json` |
-| Unit tests | Vitest | `vitest.config.ts` — all tests must pass |
+| Unit tests | Vitest | `vitest.config.mts` — all tests must pass; `e2e/**` excluded |
 | Build integrity | `next build` | Must exit 0 with placeholder credentials |
 
 ### Infrastructure (enforced at deploy time)
@@ -258,9 +276,9 @@ The following checks are enforced and block merge or deployment if they fail.
 
 ### Deployment identity
 
-- The `VERCEL_TOKEN` used by CI must belong to a **machine account** (not a personal account), scoped only to this Vercel project.
+- The `DEPLOY_SSH_KEY` must belong to a **dedicated deploy keypair** (not a personal key), with the public key authorised only on the deploy user's account on the server.
 - The `SUPABASE_DB_URL` should use a **least-privilege database user** that can only run migrations (not SELECT/INSERT on application tables).
-- Rotate both tokens quarterly. Use GitHub's secret scanning to detect accidental exposure.
+- Rotate the deploy key and database URL quarterly. Use GitHub's secret scanning to detect accidental exposure.
 
 ---
 
@@ -268,9 +286,9 @@ The following checks are enforced and block merge or deployment if they fail.
 
 ### Dependencies
 
-- Cloud landing zone: this model assumes Vercel + Supabase cloud. If the deployment target changes to AWS/GCP, the hosting layer (Vercel) is replaced but the migration and CI layers remain unchanged.
-- Domain/DNS: production URL must be configured in Vercel and in `supabase/config.toml` `site_url` before going live.
-- OIDC federation (future): replace the `VERCEL_TOKEN` long-lived token with GitHub's OIDC token for keyless, time-bounded deployments.
+- Deployment target: this model assumes a self-hosted server reachable via SSH. If the target changes to a managed platform (AWS ECS, GCP Cloud Run, etc.), only the deploy job in `deploy-staging.yml` and `deploy-prod.yml` changes — the build, migration, and CI layers remain unchanged.
+- Domain/DNS: production URL must be configured in Supabase Auth (Site URL + Redirect URLs) and in `supabase/config.toml` `site_url` before going live.
+- OIDC federation (future): replace long-lived `DEPLOY_SSH_KEY` with ephemeral OIDC-based credentials for keyless, time-bounded deployments.
 
 ### Risk: ad hoc deployments
 
