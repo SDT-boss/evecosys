@@ -2,14 +2,17 @@
 
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
+import markerIconImg from 'leaflet/dist/images/marker-icon.png'
+import markerIcon2xImg from 'leaflet/dist/images/marker-icon-2x.png'
+import markerShadowImg from 'leaflet/dist/images/marker-shadow.png'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import type { ChargingStation } from '@/types'
 
-delete (L.Icon.Default.prototype as any)._getIconUrl
+delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl
 L.Icon.Default.mergeOptions({
-  iconUrl: require('leaflet/dist/images/marker-icon.png'),
-  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+  iconUrl: markerIconImg.src,
+  iconRetinaUrl: markerIcon2xImg.src,
+  shadowUrl: markerShadowImg.src,
 })
 
 const MALAYSIA_CENTER: [number, number] = [3.139, 101.6869]

@@ -9,7 +9,8 @@ export async function GET() {
     const client = new LinearClient({ apiKey: key })
     const viewer = await client.viewer()
     return NextResponse.json({ viewer })
-  } catch (err: any) {
-    return NextResponse.json({ error: err?.message ?? String(err) }, { status: 500 })
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err)
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

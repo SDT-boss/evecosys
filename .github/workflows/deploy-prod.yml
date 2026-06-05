@@ -1,0 +1,138 @@
+name: Deploy → Production
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: Reason for manual deployment
+        required: true
+        type: string
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  migrate:
+    name: Run DB Migrations (production)
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install Supabase CLI
+        run: npm install -g supabase@latest
+
+      - name: Run migrations
+        run: supabase db push --db-url "${{ secrets.SUPABASE_DB_URL }}"
+
+  build-and-push:
+    name: Build & push Docker image (production)
+    runs-on: ubuntu-latest
+    environment: production
+    needs: migrate
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve image tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "value=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=prod-${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.value }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          build-args: |
+            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+
+  deploy:
+    name: Deploy to production server
+    runs-on: ubuntu-latest
+    environment: production
+    needs: build-and-push
+    timeout-minutes: 10
+
+    steps:
+      - name: Resolve image tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "value=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=prod-${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            docker pull ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.value }}
+            docker stop evecosys-prod 2>/dev/null || true
+            docker rm   evecosys-prod 2>/dev/null || true
+            docker run -d \
+              --name evecosys-prod \
+              --restart unless-stopped \
+              -p 3000:3000 \
+              --env-file /etc/evecosys/prod.env \
+              ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.value }}
+            docker image prune -f
+
+  smoke:
+    name: Smoke test (production)
+    runs-on: ubuntu-latest
+    needs: deploy
+    timeout-minutes: 5
+
+    steps:
+      - name: Health check
+        run: |
+          url="${{ secrets.PROD_URL }}"
+          for i in 1 2 3; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" "$url")
+            if [ "$status" = "200" ] || [ "$status" = "307" ]; then
+              echo "Health check passed (HTTP $status)"
+              exit 0
+            fi
+            echo "Attempt $i: HTTP $status — retrying in 10s"
+            sleep 10
+          done
+          echo "Health check failed after 3 attempts"
+          exit 1

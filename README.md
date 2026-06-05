@@ -1,6 +1,6 @@
 # EVEcosys — EV Fleet Management Platform
 
-EVEcosys is a web application that helps organisations manage electric vehicle (EV) fleets. Managers can add users, track vehicles, monitor charging stations, and review trip data. Drivers see only their own vehicle and trips. Admins get a read-only view of fleet-wide KPIs and analytics across their organisation.
+EVEcosys is a web application that helps organisations manage electric vehicle (EV) fleets. Managers can add users, track vehicles, monitor charging stations, and review trip data. Drivers see only their own vehicle and trips. Board members get a read-only view of fleet-wide KPIs and analytics.
 
 ---
 
@@ -12,10 +12,11 @@ EVEcosys is a web application that helps organisations manage electric vehicle (
 4. [Setting up for development](#local-development)
 5. [Storybook — component stories](#storybook)
 6. [Running tests](#running-tests)
-7. [Deploying to production](#deployment)
-8. [Database tables](#database-schema)
-9. [Security](#security)
-10. [Smoke test checklist](#smoke-test-checklist)
+7. [CI/CD pipeline](#cicd-pipeline)
+8. [Deploying to production](#deployment)
+9. [Database tables](#database-schema)
+10. [Security](#security)
+11. [Smoke test checklist](#smoke-test-checklist)
 
 ---
 
@@ -37,20 +38,20 @@ Every 30 days, users are prompted to reset their password before they can contin
 
 ## Codebase Structure
 
-This is a **monorepo** — a single repository containing multiple related projects. Think of it like one folder on your computer that holds several sub-projects which share code with each other.
+This is a **monorepo** — a single repository containing multiple related projects.
 
 ```
 evecosys/
 │
 ├── app/                    ← The web application (pages and API)
 │   ├── (auth)/             ← Login, forgot password, reset password
-│   ├── (dashboard)/        ← Role dashboards (admin, driver, manager)
+│   ├── (dashboard)/        ← Role dashboards (board, driver, manager)
 │   └── api/                ← Server-side API endpoints
 │
 ├── components/             ← Reusable UI building blocks (buttons, forms, tables, etc.)
 │   ├── ui/                 ← Base visual primitives
 │   ├── auth/               ← Auth-specific components
-│   ├── board/              ← Admin-role components
+│   ├── board/              ← Board-role components
 │   ├── driver/             ← Driver-role components
 │   ├── manager/            ← Manager-role components
 │   └── layout/             ← Page shells and navigation
@@ -67,7 +68,7 @@ evecosys/
 │
 ├── types/                  ← TypeScript type definitions for every data entity
 │
-├── test/                   ← Unit and integration tests (run in under a second each)
+├── test/                   ← Unit and integration tests (run in memory, no browser)
 │   ├── unit/               ← Tests for individual functions and components
 │   ├── integration/        ← Tests for multi-step flows (e.g. password reset)
 │   └── utils/              ← Test helpers and database stubs
@@ -76,13 +77,12 @@ evecosys/
 │   ├── tests/              ← Test specs grouped by feature and role
 │   ├── page-objects/       ← Helper classes that represent pages in the browser
 │   ├── fixtures/           ← Shared test setup and teardown
-│   ├── helpers/            ← Auth helpers and database utilities
-│   └── test-data/          ← Random data generators (email addresses, plate numbers, etc.)
+│   ├── helpers/            ← Auth helpers and Supabase admin utilities
+│   └── test-data/          ← Random data generators (emails, plate numbers, etc.)
 │
 ├── docs/                   ← Design decisions and architecture notes
 ├── public/                 ← Brand logos and static assets
-├── scripts/                ← One-off utility scripts
-└── vscode-extension/       ← VS Code extension for Linear integration
+└── supabase/               ← Supabase CLI config and versioned DB migrations
 ```
 
 ### The three workstreams
@@ -91,93 +91,79 @@ evecosys/
 |---|---|---|
 | **App** | `app/` + `components/` | The running web application users interact with |
 | **Design System** | `design-system/` | Shared visual language — `DESIGN.md` is the canonical record, `tokens/tokens.json` is the machine source, Style Dictionary compiles both to `variables.css` and `tokens.js` on every merge |
-| **Docs** | `docs/` | Design decisions, architecture records, `DESIGN.md` |
+| **Docs** | `docs/` | Design decisions, architecture records |
 
 ---
 
 ## Tech Stack
-
-You do not need to understand all of these to contribute, but here is what the project is built on:
 
 | What | Technology | Why |
 |---|---|---|
 | Web framework | Next.js 16 (App Router) | Handles both the UI and the server-side API in one project |
 | Database & auth | Supabase (Postgres) | Manages all data, login sessions, and row-level security |
 | Styling | Tailwind CSS | Utility-first CSS — style by adding class names |
-| UI components | shadcn/ui | Pre-built accessible components (moving to `design-system/`) |
+| Design system | Style Dictionary + shadcn/ui | Token pipeline + pre-built accessible components |
 | Unit testing | Vitest + Testing Library | Fast tests that run in memory (no browser needed) |
 | E2E testing | Playwright | Automated browser tests that simulate real user flows |
-| Deployment | Vercel | Hosts the app; auto-deploys on every push to `main` |
+| Containerisation | Docker (multi-stage) | Reproducible builds; `output: standalone` for minimal images |
+| Image registry | GitHub Container Registry | Free for private repos; `GITHUB_TOKEN` auth, no extra credentials |
+| Deployment | Self-hosted server via SSH | Full control; no per-seat or per-deployment cost |
 | Issue tracking | Linear | Linked via VS Code extension and GitHub Actions |
 
 ---
 
 ## Local Development
 
-### What you need installed first
-
-- [Node.js 18 or newer](https://nodejs.org)
-- npm (comes with Node)
-- A Supabase project (cloud or local CLI)
-
-### Steps
+### First-time setup (requires Docker)
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/evecosys.git
-cd evecosys
-
-# 2. Install dependencies
-#    --legacy-peer-deps avoids a known conflict with testing libraries
-npm install --legacy-peer-deps
-
-# 3. Create your environment file
-cp .env.example .env.local
-# Then open .env.local and fill in your Supabase credentials (see below)
-
-# 4. Start the development server
-npm run dev
+make setup          # installs deps, copies .env.example → .env.local, starts Supabase
+# Fill in .env.local with the API URL + anon key printed by supabase start
+make migrate        # apply DB migrations to local Supabase
+make dev            # start Next.js dev server at http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+### Daily commands
+
+```bash
+make dev            # Next.js dev server (http://localhost:3000)
+make test           # Vitest unit tests (run once)
+make test-watch     # Vitest in watch mode
+make lint           # ESLint + TypeScript check
+make tokens         # rebuild design tokens (run after editing tokens.json)
+make e2e            # Playwright E2E tests (requires running app + Supabase)
+make e2e-ui         # Playwright UI mode (visual test runner)
+make check          # run all CI checks locally before pushing
+```
 
 ### Environment variables
 
-Create a file called `.env.local` in the project root. It must contain:
+Copy `.env.example` to `.env.local` and fill in the values from `supabase start` output:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+SUPABASE_DB_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres  # local only
 ```
 
 > **Important:** `SUPABASE_SERVICE_ROLE_KEY` is a secret admin key. It must **never** start with `NEXT_PUBLIC_` — that prefix would expose it to the browser and to the public.
 
-You can find all three values in your Supabase project under **Settings → API**.
+Find your values in **Settings → API** in your Supabase project (or from the `supabase start` output for local).
 
 ---
 
 ## Storybook
 
-Storybook provides a live, interactive catalogue of every design-system component and product composition. It is the primary tool for visual review, design sign-off, and catching regressions before they reach the app.
-
-### Running Storybook locally
+Storybook provides a live, interactive catalogue of every design-system component and product composition.
 
 ```bash
-npm run storybook
+npm run storybook   # opens http://localhost:6006
 ```
 
-Opens at **http://localhost:6006**. Storybook picks up `dist/tokens/variables.css` automatically so all `--ds-*` tokens resolve as they do in the real app.
+Storybook picks up `dist/tokens/variables.css` automatically so all `--ds-*` tokens resolve as they do in the real app.
 
-> **Node.js requirement:** Storybook 8 requires Node.js ≥ 18. The Next.js app requires ≥ 20 — if you're running Storybook on Node 18, that is sufficient.
-
-### Building a static Storybook
-
-```bash
-npm run build-storybook
-```
-
-Output lands in `storybook-static/`. This is what CI deploys for design review.
+> **Node.js requirement:** Storybook 8 requires Node.js ≥ 18.
 
 ### Story catalogue
 
@@ -186,20 +172,13 @@ Stories live in `design-system/stories/`. Every story file corresponds to one co
 | Story | Path | What it covers |
 |---|---|---|
 | **Button** | `Primitives/Button` | All 6 variants, 4 sizes, with-icon, loading, disabled, icon-only |
-| **Input** | `Primitives/Input` | Default, filled, disabled, error (aria-invalid), with FormField wrappers, all input types |
-| **Card** | `Primitives/Card` | Sub-component anatomy, vehicle summary card, content-only, 3-column grid pattern |
+| **Input** | `Primitives/Input` | Default, filled, disabled, error (aria-invalid), with FormField wrappers |
+| **Card** | `Primitives/Card` | Sub-component anatomy, vehicle summary card, 3-column grid pattern |
 | **Badge** | `Primitives/Badge` | All 5 variants, vehicle status semantics, inline-with-text usage |
-| **Typography** | `Foundations/Typography` | Font families, size scale, weight scale, line-height scale, real-world page hierarchy |
-| **StatCard** | `Compositions/StatCard` | All 3 trend directions, with/without icon, 4-column dashboard KPI grid, minimal |
-| **OnboardingCard** | `Compositions/OnboardingCard` | Manager 3-step flow, completion state, without step indicator, minimal |
-| **DashboardShell** | `Compositions/DashboardShell` | Manager overview (full shell), sidebar nav isolation, empty/first-run state |
-
-### Writing new stories
-
-1. Create `design-system/stories/ComponentName.stories.tsx`
-2. Follow CSF3 format — `Meta<typeof Component>` + named `StoryObj` exports
-3. Tag with `autodocs` for auto-generated documentation pages
-4. One story per distinct state or use-case; name stories after what the user sees, not the prop value
+| **Typography** | `Foundations/Typography` | Font families, size scale, weight scale, line-height scale |
+| **StatCard** | `Compositions/StatCard` | All 3 trend directions, with/without icon, 4-column KPI grid |
+| **OnboardingCard** | `Compositions/OnboardingCard` | Manager 3-step flow, completion state, minimal |
+| **DashboardShell** | `Compositions/DashboardShell` | Full shell, sidebar nav isolation, empty/first-run state |
 
 ---
 
@@ -209,15 +188,14 @@ There are two layers of tests. Both must pass before merging to `main`.
 
 ### Unit and integration tests (Vitest)
 
-These run entirely in memory — no browser, no real database. They are fast (usually under 10 seconds total) and check that individual functions and components behave correctly.
+Fast, in-memory tests — no browser, no real database.
 
 ```bash
-npm run test
+make test           # run once
+make test-watch     # watch mode
 ```
 
-What is tested:
-
-| Test file location | What it covers |
+| Test location | What it covers |
 |---|---|
 | `test/unit/auth/` | Login, signup, forgot-password, and reset-password forms |
 | `test/unit/api/` | All six API endpoints (charging, alerts, users, vehicles) |
@@ -225,68 +203,107 @@ What is tested:
 | `test/unit/components/` | The SignupForm component |
 | `test/integration/` | Multi-step flows with an in-memory database stub |
 
-The test utilities in `test/utils/` provide a lightweight fake database so tests never touch a real Supabase project.
-
 ### End-to-end tests (Playwright)
 
-These open a real browser and click through the app like a real user would. They require a running dev server and a live Supabase test project.
+These open a real browser and simulate real user journeys. They require a live Supabase project with test credentials configured.
 
 ```bash
-npx playwright test
+make e2e            # headless run
+make e2e-ui         # Playwright UI mode
 ```
 
-The tests are split into **7 test projects** that run in order:
+The suite is split into **6 test projects** that run in dependency order:
 
 | Project | What it does |
 |---|---|
-| `setup` | Creates three test users (manager, driver, admin) and saves login sessions |
-| `auth` | Tests login, logout, and password reset flows |
+| `setup` | Creates three test users (manager, driver, board) and saves login sessions as cookies |
+| `auth` | Tests login, logout, and password-reset flows end-to-end |
 | `manager` | Tests every Manager feature (users, drivers, vehicles, alerts, charging) |
 | `driver` | Tests the Driver dashboard and alert actions |
 | `auth-guards` | **P0 security test** — confirms each role can only access their own routes |
-| `mobile-smoke` | Runs critical paths on a mobile viewport (Pixel 5) |
+| `mobile-smoke` | Runs critical Manager paths on a Pixel 5 mobile viewport |
 | `teardown` | Cleans up all test data created during the run |
 
-Test reports are saved to `e2e/reports/` after each run. On CI, Playwright captures screenshots and traces for any test that fails.
+Test reports, screenshots, and traces are saved to `e2e/reports/` after each run.
 
-#### Writing new tests
+#### Writing new E2E tests
 
-- Add page specs to `e2e/tests/<feature>/`
-- Use the existing page-object classes in `e2e/page-objects/` rather than writing raw selectors
-- Use the fixtures in `e2e/fixtures/` so cleanup is handled automatically
-- Generate unique test data with the helpers in `e2e/test-data/` to avoid collisions between runs
+- Add spec files to `e2e/tests/<feature>/`
+- Use page-object classes from `e2e/page-objects/` rather than raw selectors
+- Use fixtures from `e2e/fixtures/` so teardown is automatic even on failure
+- Generate unique test data with `e2e/test-data/factories.ts` to avoid collisions
+
+---
+
+## CI/CD Pipeline
+
+Every pull request to `main` runs **6 parallel jobs**. All must pass before merge.
+
+| Job | What it checks |
+|---|---|
+| `Lint & type check` | ESLint + `tsc --noEmit` |
+| `Unit tests` | Vitest — all 235 unit tests |
+| `Design tokens` | Token pipeline builds cleanly; output matches committed files (drift check) |
+| `Build & startup check` | `next build` compiles + standalone server starts and responds on port 3000 |
+| `Dependency audit` | No high-severity npm vulnerabilities |
+| `Playwright E2E` | Full browser test suite against a locally built app connected to staging Supabase |
+
+On merge to `main`, the staging deploy pipeline runs automatically (`deploy-staging.yml`): database migration → Docker build & push to GHCR → SSH deploy to staging server → full E2E suite against the live staging URL.
+
+Production is promoted via GitHub Release (or `workflow_dispatch` for emergencies), with a required reviewer gate.
+
+See `docs/DELIVERY.md` for the full pipeline architecture.
 
 ---
 
 ## Deployment
 
-The app deploys automatically to Vercel when you push to `main`.
+The app ships as a Docker image built by CI and pushed to GitHub Container Registry (`ghcr.io`). A GitHub Actions workflow SSHes into the server and runs the new image.
 
-### First-time setup on Vercel
+### Required GitHub Secrets (per environment)
 
-1. Go to [vercel.com](https://vercel.com) and log in
-2. Click **Add New → Project** and import the GitHub repository
-3. Under **Environment Variables**, add all three variables from `.env.local` for **Production**, **Preview**, and **Development** environments
-4. Click **Deploy**
+Configure these under **Settings → Environments → staging** (and production):
 
-Your app will be live at `https://your-project-name.vercel.app`.
+| Secret | Description |
+|---|---|
+| `SUPABASE_URL` | Supabase project API URL |
+| `SUPABASE_ANON_KEY` | Supabase public anon key (safe to bake into JS bundle) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase admin key — runtime only, never baked in |
+| `SUPABASE_DB_URL` | Full PostgreSQL connection URL for running migrations |
+| `DEPLOY_HOST` | IP or hostname of the deployment server |
+| `DEPLOY_USER` | SSH user on the deployment server |
+| `DEPLOY_SSH_KEY` | SSH private key for the deploy user |
+| `STAGING_URL` / `PROD_URL` | Public URL of the environment (used by E2E tests) |
+| `E2E_MANAGER_EMAIL` | Email address for the E2E manager test account |
+| `E2E_DRIVER_EMAIL` | Email address for the E2E driver test account |
+| `E2E_BOARD_EMAIL` | Email address for the E2E board test account |
+| `E2E_TEST_PASSWORD` | Shared password for all E2E test accounts |
+
+### Server env file
+
+Create `/etc/evecosys/staging.env` (and `prod.env`) on the server once, owned by root, mode `0600`:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://<ref>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
+SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
+```
+
+Docker mounts this file at container start via `--env-file`. It never passes through CI.
 
 ### After deploying: update Supabase redirect URLs
 
-Supabase needs to know your production URL so password-reset and auth emails link to the right place.
-
 1. Go to your Supabase project → **Authentication → URL Configuration**
-2. Set **Site URL** to your Vercel URL (e.g. `https://evecosys.vercel.app`)
+2. Set **Site URL** to your production URL
 3. Add to **Redirect URLs:**
-   - `https://evecosys.vercel.app/**`
+   - `https://your-domain.com/**`
    - `http://localhost:3000/**` (for local dev)
-4. Save
 
 ---
 
 ## Database Schema
 
-Seven tables, all with Row Level Security (RLS) enabled. RLS means the database itself enforces access rules — a Driver cannot query another Driver's data even if they tried.
+Seven tables, all with Row Level Security (RLS) enabled.
 
 | Table | What it stores |
 |---|---|
@@ -298,12 +315,11 @@ Seven tables, all with Row Level Security (RLS) enabled. RLS means the database 
 | `charging_stations` | Charging station registry with location and connector data |
 | `user_preferences` | Per-user settings (theme: light or dark) |
 
-**Useful helper functions built into the database:**
-
+Built-in database helpers:
 - `get_my_role()` — returns the logged-in user's role
 - `get_my_vehicle_id()` — returns the Driver's assigned vehicle ID
 
-The full schema is in `supabase-schema.sql`.
+Schema lives in `supabase/migrations/`. Every change must be a new migration file — never edit an existing one.
 
 ---
 
@@ -312,7 +328,7 @@ The full schema is in `supabase-schema.sql`.
 - **Row Level Security** on every Supabase table — access is enforced at the database level
 - **Middleware** (`middleware.ts`) checks the user's role on every page request and blocks unauthorised access
 - **Security headers** set in `next.config.ts`: CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
-- **Service role key** is server-side only and never exposed to the browser
+- **Service role key** is server-side only — never exposed to the browser, never baked into the Docker image
 - **No self-registration** — only a Super Admin or Admin can create accounts
 
 ---
@@ -328,8 +344,8 @@ Run this manually after every production deployment.
 - [ ] View all trips and alerts
 - [ ] Log out
 
-### Admin
-- [ ] Log in as Admin
+### Board member
+- [ ] Log in as Board
 - [ ] Verify fleet-wide KPIs and analytics are visible
 - [ ] Attempt to edit any record — should be blocked
 - [ ] Log out

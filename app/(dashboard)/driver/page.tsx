@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { calcBehaviorScore } from '@/lib/behaviorScore'
-import type { Trip } from '@/types'
+import type { Trip, ChargingStation } from '@/types'
 
 function GaugeBox({ label, value, color, unit }: { label: string; value: number; color: string; unit: string }) {
   return (
@@ -180,7 +180,7 @@ export default async function DriverOverviewPage() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {(stations ?? []).map((s: any, i: number) => (
+                  {(stations ?? []).map((s: ChargingStation, i: number) => (
                     <div key={s.id} className="rounded-lg p-3" style={{ background: 'var(--surface2)', border: '1px solid var(--border)' }}>
                       <div className="flex items-start gap-2">
                         <span className="text-base flex-shrink-0">{i === 0 ? '⚡' : '🔌'}</span>

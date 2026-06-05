@@ -19,8 +19,8 @@ export default async function BoardOverviewPage() {
 
   const vList = (vehicles ?? []) as Vehicle[]
   const aList = (alerts ?? []) as Alert[]
-  const tList = (trips ?? []) as any[]
-  const dList = (drivers ?? []) as (Driver & { user?: any })[]
+  const tList = (trips ?? []) as Trip[]
+  const dList = (drivers ?? []) as Driver[]
 
   // ── Overview computations ──────────────────────────────────────────────────
   const totalKm = vList.reduce((s, v) => s + v.odometer, 0)

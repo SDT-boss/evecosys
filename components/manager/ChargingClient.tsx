@@ -57,7 +57,7 @@ export function ChargingClient({ initialStations }: { initialStations: ChargingS
         <div className="rounded-xl p-12 text-center mb-6" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
           <div className="text-4xl mb-3">⚡</div>
           <p className="font-semibold mb-1" style={{ color: 'var(--text)' }}>No charging stations added yet</p>
-          <p className="text-sm" style={{ color: 'var(--text3)' }}>Click "Add Station" to add your first charging location.</p>
+          <p className="text-sm" style={{ color: 'var(--text3)' }}>Click &quot;Add Station&quot; to add your first charging location.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">

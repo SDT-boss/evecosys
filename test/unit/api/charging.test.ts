@@ -1,8 +1,8 @@
 import { NextRequest } from 'next/server'
 import { POST } from '@/app/api/charging/route'
 
-let mockGetUser = vi.fn()
-let mockFrom = vi.fn()
+const mockGetUser = vi.fn()
+const mockFrom = vi.fn()
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: async () => ({ auth: { getUser: mockGetUser }, from: mockFrom }),

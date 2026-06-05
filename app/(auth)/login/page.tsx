@@ -196,7 +196,7 @@ export default function LoginPage() {
 
               {/* Signup link for users without an account */}
               <Link href="/signup" className="w-full block text-center mt-3 text-sm font-600 rounded-lg py-3" style={{ color: '#1a7080' }}>
-                Don't have an account? Sign up
+                Don&apos;t have an account? Sign up
               </Link>
 
             </form>
