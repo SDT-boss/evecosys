@@ -5,10 +5,10 @@ import { AlertBellWrapper } from '@/components/layout/AlertBellWrapper'
 import type { AppUser } from '@/types'
 
 const NAV = [
-  { label: 'Overview',   icon: '◈', href: '/board' },
-  { label: 'Fleet',      icon: '⊞', href: '/board/fleet' },
-  { label: 'Carbon',     icon: '🌱', href: '/board/carbon' },
-  { label: 'Trips',      icon: '🗺', href: '/board/trips' },
+  { label: 'Overview', icon: 'layout-dashboard', href: '/board' },
+  { label: 'Fleet',    icon: 'layout-grid',       href: '/board/fleet' },
+  { label: 'Carbon',   icon: 'leaf',              href: '/board/carbon' },
+  { label: 'Trips',    icon: 'map',               href: '/board/trips' },
 ]
 
 export default async function BoardLayout({ children }: { children: React.ReactNode }) {

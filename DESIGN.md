@@ -52,6 +52,59 @@ The page renders all 55 tokens with live swatches, spacing bars, type scale samp
 
 ---
 
+## Storybook — component stories
+
+Storybook is the interactive catalogue for every design-system component and product composition. It runs `dist/tokens/variables.css` automatically so all `--ds-*` tokens resolve exactly as they do in the app.
+
+```bash
+npm run storybook   # opens http://localhost:6006
+```
+
+### Story structure
+
+Stories live in `design-system/stories/`. They are grouped into three Storybook sections:
+
+**Foundations** — token-level documentation (no component dependency)
+
+| Story | Covers |
+|---|---|
+| `Typography` | Font families, size scale (xs → 3xl), weight scale, line-height scale, real-world page hierarchy |
+
+**Primitives** — atomic shadcn/ui base components seeded with `--ds-*` tokens
+
+| Story | Covers |
+|---|---|
+| `Button` | All 6 variants (default/secondary/outline/ghost/destructive/link), 4 sizes, with-icon, loading, disabled, icon-only |
+| `Input` | Default, filled, disabled, error (`aria-invalid`), with FormField, all input types |
+| `Card` | Sub-component anatomy, vehicle summary card, content-only, 3-column grid |
+| `Badge` | All 5 variants, vehicle-status semantic mapping, inline-with-text usage |
+
+**Compositions** — EVEcosys-specific molecules and organisms built from primitives
+
+| Story | Covers |
+|---|---|
+| `StatCard` | All 3 trend directions, with/without icon, 4-column dashboard KPI grid |
+| `OnboardingCard` | Manager 3-step flow, completion state, without step indicator, minimal |
+| `DashboardShell` | Manager overview (full shell mock), sidebar nav isolation, empty/first-run state |
+
+### Graduation rule — when to add a story
+
+A component gets a story when it meets any of these criteria:
+
+1. It is used in 2+ unrelated places in the app (graduation candidate)
+2. It needs visual sign-off before shipping a new variant or state
+3. It encodes a reusable product pattern (e.g. DashboardShell, OnboardingCard) that designers and engineers should be able to review without running the full app
+
+### Story conventions
+
+- Use **CSF3 format** (`Meta<typeof Component>` + named `StoryObj` exports)
+- Tag with `"autodocs"` for auto-generated docs pages
+- One story per distinct state or use-case
+- Name stories after what the user sees (`"Error state"`, `"With leading icon"`), not the prop value (`"aria-invalid-true"`)
+- Compositions that require auth or routing: create a static mock annotated with a doc comment explaining the production difference
+
+---
+
 ## Colour
 
 ### Brand palette

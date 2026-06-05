@@ -10,11 +10,12 @@ EVEcosys is a web application that helps organisations manage electric vehicle (
 2. [How the codebase is organised](#codebase-structure)
 3. [Tech stack](#tech-stack)
 4. [Setting up for development](#local-development)
-5. [Running tests](#running-tests)
-6. [Deploying to production](#deployment)
-7. [Database tables](#database-schema)
-8. [Security](#security)
-9. [Smoke test checklist](#smoke-test-checklist)
+5. [Storybook — component stories](#storybook)
+6. [Running tests](#running-tests)
+7. [Deploying to production](#deployment)
+8. [Database tables](#database-schema)
+9. [Security](#security)
+10. [Smoke test checklist](#smoke-test-checklist)
 
 ---
 
@@ -153,6 +154,52 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 > **Important:** `SUPABASE_SERVICE_ROLE_KEY` is a secret admin key. It must **never** start with `NEXT_PUBLIC_` — that prefix would expose it to the browser and to the public.
 
 You can find all three values in your Supabase project under **Settings → API**.
+
+---
+
+## Storybook
+
+Storybook provides a live, interactive catalogue of every design-system component and product composition. It is the primary tool for visual review, design sign-off, and catching regressions before they reach the app.
+
+### Running Storybook locally
+
+```bash
+npm run storybook
+```
+
+Opens at **http://localhost:6006**. Storybook picks up `dist/tokens/variables.css` automatically so all `--ds-*` tokens resolve as they do in the real app.
+
+> **Node.js requirement:** Storybook 8 requires Node.js ≥ 18. The Next.js app requires ≥ 20 — if you're running Storybook on Node 18, that is sufficient.
+
+### Building a static Storybook
+
+```bash
+npm run build-storybook
+```
+
+Output lands in `storybook-static/`. This is what CI deploys for design review.
+
+### Story catalogue
+
+Stories live in `design-system/stories/`. Every story file corresponds to one component or composition.
+
+| Story | Path | What it covers |
+|---|---|---|
+| **Button** | `Primitives/Button` | All 6 variants, 4 sizes, with-icon, loading, disabled, icon-only |
+| **Input** | `Primitives/Input` | Default, filled, disabled, error (aria-invalid), with FormField wrappers, all input types |
+| **Card** | `Primitives/Card` | Sub-component anatomy, vehicle summary card, content-only, 3-column grid pattern |
+| **Badge** | `Primitives/Badge` | All 5 variants, vehicle status semantics, inline-with-text usage |
+| **Typography** | `Foundations/Typography` | Font families, size scale, weight scale, line-height scale, real-world page hierarchy |
+| **StatCard** | `Compositions/StatCard` | All 3 trend directions, with/without icon, 4-column dashboard KPI grid, minimal |
+| **OnboardingCard** | `Compositions/OnboardingCard` | Manager 3-step flow, completion state, without step indicator, minimal |
+| **DashboardShell** | `Compositions/DashboardShell` | Manager overview (full shell), sidebar nav isolation, empty/first-run state |
+
+### Writing new stories
+
+1. Create `design-system/stories/ComponentName.stories.tsx`
+2. Follow CSF3 format — `Meta<typeof Component>` + named `StoryObj` exports
+3. Tag with `autodocs` for auto-generated documentation pages
+4. One story per distinct state or use-case; name stories after what the user sees, not the prop value
 
 ---
 

@@ -5,9 +5,9 @@ import { AlertBellWrapper } from '@/components/layout/AlertBellWrapper'
 import type { AppUser } from '@/types'
 
 const NAV = [
-  { label: 'My Vehicle', icon: '🚗', href: '/driver' },
-  { label: 'My Trips',   icon: '🗺', href: '/driver/trips' },
-  { label: 'Alerts',     icon: '🔔', href: '/driver/alerts' },
+  { label: 'My Vehicle', icon: 'car',  href: '/driver' },
+  { label: 'My Trips',   icon: 'map',  href: '/driver/trips' },
+  { label: 'Alerts',     icon: 'bell', href: '/driver/alerts' },
 ]
 
 export default async function DriverLayout({ children }: { children: React.ReactNode }) {

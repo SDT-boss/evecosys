@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { Badge } from '@/components/ui/Badge'
 import { calcBehaviorScore } from '@/lib/behaviorScore'
+import { BatteryWarning, Wrench, CheckCircle2, MapPin, Gauge } from 'lucide-react'
 import type { Vehicle, Alert, Trip, Driver } from '@/types'
 
 function socColor(s: number) { return s >= 50 ? '#5a9e2f' : s >= 20 ? '#c07800' : '#c02020' }
@@ -82,8 +83,13 @@ export default async function ManagerOverviewPage() {
   })
   const fleetBehaviorScore = allScores.length ? Math.round(allScores.reduce((a, b) => a + b, 0) / allScores.length) : 0
 
-  const alertIcon: Record<string, string> = { low_battery: '⚠️', maintenance: '🔧', charge_complete: '✅', geofence: '📍', speeding: '🚨' }
-  const alertBg: Record<string, string> = { low_battery: '#fdeaea', maintenance: '#fef3dc', charge_complete: 'var(--ev-green-light)', geofence: '#fdeaea', speeding: '#fdeaea' }
+  const alertMeta: Record<string, { icon: React.ReactNode; bg: string; fg: string }> = {
+    low_battery:     { icon: <BatteryWarning size={15} />, bg: 'var(--pill-red-bg)',   fg: 'var(--pill-red-fg)' },
+    maintenance:     { icon: <Wrench size={15} />,         bg: 'var(--pill-amber-bg)', fg: 'var(--pill-amber-fg)' },
+    charge_complete: { icon: <CheckCircle2 size={15} />,   bg: 'var(--pill-green-bg)', fg: 'var(--pill-green-fg)' },
+    geofence:        { icon: <MapPin size={15} />,         bg: 'var(--pill-red-bg)',   fg: 'var(--pill-red-fg)' },
+    speeding:        { icon: <Gauge size={15} />,          bg: 'var(--pill-red-bg)',   fg: 'var(--pill-red-fg)' },
+  }
 
   return (
     <div className="fade-in">
@@ -129,10 +135,12 @@ export default async function ManagerOverviewPage() {
         <SectionCard title="Active Alerts">
           {aList.length === 0 ? (
             <p className="text-sm text-center py-8" style={{ color: 'var(--text3)' }}>No active alerts 🎉</p>
-          ) : aList.map((a, i) => (
+          ) : aList.map((a, i) => {
+            const meta = alertMeta[a.type] ?? alertMeta.low_battery
+            return (
             <div key={a.id} className="flex items-center gap-3 py-2.5" style={{ borderBottom: i < aList.length - 1 ? '1px solid var(--border)' : 'none' }}>
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm flex-shrink-0" style={{ background: alertBg[a.type] ?? '#fdeaea' }}>
-                {alertIcon[a.type] ?? '⚠️'}
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: meta.bg, color: meta.fg }}>
+                {meta.icon}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-xs truncate" style={{ fontWeight: 600 }}>{a.message}</div>
@@ -142,7 +150,7 @@ export default async function ManagerOverviewPage() {
               </div>
               <div className="text-[11px] flex-shrink-0" style={{ color: '#bbb' }}>{timeAgo(a.created_at)}</div>
             </div>
-          ))}
+          )})}
         </SectionCard>
       </div>
 
@@ -157,7 +165,7 @@ export default async function ManagerOverviewPage() {
             No vehicles added yet. Go to <strong>Asset Management</strong> to add vehicles.
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="table-scroll">
           <table className="w-full text-xs">
             <thead>
               <tr style={{ background: 'var(--surface2)' }}>
@@ -176,11 +184,23 @@ export default async function ManagerOverviewPage() {
                   <td className="px-4 py-3"><span style={{ color: socColor(v.soc), fontWeight: 700 }}>{v.soc}%</span></td>
                   <td className="px-4 py-3"><span style={{ color: sohColor(v.soh), fontWeight: 700 }}>{v.soh}%</span></td>
                   <td className="px-4 py-3">
-                    <span className="rounded-full px-2 py-0.5 text-[11px]" style={{
-                      fontWeight: 600,
-                      background: v.status === 'Moving' ? '#eaf5d8' : v.status === 'Maintenance' ? '#fdeaea' : '#fef3dc',
-                      color: v.status === 'Moving' ? '#3a7010' : v.status === 'Maintenance' ? '#8a1010' : '#8a5500',
-                    }}>{v.status}</span>
+                    {(() => {
+                      const pillMap: Record<string, { bg: string; fg: string; bd: string }> = {
+                        Moving:      { bg: 'var(--pill-green-bg)', fg: 'var(--pill-green-fg)', bd: 'var(--pill-green-bd)' },
+                        Charging:    { bg: 'var(--pill-teal-bg)',  fg: 'var(--pill-teal-fg)',  bd: 'var(--pill-teal-bd)' },
+                        Parked:      { bg: 'var(--pill-amber-bg)', fg: 'var(--pill-amber-fg)', bd: 'var(--pill-amber-bd)' },
+                        Maintenance: { bg: 'var(--pill-red-bg)',   fg: 'var(--pill-red-fg)',   bd: 'var(--pill-red-bd)' },
+                      }
+                      const p = pillMap[v.status] ?? { bg: 'var(--pill-grey-bg)', fg: 'var(--pill-grey-fg)', bd: 'var(--pill-grey-bd)' }
+                      return (
+                        <span className="rounded-full px-2 py-0.5 text-[11px] inline-flex items-center gap-1" style={{
+                          fontWeight: 600, background: p.bg, color: p.fg, border: `1px solid ${p.bd}`,
+                        }}>
+                          <span style={{ width: 6, height: 6, borderRadius: '50%', background: p.fg, display: 'inline-block', flexShrink: 0 }} />
+                          {v.status}
+                        </span>
+                      )
+                    })()}
                   </td>
                   <td className="px-4 py-3" style={{ color: 'var(--text2)' }}>{v.location_name}</td>
                   <td className="px-4 py-3" style={{ fontWeight: 600 }}>{v.odometer.toLocaleString()} km</td>

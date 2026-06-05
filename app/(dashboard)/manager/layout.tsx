@@ -5,13 +5,13 @@ import { AlertBellWrapper } from '@/components/layout/AlertBellWrapper'
 import type { AppUser } from '@/types'
 
 const NAV = [
-  { label: 'Overview',        icon: '◈', href: '/manager' },
-  { label: 'Asset Management',icon: '⊞', href: '/manager/assets' },
-  { label: 'Drivers',         icon: '👤', href: '/manager/drivers' },
-  { label: 'Trips',           icon: '🗺', href: '/manager/trips' },
-  { label: 'Charging Stations', icon: '⚡', href: '/manager/charging' },
-  { label: 'Alerts',          icon: '🔔', href: '/manager/alerts' },
-  { label: 'Users',           icon: '⚙', href: '/manager/users' },
+  { label: 'Overview',          icon: 'layout-dashboard', href: '/manager' },
+  { label: 'Asset Management',  icon: 'truck',            href: '/manager/assets' },
+  { label: 'Drivers',           icon: 'users',            href: '/manager/drivers' },
+  { label: 'Trips',             icon: 'route',            href: '/manager/trips' },
+  { label: 'Charging Stations', icon: 'zap',              href: '/manager/charging' },
+  { label: 'Alerts',            icon: 'bell',             href: '/manager/alerts' },
+  { label: 'Users',             icon: 'settings',         href: '/manager/users' },
 ]
 
 export default async function ManagerLayout({ children }: { children: React.ReactNode }) {

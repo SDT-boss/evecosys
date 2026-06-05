@@ -2,11 +2,30 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { LogOut } from 'lucide-react'
+import {
+  LogOut,
+  LayoutDashboard, Truck, Users, Route, Zap, Bell, Settings,
+  LayoutGrid, Leaf, Map, Car,
+} from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { Logo } from '@/components/ui/Logo'
 import type { AppUser } from '@/types'
+
+const NAV_ICONS: Record<string, LucideIcon> = {
+  'layout-dashboard': LayoutDashboard,
+  'truck': Truck,
+  'users': Users,
+  'route': Route,
+  'zap': Zap,
+  'bell': Bell,
+  'settings': Settings,
+  'layout-grid': LayoutGrid,
+  'leaf': Leaf,
+  'map': Map,
+  'car': Car,
+}
 
 interface DashboardShellProps {
   children: React.ReactNode
@@ -115,7 +134,7 @@ export function DashboardShell({ children, navItems, user, alertBell }: Dashboar
                 marginBottom: -1,
               }}
             >
-              <span>{item.icon}</span>
+              {(() => { const Icon = NAV_ICONS[item.icon]; return Icon ? <Icon size={15} /> : <span>{item.icon}</span> })()}
               {item.label}
             </button>
           )
