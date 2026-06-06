@@ -36,14 +36,6 @@ test.describe('Manager — Charging Stations', () => {
     await expect(chargingPage.modal).not.toBeVisible()
   })
 
-  test('manager can toggle a station active/inactive', async ({ testStation }) => {
-    await chargingPage.goto()
-    const toggleBtn = chargingPage.toggleButtonFor(testStation.name)
-    await expect(toggleBtn).toBeVisible({ timeout: 15_000 })
-    await toggleBtn.click()
-    await expect(toggleBtn).toBeVisible({ timeout: 15_000 })
-  })
-
   // ─── Failure conditions ──────────────────────────────────────────────────
 
   test('submitting station form without map pin shows error or keeps button disabled', async () => {

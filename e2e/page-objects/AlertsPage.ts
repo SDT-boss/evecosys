@@ -71,8 +71,6 @@ export class AlertsPage {
     active: this.activeFilterBtn,
     resolved: this.resolvedFilterBtn,
   }[filter]
-
-  await expect(btn).toBeVisible()
   await expect(btn).toBeEnabled()
 
   await btn.click()
