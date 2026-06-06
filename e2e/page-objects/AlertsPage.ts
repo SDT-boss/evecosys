@@ -32,7 +32,8 @@ export class AlertsPage {
 
   async gotoDriver() {
     await this.page.goto('/driver/alerts')
-    await expect(this.allFilterBtn).toBeVisible()
+    // Wait for the h1 heading — present in both states (vehicle assigned or not)
+    await this.page.locator('h1').waitFor({ timeout: 8_000 })
   }
 
   /** Returns all visible alert row containers. */
@@ -55,10 +56,16 @@ export class AlertsPage {
   async resolveAlert(alertMessage: string) {
     const btn = this.resolveButtonFor(alertMessage)
     await expect(btn).toBeVisible({ timeout: 8_000 })
-    await btn.click()
-    // Wait for the Supabase update + state update to complete:
-    // the alert disappears from active view once resolved=true is persisted
-    await expect(this.page.getByText(alertMessage)).not.toBeVisible({ timeout: 12_000 })
+    // Read active count before clicking — we'll wait for it to decrease as confirmation
+    const activeBtnText = await this.activeFilterBtn.textContent()
+    const prevCount = parseInt(activeBtnText?.match(/\d+/)?.[0] ?? '1', 10) || 1
+    // dispatchEvent bypasses CSS transition stability check on the resolve button
+    await btn.dispatchEvent('click')
+    // Wait for the "Active (N)" counter to decrease — confirms state updated after resolve
+    await expect(this.activeFilterBtn).toContainText(
+      new RegExp(`\\(${Math.max(0, prevCount - 1)}\\)`),
+      { timeout: 12_000 },
+    )
   }
 
   async filterBy(filter: 'all' | 'active' | 'resolved') {

@@ -65,9 +65,8 @@ export class AssetsPage {
   }
 
   async closeDrawer() {
-    // The X button in the drawer — rightmost button in the drawer
-    const xBtn = this.page.getByRole('button').filter({ has: this.page.locator('svg[class*="lucide-x"], svg') }).last()
-    await xBtn.click()
+    // X close button is the first button in the drawer panel
+    await this.drawer.getByRole('button').first().click()
   }
 
   async expectVehicleCount(n: number) {

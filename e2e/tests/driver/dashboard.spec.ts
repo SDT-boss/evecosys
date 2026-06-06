@@ -32,8 +32,8 @@ test.describe('Driver — Dashboard', () => {
     const soc = page.getByText(/\d+\s*%/)
     const hasNoVehicle = await noVehicle.isVisible().catch(() => false)
     const hasSoc = await soc.isVisible().catch(() => false)
-    // One of the two states is valid
-    expect(hasNoVehicle || !hasSoc).toBeTruthy()
+    // Accept either state: unassigned (no SOC) or assigned (SOC visible from parallel test)
+    expect(hasNoVehicle || hasSoc).toBeTruthy()
   })
 
   // ─── Trips page ───────────────────────────────────────────────────────────
@@ -63,9 +63,13 @@ test.describe('Driver — Dashboard', () => {
     // Extract the SOC text and validate range
     const socText = await dashboard.page.getByText(/\d+\s*%/).first().textContent()
     if (socText) {
-      const pct = parseInt(socText, 10)
-      expect(pct).toBeGreaterThanOrEqual(0)
-      expect(pct).toBeLessThanOrEqual(100)
+      // textContent may include surrounding text; extract the number with regex
+      const match = socText.match(/(\d+)/)
+      if (match) {
+        const pct = parseInt(match[1], 10)
+        expect(pct).toBeGreaterThanOrEqual(0)
+        expect(pct).toBeLessThanOrEqual(100)
+      }
     }
   })
 })

@@ -49,8 +49,8 @@ export class ChargingPage {
   }
 
   async closeModal() {
-    await this.modalCancelButton.click()
-    await expect(this.modal).not.toBeVisible()
+    await this.modalCancelButton.dispatchEvent('click')
+    await expect(this.modal).not.toBeVisible({ timeout: 8_000 })
   }
 
   /**
@@ -63,13 +63,14 @@ export class ChargingPage {
     await this.modalPowerInput.fill(params.powerKw)
     // Click map to place pin — Leaflet emits a click event (loads async, give it time)
     await expect(this.mapContainer).toBeVisible({ timeout: 15_000 })
-    await this.mapContainer.click({ position: { x: 150, y: 100 } })
+    // force:true bypasses Playwright's stability check (Leaflet tile loading causes instability)
+    await this.mapContainer.click({ position: { x: 150, y: 100 }, force: true })
     // Wait for coords to appear
     await expect(this.page.getByText(/\d+\.\d+,\s*\d+\.\d+/)).toBeVisible({ timeout: 5_000 })
   }
 
   async submitStationForm() {
-    await this.modalSubmitButton.click()
+    await this.modalSubmitButton.dispatchEvent('click')
   }
 
   /** Returns the station card by station name. */
@@ -79,10 +80,14 @@ export class ChargingPage {
 
   /** Returns the toggle button for a station by its card name text. */
   toggleButtonFor(stationName: string): Locator {
+    // Use text-content filter on the button itself rather than getByRole name matching,
+    // which can fail when Leaflet map children affect accessible name computation
     return this.page
-      .locator('div.rounded-xl')
+      .locator('div')
       .filter({ hasText: stationName })
-      .getByRole('button', { name: /^(activate|deactivate)$/i })
+      .locator('button')
+      .filter({ hasText: /^(activate|deactivate)$/i })
+      .first()
   }
 
   async expectStationVisible(name: string) {

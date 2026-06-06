@@ -42,8 +42,11 @@ export class DriversPage {
   }
 
   async selectVehicle(plateNo: string) {
-    // The dropdown lists vehicles as "Brand Model · PlateNo"
-    await this.vehicleSelect.selectOption({ label: new RegExp(plateNo) })
+    // Options have value=vehicleId and label="Brand Model · PlateNo"
+    // Playwright's selectOption({ label }) only accepts strings, not RegExp
+    const opt = this.modal.locator('option').filter({ hasText: plateNo }).first()
+    const val = await opt.getAttribute('value')
+    await this.vehicleSelect.selectOption(val ?? '')
   }
 
   async confirmAssign() {

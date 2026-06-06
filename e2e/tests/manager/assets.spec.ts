@@ -70,7 +70,7 @@ test.describe('Manager — Assets', () => {
     await assetsPage.goto()
     await assetsPage.openVehicleCard(testVehicle.plate_no)
     await assetsPage.switchDrawerTab('Overview')
-    await expect(assetsPage.page.getByText(testVehicle.plate_no)).toBeVisible()
+    await expect(assetsPage.page.getByText(testVehicle.plate_no).first()).toBeVisible()
   })
 
   test('drawer tab navigation works', async ({ testVehicle }) => {
