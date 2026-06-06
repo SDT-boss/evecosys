@@ -119,7 +119,7 @@ export async function createTestAlert(vehicleId: string, overrides: Partial<{
   const payload = {
     vehicle_id: vehicleId,
     type: overrides.type ?? 'low_battery',
-    message: overrides.message ?? 'Battery below 20%',
+    message: overrides.message ?? `Battery below 20% — ${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     resolved: overrides.resolved ?? false,
     created_at: new Date().toISOString(),
   }

@@ -40,7 +40,7 @@ export class AssetsPage {
   }
 
   async filterByBrand(brand: string) {
-    await this.page.getByRole('button', { name: brand, exact: true }).click()
+    await this.page.getByRole('button', { name: brand }).click()
   }
 
   async filterByStatus(status: string) {
