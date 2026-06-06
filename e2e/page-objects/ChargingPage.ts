@@ -29,7 +29,7 @@ export class ChargingPage {
     this.modal = page.locator('.fixed.inset-0').filter({ has: page.getByText(/add charging station/i) })
     this.modalNameInput = this.modal.getByPlaceholder(/KLCC Charging Hub/i)
     this.modalAddressInput = this.modal.getByPlaceholder(/Kuala Lumpur/i)
-    this.modalPowerInput = this.modal.getByPlaceholder(/50/)
+    this.modalPowerInput = this.modal.getByPlaceholder('e.g. 50')
     this.modalActiveCheckbox = this.modal.locator('#isActive')
     this.modalSubmitButton = this.modal.getByRole('button', { name: /add station/i })
     this.modalCancelButton = this.modal.getByRole('button', { name: /cancel/i })
@@ -44,7 +44,7 @@ export class ChargingPage {
   }
 
   async openAddStationModal() {
-    await this.addStationButton.click()
+    await this.addStationButton.click({ force: true })
     await expect(this.modal).toBeVisible()
   }
 

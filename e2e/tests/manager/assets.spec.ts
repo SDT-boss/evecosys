@@ -49,7 +49,7 @@ test.describe('Manager — Assets', () => {
   test('brand filter reduces visible vehicles to matching brand', async ({ testVehicle }) => {
     await assetsPage.goto()
     await assetsPage.filterByBrand('BYD')
-    await expect(assetsPage.page.getByText('BYD')).toBeVisible()
+    await expect(assetsPage.page.getByText('BYD').first()).toBeVisible()
   })
 
   test('status filter shows only vehicles with matching status', async ({ testVehicle }) => {
@@ -63,7 +63,7 @@ test.describe('Manager — Assets', () => {
   test('clicking a vehicle card opens the details drawer', async ({ testVehicle }) => {
     await assetsPage.goto()
     await assetsPage.openVehicleCard(testVehicle.plate_no)
-    await expect(assetsPage.page.getByText(/SOC|State of Charge/i)).toBeVisible({ timeout: 6_000 })
+    await expect(assetsPage.page.getByText(/SOC|State of Charge/i).first()).toBeVisible({ timeout: 6_000 })
   })
 
   test('drawer shows Overview tab content including battery info', async ({ testVehicle }) => {

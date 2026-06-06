@@ -35,7 +35,7 @@ export class DriversPage {
 
   /** Opens the assign modal for the driver row containing the given name. */
   async openAssignModalFor(driverName: string) {
-    const card = this.page.locator('div').filter({ hasText: driverName }).first()
+    const card = this.driverCard(driverName)
     await card.getByRole('button', { name: /assign vehicle/i }).click()
     await expect(this.modal).toBeVisible()
   }
@@ -60,9 +60,13 @@ export class DriversPage {
     await expect(this.modal).not.toBeVisible()
   }
 
-  /** Locates the driver card containing this name. */
+  /** Locates the specific driver card for driverName. */
   driverCard(driverName: string): Locator {
-    return this.page.locator('div').filter({ hasText: driverName }).first()
+    return this.page
+      .locator('div')
+      .filter({ hasText: driverName })
+      .filter({ has: this.page.getByRole('button', { name: /assign vehicle/i }) })
+      .last()
   }
 
   async expectAssignedVehicleVisible(driverName: string, vehicleInfo: string) {

@@ -40,7 +40,7 @@ export class AssetsPage {
   }
 
   async filterByBrand(brand: string) {
-    await this.page.getByRole('button', { name: brand }).click()
+    await this.page.getByRole('button', { name: new RegExp(`^${brand}`, 'i') }).first().click()
   }
 
   async filterByStatus(status: string) {
@@ -57,8 +57,7 @@ export class AssetsPage {
 
   async openVehicleCard(plateNo: string) {
     await this.page.locator('div').filter({ hasText: plateNo }).first().click()
-    // Drawer opens — wait for overview tab content
-    await expect(this.page.getByText(/SOC|State of Charge/i)).toBeVisible({ timeout: 5_000 })
+    await expect(this.page.getByText(/SOC|State of Charge/i).first()).toBeVisible({ timeout: 5_000 })
   }
 
   async switchDrawerTab(tabName: 'Overview' | 'Location' | 'Carbon' | 'Trips') {

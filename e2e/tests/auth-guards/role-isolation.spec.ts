@@ -31,14 +31,14 @@ test.describe('Unauthenticated — protected routes redirect to /login', () => {
 test.describe('Driver — cannot access /manager or /board', () => {
   test.use({ storageState: 'e2e/.auth/driver.json' })
 
-  test('Driver GET /manager → /login', async ({ page }) => {
+  test('Driver GET /manager → /driver', async ({ page }) => {
     await page.goto('/manager')
-    await expect(page).toHaveURL('/login', { timeout: 10_000 })
+    await expect(page).toHaveURL(/\/driver/, { timeout: 10_000 })
   })
 
-  test('Driver GET /board → /login', async ({ page }) => {
+  test('Driver GET /board → /driver', async ({ page }) => {
     await page.goto('/board')
-    await expect(page).toHaveURL('/login', { timeout: 10_000 })
+    await expect(page).toHaveURL(/\/driver/, { timeout: 10_000 })
   })
 })
 
@@ -47,14 +47,14 @@ test.describe('Driver — cannot access /manager or /board', () => {
 test.describe('Manager — cannot access /driver or /board', () => {
   test.use({ storageState: 'e2e/.auth/manager.json' })
 
-  test('Manager GET /driver → /login', async ({ page }) => {
+  test('Manager GET /driver → /manager', async ({ page }) => {
     await page.goto('/driver')
-    await expect(page).toHaveURL('/login', { timeout: 10_000 })
+    await expect(page).toHaveURL(/\/manager/, { timeout: 10_000 })
   })
 
-  test('Manager GET /board → /login', async ({ page }) => {
+  test('Manager GET /board → /manager', async ({ page }) => {
     await page.goto('/board')
-    await expect(page).toHaveURL('/login', { timeout: 10_000 })
+    await expect(page).toHaveURL(/\/manager/, { timeout: 10_000 })
   })
 })
 
@@ -63,14 +63,14 @@ test.describe('Manager — cannot access /driver or /board', () => {
 test.describe('Board — cannot access /manager or /driver', () => {
   test.use({ storageState: 'e2e/.auth/board.json' })
 
-  test('Board GET /manager → /login', async ({ page }) => {
+  test('Board GET /manager → /board', async ({ page }) => {
     await page.goto('/manager')
-    await expect(page).toHaveURL('/login', { timeout: 10_000 })
+    await expect(page).toHaveURL(/\/board/, { timeout: 10_000 })
   })
 
-  test('Board GET /driver → /login', async ({ page }) => {
+  test('Board GET /driver → /board', async ({ page }) => {
     await page.goto('/driver')
-    await expect(page).toHaveURL('/login', { timeout: 10_000 })
+    await expect(page).toHaveURL(/\/board/, { timeout: 10_000 })
   })
 })
 

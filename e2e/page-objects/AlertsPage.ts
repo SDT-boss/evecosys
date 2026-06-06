@@ -55,8 +55,9 @@ export class AlertsPage {
     const btn = this.resolveButtonFor(alertMessage)
     await expect(btn).toBeVisible({ timeout: 8_000 })
     await btn.click()
-    // Wait for the button to disappear (alert resolved optimistically)
-    await expect(btn).not.toBeVisible({ timeout: 8_000 })
+    // Wait for the Supabase update + state update to complete:
+    // the alert disappears from active view once resolved=true is persisted
+    await expect(this.page.getByText(alertMessage)).not.toBeVisible({ timeout: 12_000 })
   }
 
   async filterBy(filter: 'all' | 'active' | 'resolved') {

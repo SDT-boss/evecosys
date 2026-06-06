@@ -33,7 +33,7 @@ export class UsersPage {
     this.passwordInput = page.locator('input[type="password"]')
     this.roleSelect = page.locator('select')
     this.submitCreateButton = this.createForm.getByRole('button', { name: /create user/i })
-    this.cancelCreateButton = page.getByRole('button', { name: /cancel/i })
+    this.cancelCreateButton = this.createForm.getByRole('button', { name: /cancel/i })
     this.errorMessage = page.locator('[style*="fdeaea"]')
   }
 
