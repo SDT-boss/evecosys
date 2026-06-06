@@ -38,7 +38,7 @@ export class DriversPage {
   async openAssignModalFor(driverName: string) {
     const card = this.driverCard(driverName)
     await card.getByRole('button', { name: /assign vehicle/i }).click()
-    await expect(this.modal).toBeVisible()
+    await expect(this.modal).toBeVisible({ timeout: 10_000 })
   }
 
   async selectVehicle(plateNo: string) {

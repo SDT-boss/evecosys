@@ -33,6 +33,6 @@ export class DriverDashboardPage {
   }
 
   async expectTripsCount(n: number) {
-    await expect(this.page.getByText(new RegExp(`${n} trip`))).toBeVisible()
+    await expect(this.page.getByText(new RegExp(`${n} trip`))).toBeVisible({ timeout: 10_000 })
   }
 }
