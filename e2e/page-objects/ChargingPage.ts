@@ -44,8 +44,8 @@ export class ChargingPage {
   }
 
   async openAddStationModal() {
-    await this.addStationButton.click({ force: true })
-    await expect(this.modal).toBeVisible()
+    await this.addStationButton.dispatchEvent('click')
+    await expect(this.modal).toBeVisible({ timeout: 10_000 })
   }
 
   async closeModal() {
@@ -61,8 +61,8 @@ export class ChargingPage {
     await this.modalNameInput.fill(params.name)
     await this.modalAddressInput.fill(params.address)
     await this.modalPowerInput.fill(params.powerKw)
-    // Click map to place pin — Leaflet emits a click event
-    await expect(this.mapContainer).toBeVisible({ timeout: 5_000 })
+    // Click map to place pin — Leaflet emits a click event (loads async, give it time)
+    await expect(this.mapContainer).toBeVisible({ timeout: 15_000 })
     await this.mapContainer.click({ position: { x: 150, y: 100 } })
     // Wait for coords to appear
     await expect(this.page.getByText(/\d+\.\d+,\s*\d+\.\d+/)).toBeVisible({ timeout: 5_000 })
@@ -80,10 +80,9 @@ export class ChargingPage {
   /** Returns the toggle button for a station by its card name text. */
   toggleButtonFor(stationName: string): Locator {
     return this.page
-      .locator('div')
+      .locator('div.rounded-xl')
       .filter({ hasText: stationName })
-      .getByRole('button')
-      .first()
+      .getByRole('button', { name: /^(activate|deactivate)$/i })
   }
 
   async expectStationVisible(name: string) {

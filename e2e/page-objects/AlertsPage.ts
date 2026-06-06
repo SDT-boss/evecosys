@@ -44,10 +44,11 @@ export class AlertsPage {
 
   /** Returns the resolve button for a specific alert by its message text. */
   resolveButtonFor(alertMessage: string): Locator {
+    // Match "✓ Resolve" (manager) or "✓ Mark Resolved" (driver) — not the "Resolved (N)" filter tab
     return this.page
       .locator('div')
       .filter({ hasText: alertMessage })
-      .getByRole('button', { name: /resolve/i })
+      .getByRole('button', { name: /^✓/ })
       .first()
   }
 

@@ -24,7 +24,8 @@ export class DriversPage {
     this.modal = page.locator('.fixed.inset-0').filter({ has: page.getByText(/assign vehicle/i) })
     this.vehicleSelect = this.modal.locator('select')
     this.confirmAssignButton = this.modal.getByRole('button', { name: /confirm assign/i })
-    this.unassignButton = this.modal.getByRole('button', { name: /unassign/i })
+    // Use exact match to avoid matching the "Unassigned" tab button
+    this.unassignButton = this.modal.getByRole('button', { name: 'Unassign', exact: true })
     this.modalCloseButton = this.modal.getByRole('button').filter({ has: page.locator('svg') }).first()
     this.modalErrorMessage = this.modal.locator('[style*="fdeaea"]')
   }

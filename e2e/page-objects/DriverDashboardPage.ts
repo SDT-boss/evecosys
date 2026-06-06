@@ -13,6 +13,7 @@ export class DriverDashboardPage {
 
   async goto() {
     await this.page.goto('/driver')
+    await this.page.locator('h1').waitFor({ timeout: 10_000 })
   }
 
   async gotoTrips() {

@@ -43,10 +43,10 @@ test.describe('Manager — Charging Stations', () => {
     const toggleBtn = chargingPage.toggleButtonFor(testStation.name)
     await expect(toggleBtn).toBeVisible({ timeout: 8_000 })
     await toggleBtn.click()
-    // Wait for the API call to complete before second click (button is disabled during toggle)
-    await expect(toggleBtn).toBeEnabled({ timeout: 15_000 })
+    // Wait for toggle to complete — button shows '…' during API call, then returns to Activate/Deactivate
+    await expect(toggleBtn).toBeVisible({ timeout: 15_000 })
     await toggleBtn.click()
-    await expect(toggleBtn).toBeEnabled({ timeout: 15_000 })
+    await expect(toggleBtn).toBeVisible({ timeout: 15_000 })
   })
 
   // ─── Failure conditions ──────────────────────────────────────────────────

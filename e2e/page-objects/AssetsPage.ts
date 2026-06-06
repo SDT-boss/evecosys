@@ -56,12 +56,12 @@ export class AssetsPage {
   }
 
   async openVehicleCard(plateNo: string) {
-    await this.page.locator('div').filter({ hasText: plateNo }).first().click()
+    await this.page.getByText(plateNo, { exact: true }).first().click()
     await expect(this.page.getByText(/SOC|State of Charge/i).first()).toBeVisible({ timeout: 5_000 })
   }
 
   async switchDrawerTab(tabName: 'Overview' | 'Location' | 'Carbon' | 'Trips') {
-    await this.page.getByRole('button', { name: tabName, exact: true }).click()
+    await this.drawer.getByRole('button', { name: tabName, exact: true }).click()
   }
 
   async closeDrawer() {

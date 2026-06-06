@@ -25,8 +25,8 @@ export class UsersPage {
   constructor(page: Page) {
     this.page = page
     this.addUserButton = page.getByRole('button', { name: /add user/i })
-    // The inline create form has a green border — use that plus the heading text
-    this.createForm = page.locator('div').filter({ has: page.getByText(/new user/i) }).first()
+    // Scope to the <form> element — the toggle "Cancel" button is outside the form
+    this.createForm = page.locator('form')
     this.fullNameInput = page.getByPlaceholder(/John Doe/i)
     this.emailInput = page.getByPlaceholder(/john@evecosys.com/i)
     // Password field inside the create form is type="password" initially
@@ -66,8 +66,9 @@ export class UsersPage {
   }
 
   async expectError(pattern: RegExp | string) {
-    await expect(this.errorMessage).toBeVisible()
-    await expect(this.errorMessage).toContainText(pattern)
+    // Find error by text content — more reliable than inline style colour matching
+    const errorEl = this.page.getByText(pattern)
+    await expect(errorEl).toBeVisible({ timeout: 8_000 })
   }
 
   async expectFormClosed() {
