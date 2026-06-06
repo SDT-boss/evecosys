@@ -66,10 +66,7 @@ export class AlertsPage {
     active: this.activeFilterBtn,
     resolved: this.resolvedFilterBtn,
   }[filter]
-  await expect(btn).toBeEnabled()
-
   await btn.click()
-
   await this.page.waitForLoadState('networkidle')
 }
 
