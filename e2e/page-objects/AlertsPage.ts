@@ -27,12 +27,12 @@ export class AlertsPage {
 
   async gotoManager() {
     await this.page.goto('/manager/alerts')
-    await this.page.waitForLoadState('networkidle')
+    await expect(this.allFilterBtn).toBeVisible()
   }
 
   async gotoDriver() {
     await this.page.goto('/driver/alerts')
-    await this.page.waitForLoadState('networkidle')
+    await expect(this.allFilterBtn).toBeVisible()
   }
 
   /** Returns all visible alert row containers. */
@@ -62,7 +62,6 @@ export class AlertsPage {
   async filterBy(filter: 'all' | 'active' | 'resolved') {
     const btns = { all: this.allFilterBtn, active: this.activeFilterBtn, resolved: this.resolvedFilterBtn }
     await btns[filter].click()
-    await this.page.waitForTimeout(200) // allow filter to re-render
   }
 
   async expectEmptyState(filter: 'active' | 'resolved') {

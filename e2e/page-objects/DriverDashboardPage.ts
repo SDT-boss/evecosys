@@ -13,12 +13,10 @@ export class DriverDashboardPage {
 
   async goto() {
     await this.page.goto('/driver')
-    await this.page.waitForLoadState('networkidle')
   }
 
   async gotoTrips() {
     await this.page.goto('/driver/trips')
-    await this.page.waitForLoadState('networkidle')
   }
 
   async expectVehicleVisible(plateNo: string) {

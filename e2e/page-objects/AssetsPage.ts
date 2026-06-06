@@ -28,17 +28,15 @@ export class AssetsPage {
 
   async goto() {
     await this.page.goto('/manager/assets')
-    await this.page.waitForLoadState('networkidle')
+    await expect(this.searchInput).toBeVisible()
   }
 
   async search(text: string) {
     await this.searchInput.fill(text)
-    await this.page.waitForTimeout(300) // debounce / filter rerender
   }
 
   async clearSearch() {
     await this.searchInput.clear()
-    await this.page.waitForTimeout(300)
   }
 
   async filterByBrand(brand: string) {

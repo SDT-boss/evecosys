@@ -40,7 +40,7 @@ export class ChargingPage {
 
   async goto() {
     await this.page.goto('/manager/charging')
-    await this.page.waitForLoadState('networkidle')
+    await expect(this.addStationButton).toBeVisible()
   }
 
   async openAddStationModal() {

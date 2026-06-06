@@ -31,7 +31,6 @@ export class DriversPage {
 
   async goto() {
     await this.page.goto('/manager/drivers')
-    await this.page.waitForLoadState('networkidle')
   }
 
   /** Opens the assign modal for the driver row containing the given name. */
