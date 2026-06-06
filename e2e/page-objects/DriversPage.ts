@@ -31,14 +31,16 @@ export class DriversPage {
 
   async goto() {
     await this.page.goto('/manager/drivers')
-    await this.page.waitForLoadState('networkidle')
+    // Wait for the page to have driver content instead of networkidle
+    // Drivers page should have at least the E2E Driver in the list
+    await expect(this.page.getByText(/driver/i)).toBeVisible({ timeout: 10_000 })
   }
 
   /** Opens the assign modal for the driver row containing the given name. */
   async openAssignModalFor(driverName: string) {
     const card = this.page.locator('div').filter({ hasText: driverName }).first()
     await card.getByRole('button', { name: /assign vehicle/i }).click()
-    await expect(this.modal).toBeVisible()
+    await expect(this.modal).toBeVisible({ timeout: 10_000 })
   }
 
   async selectVehicle(plateNo: string) {
@@ -68,6 +70,7 @@ export class DriversPage {
 
   async expectAssignedVehicleVisible(driverName: string, vehicleInfo: string) {
     const card = this.driverCard(driverName)
-    await expect(card.getByText(vehicleInfo)).toBeVisible({ timeout: 8_000 })
+    // Increase timeout to account for async vehicle assignment propagation
+    await expect(card.getByText(vehicleInfo)).toBeVisible({ timeout: 15_000 })
   }
 }

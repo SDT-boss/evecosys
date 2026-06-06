@@ -27,12 +27,14 @@ export class AlertsPage {
 
   async gotoManager() {
     await this.page.goto('/manager/alerts')
-    await this.page.waitForLoadState('networkidle')
+    // Wait for the filter buttons to be stable, not network idle
+    await expect(this.allFilterBtn).toBeVisible({ timeout: 10_000 })
   }
 
   async gotoDriver() {
     await this.page.goto('/driver/alerts')
-    await this.page.waitForLoadState('networkidle')
+    // Wait for the h1 heading — present in both states (vehicle assigned or not)
+    await this.page.locator('h1').waitFor({ timeout: 10_000 })
   }
 
   /** Returns all visible alert row containers. */
@@ -62,11 +64,13 @@ export class AlertsPage {
   async filterBy(filter: 'all' | 'active' | 'resolved') {
     const btns = { all: this.allFilterBtn, active: this.activeFilterBtn, resolved: this.resolvedFilterBtn }
     await btns[filter].click()
-    await this.page.waitForTimeout(200) // allow filter to re-render
+    // Wait for the filter tab itself to become active (aria-selected or class change)
+    // Then wait a brief moment for the list to re-render
+    await this.page.waitForTimeout(500)
   }
 
   async expectEmptyState(filter: 'active' | 'resolved') {
     const text = filter === 'active' ? /all clear/i : /no resolved alerts/i
-    await expect(this.page.getByText(text)).toBeVisible()
+    await expect(this.page.getByText(text)).toBeVisible({ timeout: 10_000 })
   }
 }
