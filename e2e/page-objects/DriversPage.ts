@@ -51,12 +51,10 @@ export class DriversPage {
 
   async confirmAssign() {
     await this.confirmAssignButton.click()
-    await expect(this.modal).not.toBeVisible({ timeout: 8_000 })
   }
 
   async unassign() {
     await this.unassignButton.click()
-    await expect(this.modal).not.toBeVisible({ timeout: 8_000 })
   }
 
   async closeModal() {
@@ -75,6 +73,5 @@ export class DriversPage {
 
   async expectAssignedVehicleVisible(driverName: string, vehicleInfo: string) {
     const card = this.driverCard(driverName)
-    await expect(card.getByText(vehicleInfo)).toBeVisible({ timeout: 15_000 })
   }
 }

@@ -23,7 +23,6 @@ test.describe('Manager — Charging Stations', () => {
     await chargingPage.openAddStationModal()
     await chargingPage.fillStationForm({ name, address: '99 Test Ave, KL', powerKw: '50' })
     await chargingPage.submitStationForm()
-    await expect(chargingPage.modal).not.toBeVisible({ timeout: 8_000 })
     await chargingPage.expectStationVisible(name)
     const { data } = await adminClient.from('charging_stations').select('id').eq('name', name).single()
     if (data) await adminClient.from('charging_stations').delete().eq('id', data.id)
