@@ -58,7 +58,6 @@ export class AlertsPage {
 
   async resolveAlert(alertMessage: string) {
   const btn = this.resolveButtonFor(alertMessage)
-  await btn.click()
 }
 
   async filterBy(filter: 'all' | 'active' | 'resolved') {

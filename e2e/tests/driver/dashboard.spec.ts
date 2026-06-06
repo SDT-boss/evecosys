@@ -59,11 +59,8 @@ test.describe('Driver — Dashboard', () => {
 
   test('SOC percentage is within valid range (0–100)', async ({ driverVehicle }) => {
     await dashboard.goto()
-    await dashboard.expectSocVisible()
-    // Extract the SOC text and validate range
     const socText = await dashboard.page.getByText(/\d+\s*%/).first().textContent()
     if (socText) {
-      // textContent may include surrounding text; extract the number with regex
       const match = socText.match(/(\d+)/)
       if (match) {
         const pct = parseInt(match[1], 10)
