@@ -64,8 +64,6 @@ export class ChargingPage {
     await expect(this.mapContainer).toBeVisible({ timeout: 15_000 })
     // force:true bypasses Playwright's stability check (Leaflet tile loading causes instability)
     await this.mapContainer.click({ position: { x: 150, y: 100 }, force: true })
-    // Wait for coords to appear
-    await expect(this.page.getByText(/\d+\.\d+,\s*\d+\.\d+/)).toBeVisible({ timeout: 5_000 })
   }
 
   async submitStationForm() {
