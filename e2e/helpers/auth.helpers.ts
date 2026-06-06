@@ -105,7 +105,6 @@ export async function loginViaAPI(page: Page, role: RoleKey): Promise<void> {
   // Use @supabase/ssr's own chunker so the cookie format matches exactly
   // what createServerClient/createBrowserClient reads back.
   const chunks = createChunks(cookieKey, JSON.stringify(session))
-
   await page.context().addCookies(
     chunks.map(({ name, value }) => ({
       name,
