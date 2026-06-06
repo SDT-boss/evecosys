@@ -92,23 +92,30 @@ test.describe('Board — cannot access /manager or /driver', () => {
 
 // ─── Authenticated access to own routes ─────────────────────────────────────
 
-test.describe('Correct-role access passes through', () => {
+test.describe('Manager — can access /manager', () => {
+  test.use({ storageState: 'e2e/.auth/manager.json' })
+
   test('manager can access /manager', async ({ page }) => {
-    test.use({ storageState: 'e2e/.auth/manager.json' })
     await page.goto('/manager')
     await expect(page).not.toHaveURL('/login')
     await expect(page).toHaveURL(/\/manager/)
   })
+})
+
+test.describe('Driver — can access /driver', () => {
+  test.use({ storageState: 'e2e/.auth/driver.json' })
 
   test('driver can access /driver', async ({ page }) => {
-    test.use({ storageState: 'e2e/.auth/driver.json' })
     await page.goto('/driver')
     await expect(page).not.toHaveURL('/login')
     await expect(page).toHaveURL(/\/driver/)
   })
+})
+
+test.describe('Board — can access /board', () => {
+  test.use({ storageState: 'e2e/.auth/board.json' })
 
   test('board can access /board', async ({ page }) => {
-    test.use({ storageState: 'e2e/.auth/board.json' })
     await page.goto('/board')
     await expect(page).not.toHaveURL('/login')
     await expect(page).toHaveURL(/\/board/)

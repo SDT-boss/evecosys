@@ -66,7 +66,7 @@ export class AlertsPage {
   }
 
   async expectEmptyState(filter: 'active' | 'resolved') {
-    const text = filter === 'active' ? /all clear/i : /no resolved alerts/i
-    await expect(this.page.getByText(text)).toBeVisible()
+    const text = filter === 'active' ? /all clear — no active alerts/i : /no resolved alerts yet/i
+    await expect(this.page.locator('p').filter({ hasText: text })).toBeVisible()
   }
 }
