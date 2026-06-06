@@ -58,16 +58,16 @@ export class AlertsPage {
 
   async resolveAlert(alertMessage: string) {
   const btn = this.resolveButtonFor(alertMessage)
-  await expect(btn).toBeVisible({ timeout: 8_000 })
-  
-  // Instead of tracking the counter, wait for the alert row to disappear
-  const alertRow = this.page.locator('div').filter({ hasText: alertMessage })
-  
-  // Click the button
+
+  await expect(btn).toBeVisible({
+    timeout: 8000,
+  })
+
   await btn.click()
-  
-  // Wait for the alert row to be removed/hidden from the DOM
-  await expect(alertRow).toBeHidden({ timeout: 12_000 })
+
+  await expect(btn).toBeHidden({
+    timeout: 12000,
+  })
 }
 
   async filterBy(filter: 'all' | 'active' | 'resolved') {
