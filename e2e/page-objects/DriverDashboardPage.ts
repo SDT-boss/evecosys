@@ -13,14 +13,11 @@ export class DriverDashboardPage {
 
   async goto() {
     await this.page.goto('/driver')
-    // Wait for the h1 heading to stabilize instead of networkidle
     await this.page.locator('h1').waitFor({ timeout: 10_000 })
   }
 
   async gotoTrips() {
     await this.page.goto('/driver/trips')
-    // Wait for the page heading instead of networkidle
-    await this.page.locator('h1').waitFor({ timeout: 10_000 })
   }
 
   async expectVehicleVisible(plateNo: string) {
@@ -32,8 +29,7 @@ export class DriverDashboardPage {
   }
 
   async expectSocVisible() {
-    // SOC is displayed as a percentage
-    await expect(this.page.getByText(/\d+\s*%/)).toBeVisible({ timeout: 15_000 })
+  await expect(this.page.getByText(/\d+\s*%/)).toBeVisible({ timeout: 15_000 })
   }
 
   async expectTripsCount(n: number) {

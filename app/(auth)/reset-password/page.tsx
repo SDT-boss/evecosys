@@ -97,7 +97,7 @@ function ResetPasswordForm() {
             ) : (
               <form onSubmit={handleReset} className="space-y-5">
                 {error && (
-                  <div className="rounded-lg px-4 py-3 text-sm font-medium" style={{ background: '#fdeaea', color: '#8a1010', border: '1px solid #f5c0c0' }}>
+                  <div data-testid="auth-error" className="rounded-lg px-4 py-3 text-sm font-medium" style={{ background: '#fdeaea', color: '#8a1010', border: '1px solid #f5c0c0' }}>
                     {error}
                   </div>
                 )}

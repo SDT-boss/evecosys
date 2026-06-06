@@ -71,15 +71,16 @@ test.describe('Manager — User Management', () => {
     await usersPage.emailInput.fill(existingEmail)
     await usersPage.passwordInput.fill('TestPassword123!')
     await usersPage.submitCreateButton.click()
-    await usersPage.expectError(/email|already|exists/i)
+    await usersPage.expectError(/already|exists/i)
   })
 
-  test('submitting with password under 8 chars shows error', async () => {
+  test('submitting with password under 8 chars shows error', async ({ page }) => {
     await usersPage.openCreateForm()
     await usersPage.fullNameInput.fill('Short Pass')
     await usersPage.emailInput.fill(ephemeralEmail())
     await usersPage.passwordInput.fill('short')
-    await usersPage.submitCreateButton.click()
+    // Bypass HTML5 minLength validation so the server-side check runs
+    await page.locator('form').dispatchEvent('submit')
     await usersPage.expectError(/at least 8 characters/i)
   })
 

@@ -92,7 +92,7 @@ export async function createTestVehicle(overrides: Partial<{
     plate_no: overrides.plate_no ?? `TEST-${Date.now()}`,
     soc: overrides.soc ?? 75,
     soh: overrides.soh ?? 88,
-    status: overrides.status ?? 'Active',
+    status: overrides.status ?? 'Parked',
     location_name: 'Test Location',
     location_detail: 'Test Detail',
     coordinates: '3.140853,101.686855',
@@ -119,7 +119,7 @@ export async function createTestAlert(vehicleId: string, overrides: Partial<{
   const payload = {
     vehicle_id: vehicleId,
     type: overrides.type ?? 'low_battery',
-    message: overrides.message ?? 'Battery below 20%',
+    message: overrides.message ?? `Battery below 20% — ${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     resolved: overrides.resolved ?? false,
     created_at: new Date().toISOString(),
   }

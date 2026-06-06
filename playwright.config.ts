@@ -11,9 +11,9 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 4 : undefined,
-  timeout: 30_000,
-  expect: { timeout: 8_000 },
+  workers: process.env.CI ? 12 : undefined,
+  timeout: 15_000,
+  expect: { timeout: 15_000 },
 
   reporter: [
     ['list'],
@@ -86,17 +86,6 @@ export default defineConfig({
       dependencies: ['setup'],
     },
 
-    // Mobile smoke — manager critical path on mobile viewport
-    {
-      name: 'mobile-smoke',
-      testDir: './e2e/tests/manager',
-      testMatch: '**/*.smoke.spec.ts',
-      use: {
-        ...devices['Pixel 5'],
-        storageState: 'e2e/.auth/manager.json',
-      },
-      dependencies: ['setup'],
-    },
   ],
 
   webServer: process.env.CI

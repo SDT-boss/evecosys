@@ -28,21 +28,19 @@ export class AssetsPage {
 
   async goto() {
     await this.page.goto('/manager/assets')
-    await this.page.waitForLoadState('networkidle')
+    await expect(this.searchInput).toBeVisible()
   }
 
   async search(text: string) {
     await this.searchInput.fill(text)
-    await this.page.waitForTimeout(300) // debounce / filter rerender
   }
 
   async clearSearch() {
     await this.searchInput.clear()
-    await this.page.waitForTimeout(300)
   }
 
   async filterByBrand(brand: string) {
-    await this.page.getByRole('button', { name: brand, exact: true }).click()
+    await this.page.getByRole('button', { name: new RegExp(`^${brand}`, 'i') }).first().click()
   }
 
   async filterByStatus(status: string) {
@@ -58,19 +56,17 @@ export class AssetsPage {
   }
 
   async openVehicleCard(plateNo: string) {
-    await this.page.locator('div').filter({ hasText: plateNo }).first().click()
-    // Drawer opens — wait for overview tab content
-    await expect(this.page.getByText(/SOC|State of Charge/i)).toBeVisible({ timeout: 5_000 })
+    await this.page.getByText(plateNo, { exact: true }).first().click()
+    await expect(this.page.getByText(/SOC|State of Charge/i).first()).toBeVisible({ timeout: 5_000 })
   }
 
   async switchDrawerTab(tabName: 'Overview' | 'Location' | 'Carbon' | 'Trips') {
-    await this.page.getByRole('button', { name: tabName, exact: true }).click()
+    await this.drawer.getByRole('button', { name: tabName, exact: true }).click()
   }
 
   async closeDrawer() {
-    // The X button in the drawer — rightmost button in the drawer
-    const xBtn = this.page.getByRole('button').filter({ has: this.page.locator('svg[class*="lucide-x"], svg') }).last()
-    await xBtn.click()
+    // X close button is the first button in the drawer panel
+    await this.drawer.getByRole('button').first().click()
   }
 
   async expectVehicleCount(n: number) {

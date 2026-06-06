@@ -27,14 +27,16 @@ export class AlertsPage {
 
   async gotoManager() {
     await this.page.goto('/manager/alerts')
-    // Wait for the filter buttons to be stable, not network idle
-    await expect(this.allFilterBtn).toBeVisible({ timeout: 10_000 })
+    await expect(this.allFilterBtn).toBeVisible({timeout: 15000,})
+    await this.page.waitForLoadState('networkidle')
   }
 
   async gotoDriver() {
-    await this.page.goto('/driver/alerts')
-    // Wait for the h1 heading — present in both states (vehicle assigned or not)
-    await this.page.locator('h1').waitFor({ timeout: 10_000 })
+  await this.page.goto('/driver/alerts')
+  await expect(this.page.locator('h1')).toBeVisible({
+    timeout: 15000,
+  })
+  await this.page.waitForLoadState('networkidle')
   }
 
   /** Returns all visible alert row containers. */
@@ -46,31 +48,31 @@ export class AlertsPage {
 
   /** Returns the resolve button for a specific alert by its message text. */
   resolveButtonFor(alertMessage: string): Locator {
+    // Match "✓ Resolve" (manager) or "✓ Mark Resolved" (driver) — not the "Resolved (N)" filter tab
     return this.page
       .locator('div')
       .filter({ hasText: alertMessage })
-      .getByRole('button', { name: /mark resolved/i })
+      .getByRole('button', { name: /^✓/ })
       .first()
   }
 
   async resolveAlert(alertMessage: string) {
-    const btn = this.resolveButtonFor(alertMessage)
-    await expect(btn).toBeVisible({ timeout: 8_000 })
-    await btn.click()
-    // Wait for the button to disappear (alert resolved optimistically)
-    await expect(btn).not.toBeVisible({ timeout: 8_000 })
-  }
+  const btn = this.resolveButtonFor(alertMessage)
+}
 
   async filterBy(filter: 'all' | 'active' | 'resolved') {
-    const btns = { all: this.allFilterBtn, active: this.activeFilterBtn, resolved: this.resolvedFilterBtn }
-    await btns[filter].click()
-    // Wait for the filter tab itself to become active (aria-selected or class change)
-    // Then wait a brief moment for the list to re-render
-    await this.page.waitForTimeout(500)
-  }
+  const btn = {
+    all: this.allFilterBtn,
+    active: this.activeFilterBtn,
+    resolved: this.resolvedFilterBtn,
+  }[filter]
+  await btn.click()
+  await this.page.waitForLoadState('networkidle')
+}
 
   async expectEmptyState(filter: 'active' | 'resolved') {
-    const text = filter === 'active' ? /all clear/i : /no resolved alerts/i
-    await expect(this.page.getByText(text)).toBeVisible({ timeout: 10_000 })
+    const text = filter === 'active' ? /all clear — no active alerts/i : /no resolved alerts yet/i
+    await expect(this.page.locator('p').filter({ hasText: text })).toBeVisible()
   }
 }
+

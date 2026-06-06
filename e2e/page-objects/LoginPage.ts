@@ -16,7 +16,7 @@ export class LoginPage {
     this.emailInput = page.getByPlaceholder(/you@evecosys.com/i)
     this.passwordInput = page.getByPlaceholder(/••••••••/)
     this.signInButton = page.getByRole('button', { name: /sign in/i })
-    this.errorMessage = page.locator('[style*="fdeaea"]') // error div — add data-testid="auth-error" to source
+    this.errorMessage = page.getByTestId('auth-error')
     this.forgotPasswordLink = page.getByRole('link', { name: /forgot password/i })
     this.signUpLink = page.getByRole('link', { name: /sign up/i })
     // Should NOT exist after Google SSO removal

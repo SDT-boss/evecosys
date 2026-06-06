@@ -28,6 +28,7 @@ type E2EFixtures = {
   driverVehicle: TestVehicle
 }
 
+
 export const test = base.extend<E2EFixtures>({
   testVehicle: async ({}, use) => {
     const vehicle = await createTestVehicle()

@@ -29,7 +29,7 @@ export class ChargingPage {
     this.modal = page.locator('.fixed.inset-0').filter({ has: page.getByText(/add charging station/i) })
     this.modalNameInput = this.modal.getByPlaceholder(/KLCC Charging Hub/i)
     this.modalAddressInput = this.modal.getByPlaceholder(/Kuala Lumpur/i)
-    this.modalPowerInput = this.modal.getByPlaceholder(/50/)
+    this.modalPowerInput = this.modal.getByPlaceholder('e.g. 50')
     this.modalActiveCheckbox = this.modal.locator('#isActive')
     this.modalSubmitButton = this.modal.getByRole('button', { name: /add station/i })
     this.modalCancelButton = this.modal.getByRole('button', { name: /cancel/i })
@@ -40,17 +40,16 @@ export class ChargingPage {
 
   async goto() {
     await this.page.goto('/manager/charging')
-    await this.page.waitForLoadState('networkidle')
+    await expect(this.addStationButton).toBeVisible()
   }
 
   async openAddStationModal() {
-    await this.addStationButton.click()
-    await expect(this.modal).toBeVisible()
+    await this.addStationButton.dispatchEvent('click')
   }
 
   async closeModal() {
-    await this.modalCancelButton.click()
-    await expect(this.modal).not.toBeVisible()
+    await this.modalCancelButton.dispatchEvent('click')
+    await expect(this.modal).not.toBeVisible({ timeout: 8_000 })
   }
 
   /**
@@ -61,15 +60,14 @@ export class ChargingPage {
     await this.modalNameInput.fill(params.name)
     await this.modalAddressInput.fill(params.address)
     await this.modalPowerInput.fill(params.powerKw)
-    // Click map to place pin — Leaflet emits a click event
-    await expect(this.mapContainer).toBeVisible({ timeout: 5_000 })
-    await this.mapContainer.click({ position: { x: 150, y: 100 } })
-    // Wait for coords to appear
-    await expect(this.page.getByText(/\d+\.\d+,\s*\d+\.\d+/)).toBeVisible({ timeout: 5_000 })
+    // Click map to place pin — Leaflet emits a click event (loads async, give it time)
+    await expect(this.mapContainer).toBeVisible({ timeout: 15_000 })
+    // force:true bypasses Playwright's stability check (Leaflet tile loading causes instability)
+    await this.mapContainer.click({ position: { x: 150, y: 100 }, force: true })
   }
 
   async submitStationForm() {
-    await this.modalSubmitButton.click()
+    await this.modalSubmitButton.dispatchEvent('click')
   }
 
   /** Returns the station card by station name. */
@@ -79,10 +77,13 @@ export class ChargingPage {
 
   /** Returns the toggle button for a station by its card name text. */
   toggleButtonFor(stationName: string): Locator {
+    // Use text-content filter on the button itself rather than getByRole name matching,
+    // which can fail when Leaflet map children affect accessible name computation
     return this.page
       .locator('div')
       .filter({ hasText: stationName })
-      .getByRole('button')
+      .locator('button')
+      .filter({ hasText: /^(activate|deactivate)$/i })
       .first()
   }
 

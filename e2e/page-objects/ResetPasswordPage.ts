@@ -15,7 +15,7 @@ export class ResetPasswordPage {
     this.passwordInputs = page.getByPlaceholder(/••••••••/)
     this.submitButton = page.getByRole('button', { name: /update password/i })
     this.successMessage = page.getByText(/password updated/i)
-    this.errorMessage = page.locator('[style*="fdeaea"]')
+    this.errorMessage = page.getByTestId('auth-error')
     this.forcedBanner = page.getByText(/your password has expired/i)
   }
 

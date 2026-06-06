@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test'
+import { createChunks } from '@supabase/ssr'
 
 export const TEST_USERS = {
   manager: {
@@ -22,6 +23,18 @@ export const TEST_USERS = {
 } as const
 
 export type RoleKey = keyof typeof TEST_USERS
+
+/**
+ * Dedicated driver user for forced-reset flow tests.
+ * Kept separate from TEST_USERS.driver so forced-reset tests can mutate
+ * force_password_reset_at without racing against login.spec.ts.
+ */
+export const FORCED_RESET_USER = {
+  email: process.env.E2E_FORCED_RESET_EMAIL ?? 'e2e-forced-reset@evecosys-test.com',
+  password: process.env.E2E_TEST_PASSWORD ?? 'TestPassword123!',
+  name: 'E2E Forced Reset Driver',
+  role: 'driver' as const,
+}
 
 /** Auth state file paths — written by global-setup, consumed by projects. */
 export const AUTH_STATE_PATH: Record<RoleKey, string> = {
@@ -61,7 +74,9 @@ export async function loginViaUI(
 
 /**
  * Logs in via Supabase REST API (faster than UI, bypasses layout).
- * Injects the session cookie so the browser thinks it's authenticated.
+ * Injects the session as cookies so @supabase/ssr (createServerClient) can
+ * read the auth state server-side. The app uses cookie-based auth, so
+ * localStorage injection does not work.
  * Use in global-setup to generate storageState.
  */
 export async function loginViaAPI(page: Page, role: RoleKey): Promise<void> {
@@ -81,30 +96,24 @@ export async function loginViaAPI(page: Page, role: RoleKey): Promise<void> {
     throw new Error(`loginViaAPI failed for ${role}: ${res.status()} ${await res.text()}`)
   }
 
-  const { access_token, refresh_token } = await res.json()
+  const session = await res.json()
 
-  // Navigate to the app so localStorage is set in the correct origin
-  await page.goto('/login')
+  // @supabase/ssr derives the cookie key from the Supabase project hostname
+  const projectRef = new URL(supabaseUrl).hostname.split('.')[0]
+  const cookieKey = `sb-${projectRef}-auth-token`
 
-  // Inject the session — key must be derived from the Supabase project URL,
-  // not the app URL (e.g. 'abcdef' from 'abcdef.supabase.co', not 'localhost')
-  await page.evaluate(
-    ({ accessToken, refreshToken, supabaseUrl }) => {
-      const projectRef = new URL(supabaseUrl).hostname.split('.')[0]
-      const storageKey = `sb-${projectRef}-auth-token`
-      const session = {
-        access_token: accessToken,
-        refresh_token: refreshToken,
-        token_type: 'bearer',
-        expires_at: Math.floor(Date.now() / 1000) + 3600,
-        expires_in: 3600,
-      }
-      localStorage.setItem(storageKey, JSON.stringify(session))
-    },
-    { accessToken: access_token, refreshToken: refresh_token, supabaseUrl }
+  // Use @supabase/ssr's own chunker so the cookie format matches exactly
+  // what createServerClient/createBrowserClient reads back.
+  const chunks = createChunks(cookieKey, JSON.stringify(session))
+  await page.context().addCookies(
+    chunks.map(({ name, value }) => ({
+      name,
+      value,
+      domain: 'localhost',
+      path: '/',
+    }))
   )
 
-  // Reload so Next.js picks up the session via SSR
   const destinations: Record<RoleKey, string> = {
     manager: '/manager',
     driver: '/driver',
