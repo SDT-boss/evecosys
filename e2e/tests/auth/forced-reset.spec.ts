@@ -11,7 +11,7 @@ import {
   clearPasswordReset,
   adminClient,
 } from '../../helpers/supabase.admin'
-import { TEST_USERS } from '../../helpers/auth.helpers'
+import { FORCED_RESET_USER } from '../../helpers/auth.helpers'
 
 test.describe.serial('Forced password reset flow', () => {
   let driverUserId: string
@@ -20,9 +20,9 @@ test.describe.serial('Forced password reset flow', () => {
     const { data } = await adminClient
       .from('users')
       .select('id')
-      .eq('email', TEST_USERS.driver.email)
+      .eq('email', FORCED_RESET_USER.email)
       .single()
-    if (!data) throw new Error('E2E driver user not found')
+    if (!data) throw new Error('E2E forced-reset driver user not found')
     driverUserId = data.id
   })
 
@@ -36,7 +36,7 @@ test.describe.serial('Forced password reset flow', () => {
 
     const loginPage = new LoginPage(page)
     await loginPage.goto()
-    await loginPage.login(TEST_USERS.driver.email, TEST_USERS.driver.password)
+    await loginPage.login(FORCED_RESET_USER.email, FORCED_RESET_USER.password)
 
     await expect(page).toHaveURL('/reset-password?forced=true', { timeout: 15_000 })
   })
@@ -46,7 +46,7 @@ test.describe.serial('Forced password reset flow', () => {
 
     const loginPage = new LoginPage(page)
     await loginPage.goto()
-    await loginPage.login(TEST_USERS.driver.email, TEST_USERS.driver.password)
+    await loginPage.login(FORCED_RESET_USER.email, FORCED_RESET_USER.password)
 
     const resetPage = new ResetPasswordPage(page)
     await resetPage.expectForcedBanner()
@@ -58,7 +58,7 @@ test.describe.serial('Forced password reset flow', () => {
 
     const loginPage = new LoginPage(page)
     await loginPage.goto()
-    await loginPage.login(TEST_USERS.driver.email, TEST_USERS.driver.password)
+    await loginPage.login(FORCED_RESET_USER.email, FORCED_RESET_USER.password)
 
     await expect(page).toHaveURL(/\/driver/, { timeout: 15_000 })
   })
@@ -88,7 +88,7 @@ test.describe.serial('Forced password reset flow', () => {
     await page.goto('/reset-password')
 
     const resetPage = new ResetPasswordPage(page)
-    await resetPage.fillPasswords(TEST_USERS.driver.password, TEST_USERS.driver.password)
+    await resetPage.fillPasswords(FORCED_RESET_USER.password, FORCED_RESET_USER.password)
     await resetPage.submit()
 
     // May succeed or fail depending on session state — check for either outcome

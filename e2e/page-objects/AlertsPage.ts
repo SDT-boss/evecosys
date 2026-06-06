@@ -47,7 +47,7 @@ export class AlertsPage {
     return this.page
       .locator('div')
       .filter({ hasText: alertMessage })
-      .getByRole('button', { name: /mark resolved/i })
+      .getByRole('button', { name: /resolve/i })
       .first()
   }
 

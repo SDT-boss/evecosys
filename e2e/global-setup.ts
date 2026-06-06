@@ -12,14 +12,13 @@ import {
   deleteTestUser,
   adminClient,
 } from './helpers/supabase.admin'
-import { loginViaAPI, TEST_USERS, AUTH_STATE_PATH } from './helpers/auth.helpers'
+import { loginViaAPI, TEST_USERS, FORCED_RESET_USER, AUTH_STATE_PATH } from './helpers/auth.helpers'
 
 dotenv.config({ path: '.env.local' })
 
-async function ensureTestUser(role: keyof typeof TEST_USERS): Promise<string> {
-  const user = TEST_USERS[role]
+type UserSpec = { email: string; password: string; name: string; role: 'manager' | 'driver' | 'board' }
 
-  // Check if user already exists
+async function ensureUser(user: UserSpec): Promise<string> {
   const { data: existing } = await adminClient
     .from('users')
     .select('id')
@@ -38,7 +37,6 @@ async function ensureTestUser(role: keyof typeof TEST_USERS): Promise<string> {
     return existing.id
   }
 
-  // Create fresh
   const created = await createTestUser({
     email: user.email,
     password: user.password,
@@ -48,6 +46,10 @@ async function ensureTestUser(role: keyof typeof TEST_USERS): Promise<string> {
   return created.id
 }
 
+function ensureTestUser(role: keyof typeof TEST_USERS): Promise<string> {
+  return ensureUser(TEST_USERS[role])
+}
+
 export default async function globalSetup(config: FullConfig) {
   console.log('\n[E2E] Global setup — ensuring test users and auth state...')
 
@@ -55,11 +57,12 @@ export default async function globalSetup(config: FullConfig) {
   const browser = await chromium.launch()
 
   try {
-    // Ensure all three test users exist in Supabase
+    // Ensure all test users exist in Supabase
     await Promise.all([
       ensureTestUser('manager'),
       ensureTestUser('driver'),
       ensureTestUser('board'),
+      ensureUser(FORCED_RESET_USER), // dedicated user for forced-reset tests
     ])
 
     // Generate auth state for each role in parallel

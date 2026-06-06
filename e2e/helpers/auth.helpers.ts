@@ -24,6 +24,18 @@ export const TEST_USERS = {
 
 export type RoleKey = keyof typeof TEST_USERS
 
+/**
+ * Dedicated driver user for forced-reset flow tests.
+ * Kept separate from TEST_USERS.driver so forced-reset tests can mutate
+ * force_password_reset_at without racing against login.spec.ts.
+ */
+export const FORCED_RESET_USER = {
+  email: process.env.E2E_FORCED_RESET_EMAIL ?? 'e2e-forced-reset@evecosys-test.com',
+  password: process.env.E2E_TEST_PASSWORD ?? 'TestPassword123!',
+  name: 'E2E Forced Reset Driver',
+  role: 'driver' as const,
+}
+
 /** Auth state file paths — written by global-setup, consumed by projects. */
 export const AUTH_STATE_PATH: Record<RoleKey, string> = {
   manager: 'e2e/.auth/manager.json',
