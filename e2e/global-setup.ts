@@ -26,14 +26,17 @@ async function ensureUser(user: UserSpec): Promise<string> {
     .single()
 
   if (existing) {
-    // Always reset force_password_reset_at to 30 days from now so a previous
-    // test run that expired it doesn't cause login-redirect failures.
     const nextReset = new Date()
     nextReset.setDate(nextReset.getDate() + 30)
-    await adminClient
-      .from('users')
-      .update({ force_password_reset_at: nextReset.toISOString() })
-      .eq('id', existing.id)
+    await Promise.all([
+      // Reset force_password_reset_at so previous expired runs don't cause redirects
+      adminClient
+        .from('users')
+        .update({ force_password_reset_at: nextReset.toISOString() })
+        .eq('id', existing.id),
+      // Sync the password so loginViaAPI always matches what the tests expect
+      adminClient.auth.admin.updateUserById(existing.id, { password: user.password }),
+    ])
     return existing.id
   }
 
