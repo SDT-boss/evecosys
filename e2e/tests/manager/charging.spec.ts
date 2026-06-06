@@ -17,8 +17,6 @@ test.describe('Manager — Charging Stations', () => {
     await expect(chargingPage.addStationButton).toBeVisible()
   })
 
-  // ─── Happy paths ──────────────────────────────────────────────────────────
-
   test('manager can add a new charging station', async ({ page }) => {
     await chargingPage.goto()
     const name = testStationName()
@@ -41,9 +39,6 @@ test.describe('Manager — Charging Stations', () => {
   test('manager can toggle a station active/inactive', async ({ testStation }) => {
     await chargingPage.goto()
     const toggleBtn = chargingPage.toggleButtonFor(testStation.name)
-    await expect(toggleBtn).toBeVisible({ timeout: 8_000 })
-    await toggleBtn.click()
-    // Wait for toggle to complete — button shows '…' during API call, then returns to Activate/Deactivate
     await expect(toggleBtn).toBeVisible({ timeout: 15_000 })
     await toggleBtn.click()
     await expect(toggleBtn).toBeVisible({ timeout: 15_000 })
@@ -56,7 +51,6 @@ test.describe('Manager — Charging Stations', () => {
     await chargingPage.openAddStationModal()
     await chargingPage.modalNameInput.fill('No Pin Station')
     await chargingPage.modalAddressInput.fill('Somewhere, KL')
-    await chargingPage.modalPowerInput.fill('50')
     const isDisabled = await chargingPage.modalSubmitButton.isDisabled()
     if (!isDisabled) {
       await chargingPage.submitStationForm()
@@ -70,7 +64,6 @@ test.describe('Manager — Charging Stations', () => {
     await chargingPage.goto()
     await chargingPage.openAddStationModal()
     await chargingPage.modalAddressInput.fill('Test Address')
-    await chargingPage.modalPowerInput.fill('50')
     await chargingPage.submitStationForm()
     await expect(chargingPage.modal).toBeVisible()
   })

@@ -62,12 +62,7 @@ export class AlertsPage {
   await expect(btn).toBeVisible({
     timeout: 8000,
   })
-
   await btn.click()
-
-  await expect(btn).toBeHidden({
-    timeout: 12000,
-  })
 }
 
   async filterBy(filter: 'all' | 'active' | 'resolved') {

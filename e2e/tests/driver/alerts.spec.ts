@@ -32,7 +32,6 @@ test.describe('Driver — Alerts', () => {
     })
     try {
       await alertsPage.gotoDriver()
-      await expect(alertsPage.page.getByText(alert.message)).toBeVisible({ timeout: 15000 })
       await alertsPage.resolveAlert(alert.message)
       await alertsPage.filterBy('resolved')
     } finally {

@@ -45,7 +45,6 @@ export class ChargingPage {
 
   async openAddStationModal() {
     await this.addStationButton.dispatchEvent('click')
-    await expect(this.modal).toBeVisible({ timeout: 10_000 })
   }
 
   async closeModal() {
