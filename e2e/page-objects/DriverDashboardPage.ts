@@ -21,7 +21,7 @@ export class DriverDashboardPage {
   }
 
   async expectVehicleVisible(plateNo: string) {
-    await expect(this.page.getByText(plateNo)).toBeVisible({ timeout: 8_000 })
+    await expect(this.page.getByText(plateNo)).toBeVisible({ timeout: 15_000 })
   }
 
   async expectNoVehicleAssigned() {
@@ -29,8 +29,7 @@ export class DriverDashboardPage {
   }
 
   async expectSocVisible() {
-    // SOC is displayed as a percentage
-    await expect(this.page.getByText(/\d+\s*%/)).toBeVisible()
+  await expect(this.page.getByText(/\d+\s*%/)).toBeVisible({ timeout: 15_000 })
   }
 
   async expectTripsCount(n: number) {

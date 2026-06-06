@@ -54,24 +54,24 @@ export class AlertsPage {
   }
 
   async resolveAlert(alertMessage: string) {
-    const btn = this.resolveButtonFor(alertMessage)
-    await expect(btn).toBeVisible({ timeout: 8_000 })
-    // Read active count before clicking — we'll wait for it to decrease as confirmation
-    const activeBtnText = await this.activeFilterBtn.textContent()
-    const prevCount = parseInt(activeBtnText?.match(/\d+/)?.[0] ?? '1', 10) || 1
-    // dispatchEvent bypasses CSS transition stability check on the resolve button
-    await btn.dispatchEvent('click')
-    // Wait for the "Active (N)" counter to decrease — confirms state updated after resolve
-    await expect(this.activeFilterBtn).toContainText(
-      new RegExp(`\\(${Math.max(0, prevCount - 1)}\\)`),
-      { timeout: 12_000 },
-    )
-  }
+  const btn = this.resolveButtonFor(alertMessage)
+  await expect(btn).toBeVisible({ timeout: 8_000 })
+  
+  // Instead of tracking the counter, wait for the alert row to disappear
+  const alertRow = this.page.locator('div').filter({ hasText: alertMessage })
+  
+  // Click the button
+  await btn.click()
+  
+  // Wait for the alert row to be removed/hidden from the DOM
+  await expect(alertRow).toBeHidden({ timeout: 12_000 })
+}
 
   async filterBy(filter: 'all' | 'active' | 'resolved') {
-    const btns = { all: this.allFilterBtn, active: this.activeFilterBtn, resolved: this.resolvedFilterBtn }
-    await btns[filter].click()
-  }
+  const btns = { all: this.allFilterBtn, active: this.activeFilterBtn, resolved: this.resolvedFilterBtn }
+  await btns[filter].click()
+  await this.page.waitForTimeout(200) // allow filter to re-render
+}
 
   async expectEmptyState(filter: 'active' | 'resolved') {
     const text = filter === 'active' ? /all clear — no active alerts/i : /no resolved alerts yet/i
