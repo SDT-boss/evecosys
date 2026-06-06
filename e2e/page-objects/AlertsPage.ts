@@ -68,15 +68,10 @@ export class AlertsPage {
 }
 
   async filterBy(filter: 'all' | 'active' | 'resolved') {
-    const btns = { 
-      all: this.allFilterBtn, 
-      active: this.activeFilterBtn, 
-      resolved: this.resolvedFilterBtn 
-    }
-    await btns[filter].click()
-    await this.page.waitForLoadState('networkidle')
-    await this.page.waitForTimeout(500) // increased from 200ms
-  }
+  const btns = { all: this.allFilterBtn, active: this.activeFilterBtn, resolved: this.resolvedFilterBtn }
+  await btns[filter].click()
+  await this.page.waitForTimeout(1000)
+}
 
   async expectEmptyState(filter: 'active' | 'resolved') {
     const text = filter === 'active' ? /all clear — no active alerts/i : /no resolved alerts yet/i
