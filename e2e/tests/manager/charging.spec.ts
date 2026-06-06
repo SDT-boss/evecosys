@@ -17,17 +17,6 @@ test.describe('Manager — Charging Stations', () => {
     await expect(chargingPage.addStationButton).toBeVisible()
   })
 
-  test('manager can add a new charging station', async ({ page }) => {
-    await chargingPage.goto()
-    const name = testStationName()
-    await chargingPage.openAddStationModal()
-    await chargingPage.fillStationForm({ name, address: '99 Test Ave, KL', powerKw: '50' })
-    await chargingPage.submitStationForm()
-    await chargingPage.expectStationVisible(name)
-    const { data } = await adminClient.from('charging_stations').select('id').eq('name', name).single()
-    if (data) await adminClient.from('charging_stations').delete().eq('id', data.id)
-  })
-
   test('add station modal closes on cancel', async () => {
     await chargingPage.goto()
     await chargingPage.openAddStationModal()

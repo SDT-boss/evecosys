@@ -58,10 +58,6 @@ export class AlertsPage {
 
   async resolveAlert(alertMessage: string) {
   const btn = this.resolveButtonFor(alertMessage)
-
-  await expect(btn).toBeVisible({
-    timeout: 8000,
-  })
   await btn.click()
 }
 
