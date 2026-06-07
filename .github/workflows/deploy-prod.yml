@@ -155,7 +155,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     needs: [deploy, smoke]
-    if: needs.smoke.result == 'failure' && needs.deploy.result == 'success'
+    if: always() && needs.deploy.result == 'success' && needs.smoke.result != 'success'
     timeout-minutes: 10
 
     steps:
