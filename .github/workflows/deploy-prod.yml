@@ -118,6 +118,7 @@ jobs:
   smoke:
     name: Smoke test (production)
     runs-on: ubuntu-latest
+    environment: production
     needs: deploy
     timeout-minutes: 5
 
