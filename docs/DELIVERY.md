@@ -33,10 +33,11 @@ evecosys/                       ← monorepo root
 │   └── migrations/             ← Versioned SQL migration files
 │       └── YYYYMMDDHHMMSS_description.sql
 ├── .github/workflows/
-│   ├── ci.yml                  ← PR quality gate (5 parallel jobs)
-│   ├── e2e.yml                 ← PR E2E test suite (Playwright)
-│   ├── deploy-staging.yml      ← main → staging
-│   └── deploy-prod.yml         ← release/dispatch → production
+│   ├── ci.yml                  ← PR quality gate (6 parallel jobs)
+│   ├── e2e.yml                 ← PR E2E test suite (Playwright, staging env)
+│   ├── codeql.yml              ← SAST scanning (PRs + weekly)
+│   ├── deploy-staging.yml      ← main → staging (Trivy scan + deploy)
+│   └── deploy-prod.yml         ← release/dispatch → production (Trivy scan + rollback)
 └── .env.example                ← Required env var reference (no values)
 ```
 
@@ -101,7 +102,7 @@ PR opened / updated
 
 Runs on every PR targeting `main`. All jobs must pass before merge is allowed.
 
-**`ci.yml` — 5 parallel jobs:**
+**`ci.yml` — 6 parallel jobs:**
 
 | Job | Tool | Failure means |
 |---|---|---|
@@ -110,6 +111,7 @@ Runs on every PR targeting `main`. All jobs must pass before merge is allowed.
 | Design tokens | Style Dictionary + `git diff` | Token drift — run `make tokens` and commit output |
 | Build & startup check | `next build` + `next start` | App would not compile or start; fix before merge |
 | Dependency audit | `npm audit --audit-level=high` | High-severity vulnerability in dependency tree |
+| Dependency review | `actions/dependency-review-action` | PR introduces a new high-severity CVE via package changes |
 
 The build job uses placeholder Supabase credentials. It validates that the Next.js build graph is intact and the standalone server starts, not that the app connects to a real database.
 
@@ -123,11 +125,17 @@ The build job uses placeholder Supabase credentials. It validates that the Next.
 
 The E2E job uses the `staging` GitHub Environment for secrets. It runs against a locally built and started app, not the deployed staging server, which means it validates the code on the PR branch rather than what is already deployed.
 
+**`codeql.yml` — SAST scanning:**
+
+CodeQL runs on every PR to `main` and on a weekly schedule. It analyzes JavaScript/TypeScript for security vulnerabilities (XSS, injection, path traversal) and quality issues using the `security-and-quality` query suite. Findings appear in the GitHub Security tab.
+
 ### Stage 2: Staging Deploy
 
 Runs automatically on every merge to `main`. Uses the `staging` GitHub Environment.
 
 Jobs run sequentially: migrations must succeed before the image is built, and the image must be pushed before the server pulls it. A broken migration never leaves the app and database in a split state.
+
+After the image is pushed to GHCR, Trivy scans it for CRITICAL CVEs before deployment. A critical finding blocks the deploy. Known accepted findings can be suppressed in `.trivyignore` at the repo root with a documented rationale.
 
 ### Stage 3: Production Deploy
 
@@ -135,15 +143,17 @@ Triggered by publishing a GitHub Release (the canonical promotion path) or via `
 
 Uses the `production` GitHub Environment, which is configured with **required reviewers** in GitHub settings. The deployment will not start until at least one designated reviewer approves the run. This is the only manual gate in the pipeline.
 
+After the image is pushed to GHCR, Trivy scans it for CRITICAL CVEs before deployment. A critical finding blocks the deploy. Known accepted findings can be suppressed in `.trivyignore` at the repo root with a documented rationale.
+
 ### Rollback
 
 | What broke | Rollback path |
 |---|---|
-| App regression (no DB change) | On the server: `docker stop evecosys-prod && docker run ... ghcr.io/OWNER/evecosys:<previous-tag>`. The previous image is still in GHCR — find the tag in the Actions run history. |
+| App regression (no DB change) | **Automated:** if the production smoke test fails immediately after deploy, the `rollback` job in `deploy-prod.yml` fires automatically, SSHes in, and restores the previous container image from `/etc/evecosys/prev_image.txt`. **Manual fallback:** `docker stop evecosys-prod && docker run ... <previous-image>` on the server. |
 | App + migration | Create a new forward migration that reverses the schema change, then redeploy. Never `DROP` without a migration file. |
 | Bad staging deploy | Push a revert commit to `main`; staging redeploys automatically. |
 
-There is no automated rollback. Automated rollback on a failed smoke test is a future improvement once E2E coverage is sufficient to trust it.
+The automated rollback fires when: (1) the `deploy` job succeeded, AND (2) the `smoke` job fails. It reads the previous image tag saved to `/etc/evecosys/prev_image.txt` by the deploy step before the container swap. If no previous tag is recorded (first-ever deploy), it exits with an error and requires manual intervention.
 
 ---
 
@@ -265,8 +275,9 @@ The following checks are enforced and block merge or deployment if they fail.
 | Check | When | Failure action |
 |---|---|---|
 | Migration dry-run | Before `supabase db push` (future: add `--dry-run` flag) | Block deploy |
+| Container scan (Trivy) | After image push, before SSH deploy (staging + production) | Block deploy on CRITICAL CVEs |
 | Staging smoke test | After staging deploy | Block production promotion |
-| Production smoke test | After production deploy | Alert on-call; consider rollback |
+| Production smoke test | After production deploy | Triggers automated rollback; alerts on-call |
 
 ### Branch protection (configure in GitHub)
 
