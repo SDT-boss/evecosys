@@ -155,6 +155,17 @@ After the image is pushed to GHCR, Trivy scans it for CRITICAL CVEs before deplo
 
 The automated rollback fires when: (1) the `deploy` job succeeded, AND (2) the `smoke` job fails. It reads the previous image tag saved to `/etc/evecosys/prev_image.txt` by the deploy step before the container swap. If no previous tag is recorded (first-ever deploy), it exits with an error and requires manual intervention.
 
+### Known Limitations
+
+**Trivy scan runs after image push, not before**
+The Trivy container scan runs as the final step of the `build-and-push` job, after the image has already been pushed to GHCR. A CRITICAL finding blocks deployment, but the vulnerable image remains in the registry (including the `:latest` tag in production). Teams pulling from GHCR for other purposes (local testing, inspection) may pull a scanned-and-blocked image. A future improvement is to build locally without push, scan, and only push on scan success.
+
+**Automated rollback does not undo database migrations**
+The `rollback` job restores the previous container image but does not reverse any DB migrations that ran earlier in the same pipeline. If a release includes a schema migration AND the smoke test fails, the rolled-back image will run against the new schema. For releases that include migrations, the safe path is a forward-fix migration rather than relying on automated rollback. DELIVERY.md's rollback table covers this, but the automation doesn't know which releases include schema changes.
+
+**Rollback job requires environment approval**
+The `rollback` job declares `environment: production`. If the production GitHub Environment is configured with required reviewers (as documented in Section 4), the rollback will pause and wait for a human to approve before it can restore service — even during an active production outage. This means the automated rollback is not fully autonomous under the documented configuration. Either accept this trade-off (the approval requirement adds auditability even for emergency actions), or create a separate `production-rollback` environment without required reviewers but with the same secrets.
+
 ---
 
 ## 3. Environment Strategy
