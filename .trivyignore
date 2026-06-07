@@ -1,0 +1,6 @@
+# Trivy CVE suppressions
+# Format: one CVE-ID per line
+# Use this file to suppress known false positives or accepted risks.
+# Document the reason in a comment above each entry.
+# Example:
+# CVE-2023-XXXXX  # Accepted: only affects feature X which we don't use
