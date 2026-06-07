@@ -104,6 +104,8 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
+            PREV=$(docker inspect evecosys-prod --format='{{.Config.Image}}' 2>/dev/null || echo "")
+            echo "$PREV" > /etc/evecosys/prev_image.txt
             docker pull ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.value }}
             docker stop evecosys-prod 2>/dev/null || true
             docker rm   evecosys-prod 2>/dev/null || true
@@ -137,3 +139,35 @@ jobs:
           done
           echo "Health check failed after 3 attempts"
           exit 1
+
+  rollback:
+    name: Rollback (smoke failed)
+    runs-on: ubuntu-latest
+    environment: production
+    needs: [deploy, smoke]
+    if: needs.smoke.result == 'failure' && needs.deploy.result == 'success'
+    timeout-minutes: 10
+
+    steps:
+      - name: Roll back to previous image
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            PREV=$(cat /etc/evecosys/prev_image.txt 2>/dev/null || echo "")
+            if [ -z "$PREV" ]; then
+              echo "No previous image recorded — manual rollback required"
+              exit 1
+            fi
+            echo "Rolling back to: $PREV"
+            docker stop evecosys-prod 2>/dev/null || true
+            docker rm   evecosys-prod 2>/dev/null || true
+            docker run -d \
+              --name evecosys-prod \
+              --restart unless-stopped \
+              -p 3000:3000 \
+              --env-file /etc/evecosys/prod.env \
+              "$PREV"
+            echo "Rollback complete"
