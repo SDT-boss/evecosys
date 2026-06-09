@@ -25,12 +25,15 @@ A tenant's database credentials are accepted, validated for real connectivity, s
 - [x] Partial provisioning state wiped on rollback — Validated in Phase 02: BYODB Registration Service
 - [x] Unit tests for BYODB registration, connectivity validation, and rollback on failure — Validated in Phase 02: BYODB Registration Service
 
+### Validated
+
+- [x] Tenant-scoped read/write interceptor using Supabase Auth + RLS policies — Validated in Phase 03: Tenant Isolation Layer
+- [x] Cross-tenant data isolation enforced at the DB level via RLS — Validated in Phase 03: Tenant Isolation Layer
+- [x] Admin/service operations via Supabase service role key (never exposed to client) — Validated in Phase 03: Tenant Isolation Layer
+- [x] Unit tests for cross-tenant isolation (Tenant A cannot read Tenant B's control-plane config) — Validated in Phase 03: Tenant Isolation Layer
+
 ### Active
 
-- [ ] Tenant-scoped read/write interceptor using Supabase Auth + RLS policies
-- [ ] Cross-tenant data isolation enforced at the DB level via RLS
-- [ ] Admin/service operations via Supabase service role key (never exposed to client)
-- [ ] Unit tests for cross-tenant isolation (Tenant A cannot read Tenant B's control-plane config)
 - [ ] 100% test compliance on generated code
 
 ### Out of Scope
@@ -89,4 +92,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-09 — Phase 02 complete*
+*Last updated: 2026-06-09 — Phase 03 complete*
