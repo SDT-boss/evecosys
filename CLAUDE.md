@@ -1,5 +1,22 @@
 # CLAUDE.md
 
+## GSD Workflow
+
+This project uses GSD (Get Shit Done) for agentic planning and execution.
+
+**Planning artifacts:** `.planning/` — read `STATE.md` to resume, `ROADMAP.md` for phases, `REQUIREMENTS.md` for requirements.
+
+**Key workflow commands:**
+- `/gsd:plan-phase N` — create execution plan for phase N
+- `/gsd:execute-phase N` — execute all plans in phase N
+- `/gsd:progress` — check where you left off
+- `/gsd:discuss-phase N` — gather context before planning
+
+**Current milestone:** Control-Plane & Tenant Provisioning Engine (4 phases, 19 requirements)
+**Current status:** Phase 1 ready to plan
+
+---
+
 ## Project Overview
 
 EVEcosys — EV fleet management platform. Roles: manager, board member, driver. Stack: Next.js 16 + Supabase (auth + DB) + a shared design system (`@evecosys/design-system`).

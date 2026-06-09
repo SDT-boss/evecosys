@@ -1,7 +1,7 @@
 # Supabase CLI configuration
 # See: https://supabase.com/docs/guides/cli/config
 
-project_id = "replace-with-your-project-ref"
+project_id = "jbwihixeierkitccbntm"
 
 [db]
 port = 54322
