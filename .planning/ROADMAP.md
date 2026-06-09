@@ -75,7 +75,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. After rollback, no partial credentials exist in Supabase Vault for the failed provisioning attempt
   3. After rollback, all partial provisioning state (in-progress artifacts, staged records) is wiped — the tenant is in a clean `Registered` state ready to retry
   4. The full Vitest unit test suite (all phases) passes with zero failures before any PR merge
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 04-01-PLAN.md — Harden rollback: ProvisioningRollbackError + transitionTenant, dedicated rollback.test.ts (ROLLBACK-01/02/03)
+- [ ] 04-02-PLAN.md — Vitest integration suite + config: full provisioning lifecycle, ROLLBACK-03, RLS against local Supabase (ROLLBACK-03/TEST-04)
+- [ ] 04-03-PLAN.md — Phase 3 gap-audit close-out (SEC-02/SEC-03/TEST-03) + full unit suite green (TEST-04)
 
 ## Progress
 
@@ -87,4 +90,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Tenant Entity & State Machine | 3/3 | Complete   | 2026-06-09 |
 | 2. BYODB Registration Service | 3/3 | Complete   | 2026-06-09 |
 | 3. Tenant Isolation Layer | 1/3 | Complete    | 2026-06-09 |
-| 4. Rollback & Error Recovery | 0/TBD | Not started | - |
+| 4. Rollback & Error Recovery | 0/3 | Not started | - |
