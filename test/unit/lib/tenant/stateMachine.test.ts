@@ -22,7 +22,7 @@ const VALID: [TenantState, TenantState][] = [
 ]
 
 function tenant(state: TenantState): Tenant {
-  return { id: 't1', state, created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' }
+  return { id: 't1', owner_id: 'owner-t1', state, created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' }
 }
 
 describe('tenant state machine', () => {
