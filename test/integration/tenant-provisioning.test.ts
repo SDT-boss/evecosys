@@ -18,6 +18,7 @@
  */
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import ws from 'ws'
 import * as stateMachineMod from '@/lib/tenant/stateMachine'
 import { BYODBRegistrationService } from '@/lib/tenant/registrationService'
 import { SupabaseVaultStore } from '@/lib/tenant/vaultStore'
@@ -99,6 +100,7 @@ beforeAll(async () => {
   admin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { realtime: { transport: ws } },
   )
   anonUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
   anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -250,7 +252,7 @@ describe.skipIf(!suiteEnabled)('BYODB Tenant Provisioning Integration', () => {
 
   it('SEC-02/TEST-03 RLS isolation: userA cannot read userB tenant row via authenticated client', async () => {
     // Sign in as userA
-    const { data: signInData, error: signInErr } = await createClient(anonUrl, anonKey)
+    const { data: signInData, error: signInErr } = await createClient(anonUrl, anonKey, { realtime: { transport: ws } })
       .auth.signInWithPassword({
         email: userAEmail,
         password: userPassword,
@@ -262,6 +264,7 @@ describe.skipIf(!suiteEnabled)('BYODB Tenant Provisioning Integration', () => {
 
     // Build an authenticated client for userA by injecting the access token
     const userAClient = createClient(anonUrl, anonKey, {
+      realtime: { transport: ws },
       global: {
         headers: {
           Authorization: `Bearer ${signInData.session.access_token}`,
