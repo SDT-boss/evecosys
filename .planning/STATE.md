@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Phase 3 context gathered
-last_updated: "2026-06-09T10:22:08.065Z"
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-06-09T10:40:07.426Z"
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 6
-  completed_plans: 6
+  total_plans: 9
+  completed_plans: 7
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-09)
 
 **Core value:** A tenant's database credentials are accepted, validated for real connectivity, stored securely in Supabase Vault, and isolated from every other tenant — with automatic rollback if provisioning fails at any step.
-**Current focus:** Phase 02 — byodb-registration-service
+**Current focus:** Phase 03 — tenant-isolation-layer
 
 ## Current Position
 
-Phase: 02 (byodb-registration-service) — COMPLETE
-Plan: 3 of 3 — COMPLETE
+Phase: 03 (tenant-isolation-layer) — EXECUTING
+Plan: 1 of 3
 
 ## Performance Metrics
 
@@ -51,6 +51,7 @@ Plan: 3 of 3 — COMPLETE
 | Phase 02 P01 | 3 | 3 tasks | 4 files |
 | Phase 02 P02 | 327 | 3 tasks | 5 files |
 | Phase 02 P03 | 2 | 3 tasks | 1 files |
+| Phase 03 P01 | 162 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -76,6 +77,9 @@ Recent decisions affecting current work:
 - [Phase 02]: Rollback wraps only post-store steps; probe failure cannot reach vault.delete
 - [Phase 02 P03]: vi.spyOn on stateMachine.transition is the cleanest way to force post-store failure for rollback coverage without modifying production code
 - [Phase 02 P03]: registrationService.test.ts was created during 02-02 plan; 02-03 added the missing credentials.test.ts
+- [Phase 03]: AuthSessionError and TenantAccessError added to types.ts co-located with existing contracts for single-import convenience
+- [Phase 03]: DatabaseClient defined as interface only — concrete Supabase implementation deferred to Phase 03 Plan 02
+- [Phase 03]: types.ts does not import server-only — file remains client-safe for test imports; only authGuard.ts and service files get the marker
 
 ### Pending Todos
 
@@ -87,6 +91,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-09T10:22:08.059Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-tenant-isolation-layer/03-CONTEXT.md
+Last session: 2026-06-09T10:40:07.420Z
+Stopped at: Completed 03-01-PLAN.md
+Resume file: None

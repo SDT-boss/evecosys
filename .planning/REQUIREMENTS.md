@@ -24,10 +24,10 @@
 
 ### Security & Tenant Isolation
 
-- [ ] **SEC-01**: All tenant-scoped read/write operations require a validated Supabase Auth session
+- [x] **SEC-01**: All tenant-scoped read/write operations require a validated Supabase Auth session
 - [ ] **SEC-02**: Supabase RLS policies enforce cross-tenant isolation at the database layer
 - [ ] **SEC-03**: Admin/service-role operations use the Supabase service role key — never exposed to client-side code
-- [ ] **SEC-04**: Zero cross-tenant config visibility: Tenant A cannot read Tenant B's control-plane configuration under any code path
+- [x] **SEC-04**: Zero cross-tenant config visibility: Tenant A cannot read Tenant B's control-plane configuration under any code path
 
 ### Rollback & Error Recovery
 
@@ -75,10 +75,10 @@
 | BYODB-03 | Phase 2 | Complete |
 | BYODB-04 | Phase 2 | Complete |
 | BYODB-05 | Phase 2 | Complete |
-| SEC-01 | Phase 3 | Pending |
+| SEC-01 | Phase 3 | Complete |
 | SEC-02 | Phase 3 | Pending |
 | SEC-03 | Phase 3 | Pending |
-| SEC-04 | Phase 3 | Pending |
+| SEC-04 | Phase 3 | Complete |
 | ROLLBACK-01 | Phase 4 | Pending |
 | ROLLBACK-02 | Phase 4 | Pending |
 | ROLLBACK-03 | Phase 4 | Pending |
