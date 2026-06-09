@@ -12,7 +12,7 @@ This milestone implements the core tenant provisioning engine for EVEcosys BYODB
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Tenant Entity & State Machine** - Core domain model with enforced state transitions and full unit test coverage
+- [x] **Phase 1: Tenant Entity & State Machine** - Core domain model with enforced state transitions and full unit test coverage (completed 2026-06-09)
 - [ ] **Phase 2: BYODB Registration Service** - Credential acceptance, real connectivity validation, Vault storage, and registration unit tests
 - [ ] **Phase 3: Tenant Isolation Layer** - Supabase RLS policies, auth interceptor, service-role gating, and cross-tenant isolation tests
 - [ ] **Phase 4: Rollback & Error Recovery** - Automatic rollback on provisioning failure, partial state cleanup, integration hardening, and 100% test compliance
@@ -78,7 +78,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Tenant Entity & State Machine | 2/3 | In Progress|  |
+| 1. Tenant Entity & State Machine | 3/3 | Complete   | 2026-06-09 |
 | 2. BYODB Registration Service | 0/TBD | Not started | - |
 | 3. Tenant Isolation Layer | 0/TBD | Not started | - |
 | 4. Rollback & Error Recovery | 0/TBD | Not started | - |
