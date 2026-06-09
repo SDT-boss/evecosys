@@ -12,12 +12,12 @@ A tenant's database credentials are accepted, validated for real connectivity, s
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] Tenant entity with strict state machine: `Registered → Provisioning → Active → Suspended → Decommissioned` — Validated in Phase 01: Tenant Entity & State Machine
+- [x] Invalid state transition rejections enforced (e.g., `Decommissioned → Active` blocked) — Validated in Phase 01: Tenant Entity & State Machine
+- [x] Unit tests for state machine transitions and invalid transition rejections — Validated in Phase 01: Tenant Entity & State Machine
 
 ### Active
 
-- [ ] Tenant entity with strict state machine: `Registered → Provisioning → Active → Suspended → Decommissioned`
-- [ ] Invalid state transition rejections enforced (e.g., `Decommissioned → Active` blocked)
 - [ ] `BYODBRegistrationService` that accepts, validates connectivity, and stores tenant DB credentials
 - [ ] BYODB support for any PostgreSQL-compatible or MySQL-compatible DB (Supabase, AWS RDS, Neon, Alibaba Cloud, etc.)
 - [ ] All BYODB credentials stored via Supabase Vault — never logged or stored as plain text
@@ -26,7 +26,6 @@ A tenant's database credentials are accepted, validated for real connectivity, s
 - [ ] Admin/service operations via Supabase service role key (never exposed to client)
 - [ ] Automatic rollback to `Registered` (or `Decommissioned`) if provisioning fails mid-flight
 - [ ] Partial provisioning state wiped on rollback
-- [ ] Unit tests for state machine transitions and invalid transition rejections
 - [ ] Unit tests for BYODB registration, connectivity validation, and rollback on failure
 - [ ] Unit tests for cross-tenant isolation (Tenant A cannot read Tenant B's control-plane config)
 - [ ] 100% test compliance on generated code
@@ -86,4 +85,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-09 after initialization*
+*Last updated: 2026-06-09 — Phase 01 complete*
