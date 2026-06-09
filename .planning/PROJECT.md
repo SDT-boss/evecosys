@@ -16,17 +16,20 @@ A tenant's database credentials are accepted, validated for real connectivity, s
 - [x] Invalid state transition rejections enforced (e.g., `Decommissioned → Active` blocked) — Validated in Phase 01: Tenant Entity & State Machine
 - [x] Unit tests for state machine transitions and invalid transition rejections — Validated in Phase 01: Tenant Entity & State Machine
 
+### Validated
+
+- [x] `BYODBRegistrationService` that accepts, validates connectivity, and stores tenant DB credentials — Validated in Phase 02: BYODB Registration Service
+- [x] BYODB support for any PostgreSQL-compatible or MySQL-compatible DB (Supabase, AWS RDS, Neon, Alibaba Cloud, etc.) — Validated in Phase 02: BYODB Registration Service
+- [x] All BYODB credentials stored via Supabase Vault — never logged or stored as plain text — Validated in Phase 02: BYODB Registration Service
+- [x] Automatic rollback to `Registered` if provisioning fails mid-flight — Validated in Phase 02: BYODB Registration Service
+- [x] Partial provisioning state wiped on rollback — Validated in Phase 02: BYODB Registration Service
+- [x] Unit tests for BYODB registration, connectivity validation, and rollback on failure — Validated in Phase 02: BYODB Registration Service
+
 ### Active
 
-- [ ] `BYODBRegistrationService` that accepts, validates connectivity, and stores tenant DB credentials
-- [ ] BYODB support for any PostgreSQL-compatible or MySQL-compatible DB (Supabase, AWS RDS, Neon, Alibaba Cloud, etc.)
-- [ ] All BYODB credentials stored via Supabase Vault — never logged or stored as plain text
 - [ ] Tenant-scoped read/write interceptor using Supabase Auth + RLS policies
 - [ ] Cross-tenant data isolation enforced at the DB level via RLS
 - [ ] Admin/service operations via Supabase service role key (never exposed to client)
-- [ ] Automatic rollback to `Registered` (or `Decommissioned`) if provisioning fails mid-flight
-- [ ] Partial provisioning state wiped on rollback
-- [ ] Unit tests for BYODB registration, connectivity validation, and rollback on failure
 - [ ] Unit tests for cross-tenant isolation (Tenant A cannot read Tenant B's control-plane config)
 - [ ] 100% test compliance on generated code
 
@@ -61,11 +64,12 @@ This feature is part of the core architectural epic for BYO cloud tenant support
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Supabase Vault for BYODB credentials | Aligns with existing Supabase investment; built-in encryption at rest | — Pending |
+| Supabase Vault for BYODB credentials | Aligns with existing Supabase investment; built-in encryption at rest | Implemented via `store_byodb_secret`/`delete_byodb_secret` SECURITY DEFINER RPCs (Phase 02) |
 | Supabase Auth + RLS for tenant isolation | Natural fit — RLS enforces isolation at DB layer, not application layer | — Pending |
-| State machine implemented in application layer | Allows pre-transition business logic before DB write | — Pending |
-| Rollback targets `Registered` (not `Decommissioned`) on provisioning failure | Allows retry without full re-registration; `Decommissioned` reserved for intentional teardown | — Pending |
-| BYODB validation via real connectivity probe | Reject bad credentials before they're stored; prevents zombie tenants in `Provisioning` state | — Pending |
+| State machine implemented in application layer | Allows pre-transition business logic before DB write | Confirmed in Phase 01 |
+| Rollback targets `Registered` (not `Decommissioned`) on provisioning failure | Allows retry without full re-registration; `Decommissioned` reserved for intentional teardown | Implemented — vault.delete + state rollback in `registrationService.ts` (Phase 02) |
+| BYODB validation via real connectivity probe | Reject bad credentials before they're stored; prevents zombie tenants in `Provisioning` state | Implemented — `RealConnectivityProbe` with dynamic pg/mysql2 imports + ownership checks (Phase 02) |
+| Dynamic driver imports in probe | Prevents test environments from loading pg/mysql2 at import time | Implemented via `await import('pg')` pattern in `probeDriver.ts` (Phase 02) |
 
 ## Evolution
 
@@ -85,4 +89,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-09 — Phase 01 complete*
+*Last updated: 2026-06-09 — Phase 02 complete*
