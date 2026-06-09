@@ -4,8 +4,9 @@ import {
 } from '@/lib/tenant/credentials'
 import { type ConnectivityProbe, ConnectivityError } from '@/lib/tenant/probe'
 import type { VaultStore } from '@/lib/tenant/vault'
-import { transition } from '@/lib/tenant/stateMachine'
+import { transition, transitionTenant } from '@/lib/tenant/stateMachine'
 import type { Tenant } from '@/lib/tenant/types'
+import { ProvisioningRollbackError } from '@/lib/tenant/types'
 
 export interface RegistrationResult {
   tenant: Tenant
@@ -64,9 +65,20 @@ export class BYODBRegistrationService {
         tenant: { ...tenant, state: nextState, updated_at: new Date().toISOString() },
         secretId: stored.secretId,
       }
-    } catch (err) {
-      await this.vault.delete(stored.secretId)
-      throw err
+    } catch (originalErr) {
+      // Rollback: reset state to Registered in memory (explicit + testable intent)
+      transitionTenant(tenant, 'Registered')
+
+      // Clean up the orphaned Vault secret; wrap a dual failure in ProvisioningRollbackError
+      try {
+        await this.vault.delete(stored.secretId)
+      } catch (rollbackErr) {
+        throw new ProvisioningRollbackError(
+          originalErr instanceof Error ? originalErr : new Error(String(originalErr)),
+          rollbackErr instanceof Error ? rollbackErr : new Error(String(rollbackErr)),
+        )
+      }
+      throw originalErr
     }
   }
 }
