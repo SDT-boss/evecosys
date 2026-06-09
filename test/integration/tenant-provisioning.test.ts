@@ -84,16 +84,6 @@ async function deleteTenant(id: string): Promise<void> {
   await admin.from('tenants').delete().eq('id', id)
 }
 
-async function vaultSecretExists(secretId: string): Promise<boolean> {
-  // Check existence via delete attempt: if it succeeds the secret existed and is now gone;
-  // we need non-destructive read. Query vault.secrets directly using the service-role client.
-  const { data } = await admin.rpc('check_byodb_secret_exists', { p_secret_id: secretId })
-  // If RPC doesn't exist, fall back to attempting store check via a raw query.
-  // Actually, use the fact that delete_byodb_secret is idempotent and use a shadow read approach.
-  // Simpler: query the vault secrets table directly (service-role has access).
-  return !!data
-}
-
 // ── beforeAll: create ephemeral users and tenants ───────────────────────────
 beforeAll(async () => {
   // Initialise clients — env vars are guaranteed by describe.skipIf guard above
