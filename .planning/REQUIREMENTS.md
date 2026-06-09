@@ -10,9 +10,9 @@
 
 ### Tenant Lifecycle Management
 
-- [ ] **TENANT-01**: Tenant entity has explicit states: `Registered`, `Provisioning`, `Active`, `Suspended`, `Decommissioned`
-- [ ] **TENANT-02**: State machine enforces valid transitions only — invalid transitions (e.g., `Decommissioned → Active`) are rejected with a descriptive error
-- [ ] **TENANT-03**: All state transition validation runs before any database write is committed
+- [x] **TENANT-01**: Tenant entity has explicit states: `Registered`, `Provisioning`, `Active`, `Suspended`, `Decommissioned`
+- [x] **TENANT-02**: State machine enforces valid transitions only — invalid transitions (e.g., `Decommissioned → Active`) are rejected with a descriptive error
+- [x] **TENANT-03**: All state transition validation runs before any database write is committed
 
 ### BYODB Registration
 
@@ -67,9 +67,9 @@
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| TENANT-01 | Phase 1 | Pending |
-| TENANT-02 | Phase 1 | Pending |
-| TENANT-03 | Phase 1 | Pending |
+| TENANT-01 | Phase 1 | Complete |
+| TENANT-02 | Phase 1 | Complete |
+| TENANT-03 | Phase 1 | Complete |
 | BYODB-01 | Phase 2 | Pending |
 | BYODB-02 | Phase 2 | Pending |
 | BYODB-03 | Phase 2 | Pending |
