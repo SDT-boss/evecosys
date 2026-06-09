@@ -31,9 +31,9 @@
 
 ### Rollback & Error Recovery
 
-- [ ] **ROLLBACK-01**: If any provisioning step fails during the `Provisioning` state, an automatic rollback is triggered
-- [ ] **ROLLBACK-02**: Rollback resets tenant state to `Registered` and wipes all partial provisioning state
-- [ ] **ROLLBACK-03**: Failed or partial credentials are never persisted in Supabase Vault during a rolled-back provisioning attempt
+- [x] **ROLLBACK-01**: If any provisioning step fails during the `Provisioning` state, an automatic rollback is triggered
+- [x] **ROLLBACK-02**: Rollback resets tenant state to `Registered` and wipes all partial provisioning state
+- [x] **ROLLBACK-03**: Failed or partial credentials are never persisted in Supabase Vault during a rolled-back provisioning attempt
 
 ### Testing
 
@@ -79,9 +79,9 @@
 | SEC-02 | Phase 3 | Pending |
 | SEC-03 | Phase 3 | Pending |
 | SEC-04 | Phase 3 | Complete |
-| ROLLBACK-01 | Phase 4 | Pending |
-| ROLLBACK-02 | Phase 4 | Pending |
-| ROLLBACK-03 | Phase 4 | Pending |
+| ROLLBACK-01 | Phase 4 | Complete |
+| ROLLBACK-02 | Phase 4 | Complete |
+| ROLLBACK-03 | Phase 4 | Complete |
 | TEST-01 | Phase 1 | Complete |
 | TEST-02 | Phase 2 | Complete |
 | TEST-03 | Phase 3 | Pending |

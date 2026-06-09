@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Phase 4 context gathered
-last_updated: "2026-06-09T14:53:22.541Z"
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-06-09T15:40:08.817Z"
 progress:
   total_phases: 4
   completed_phases: 3
-  total_plans: 9
-  completed_plans: 9
+  total_plans: 12
+  completed_plans: 10
 ---
 
 # Project State
@@ -19,11 +19,11 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-09)
 
 **Core value:** A tenant's database credentials are accepted, validated for real connectivity, stored securely in Supabase Vault, and isolated from every other tenant — with automatic rollback if provisioning fails at any step.
-**Current focus:** Phase 03 — tenant-isolation-layer
+**Current focus:** Phase 04 — rollback-error-recovery
 
 ## Current Position
 
-Phase: 03 (tenant-isolation-layer) — EXECUTING
+Phase: 04 (rollback-error-recovery) — EXECUTING
 Plan: 1 of 3
 
 ## Performance Metrics
@@ -52,6 +52,7 @@ Plan: 1 of 3
 | Phase 02 P02 | 327 | 3 tasks | 5 files |
 | Phase 02 P03 | 2 | 3 tasks | 1 files |
 | Phase 03 P01 | 162 | 2 tasks | 5 files |
+| Phase 04 P01 | 5 | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -80,6 +81,9 @@ Recent decisions affecting current work:
 - [Phase 03]: AuthSessionError and TenantAccessError added to types.ts co-located with existing contracts for single-import convenience
 - [Phase 03]: DatabaseClient defined as interface only — concrete Supabase implementation deferred to Phase 03 Plan 02
 - [Phase 03]: types.ts does not import server-only — file remains client-safe for test imports; only authGuard.ts and service files get the marker
+- [Phase 04]: ProvisioningRollbackError wraps both originalError and rollbackError as readonly Error fields for precise dual-failure diagnostics
+- [Phase 04]: transitionTenant(tenant,'Registered') call result discarded — register() always throws on rollback per locked contract; call is for explicit, testable in-memory state reset
+- [Phase 04]: rollback.test.ts is single source of rollback coverage — legacy inline block removed from registrationService.test.ts
 
 ### Pending Todos
 
@@ -91,6 +95,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-09T14:53:22.535Z
-Stopped at: Phase 4 context gathered
-Resume file: .planning/phases/04-rollback-error-recovery/04-CONTEXT.md
+Last session: 2026-06-09T15:40:08.811Z
+Stopped at: Completed 04-01-PLAN.md
+Resume file: None
