@@ -68,12 +68,14 @@ Exceptions: none — Phase 4 introduces no UI surfaces requiring spacing excepti
 
 Source: `design-system/tokens/tokens.json` — existing token pipeline. No changes in Phase 4.
 
+Two weights only: 400 (normal) for Body and Label roles; 600 (semibold) for Heading and Display roles. Size distinction provides sufficient hierarchy between Body/Label and between Heading/Display — additional weight steps are not needed.
+
 | Role | Size | Weight | Line Height | CSS Custom Properties |
 |------|------|--------|-------------|----------------------|
 | Body | 16px (1rem) | 400 (normal) | 1.5 | `var(--ds-font-size-base)` / `var(--ds-font-weight-normal)` / `var(--ds-font-line-height-normal)` |
-| Label | 14px (0.875rem) | 500 (medium) | 1.375 | `var(--ds-font-size-sm)` / `var(--ds-font-weight-medium)` / `var(--ds-font-line-height-snug)` |
+| Label | 14px (0.875rem) | 400 (normal) | 1.375 | `var(--ds-font-size-sm)` / `var(--ds-font-weight-normal)` / `var(--ds-font-line-height-snug)` |
 | Heading | 20px (1.25rem) | 600 (semibold) | 1.25 | `var(--ds-font-size-xl)` / `var(--ds-font-weight-semibold)` / `var(--ds-font-line-height-tight)` |
-| Display | 30px (1.875rem) | 700 (bold) | 1.25 | `var(--ds-font-size-3xl)` / `var(--ds-font-weight-bold)` / `var(--ds-font-line-height-tight)` |
+| Display | 30px (1.875rem) | 600 (semibold) | 1.25 | `var(--ds-font-size-3xl)` / `var(--ds-font-weight-semibold)` / `var(--ds-font-line-height-tight)` |
 
 Note: Phase 4 introduces no typographic surfaces. These values are confirmed from the existing token pipeline for future phases that consume `ProvisioningRollbackError` messages.
 
