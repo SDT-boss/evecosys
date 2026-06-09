@@ -60,7 +60,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Tenant A cannot read or write Tenant B's control-plane configuration under any code path — confirmed by querying with Tenant A's session token and receiving zero rows from Tenant B's data
   3. Admin/service-role operations are only callable via server-side code using the service role key — no client-side code path can invoke them
   4. Unit tests assert cross-tenant isolation by attempting Tenant A reads against Tenant B's data with all isolation assertions passing
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 03-01-PLAN.md — Contracts: server-only, AuthSessionError/TenantAccessError, DatabaseClient, Tenant.owner_id (SEC-01/SEC-04)
+- [ ] 03-02-PLAN.md — TenantAuthGuard + cross-tenant isolation tests (SEC-01/SEC-04/TEST-03)
+- [ ] 03-03-PLAN.md — createServiceClient() factory + RLS audit migration (SEC-02/SEC-03)
 
 ### Phase 4: Rollback & Error Recovery
 **Goal**: A provisioning failure at any step triggers automatic rollback to `Registered`, wipes all partial state and credentials from Vault, and the full test suite passes with 100% compliance.
@@ -83,5 +86,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Tenant Entity & State Machine | 3/3 | Complete   | 2026-06-09 |
 | 2. BYODB Registration Service | 3/3 | Complete   | 2026-06-09 |
-| 3. Tenant Isolation Layer | 0/TBD | Not started | - |
+| 3. Tenant Isolation Layer | 0/3 | Not started | - |
 | 4. Rollback & Error Recovery | 0/TBD | Not started | - |
