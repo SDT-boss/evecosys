@@ -45,7 +45,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Valid credentials are stored in Supabase Vault and never appear in logs, environment variables, or the control-plane DB as plain text
   4. After successful credential storage, tenant state transitions from `Provisioning` to `Active`
   5. Unit tests cover the happy-path registration flow, connectivity failure rejection, and rollback-on-failure — all passing
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 02-01-PLAN.md — Credential contracts, probe/vault interfaces & Vault RPC migration (BYODB-01/03/04)
+- [ ] 02-02-PLAN.md — BYODBRegistrationService: probe, Vault store, Provisioning→Active, rollback (BYODB-01/02/04/05)
+- [ ] 02-03-PLAN.md — Vitest suite: happy-path, connectivity failure, rollback (TEST-02)
 
 ### Phase 3: Tenant Isolation Layer
 **Goal**: Every tenant-scoped data operation is gated by a validated Supabase Auth session and enforced by RLS policies at the database layer, with service-role operations never reachable from client code.
@@ -79,6 +82,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Tenant Entity & State Machine | 3/3 | Complete   | 2026-06-09 |
-| 2. BYODB Registration Service | 0/TBD | Not started | - |
+| 2. BYODB Registration Service | 0/3 | Planned | - |
 | 3. Tenant Isolation Layer | 0/TBD | Not started | - |
 | 4. Rollback & Error Recovery | 0/TBD | Not started | - |
