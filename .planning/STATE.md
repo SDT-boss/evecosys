@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: "Completed 02-01: BYODB credential domain contracts"
-last_updated: "2026-06-09T09:27:32.823Z"
+stopped_at: "Completed 02-02: BYODB registration service implementation"
+last_updated: "2026-06-09T09:35:17.773Z"
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 6
-  completed_plans: 4
+  completed_plans: 5
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-06-09)
 ## Current Position
 
 Phase: 02 (byodb-registration-service) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 
 ## Performance Metrics
 
@@ -49,6 +49,7 @@ Plan: 2 of 3
 | Phase 01 P02 | 5 | 1 tasks | 1 files |
 | Phase 01 P03 | 2 | 1 tasks | 1 files |
 | Phase 02 P01 | 3 | 3 tasks | 4 files |
+| Phase 02 P02 | 327 | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -69,6 +70,9 @@ Recent decisions affecting current work:
 - [Phase 02 P01]: URL built-in used for connection string parsing — credentials.ts has zero runtime DB dependencies
 - [Phase 02 P01]: ConnectivityProbe and VaultStore defined as interfaces only — concrete implementations deferred to Plan 02
 - [Phase 02 P01]: vault_secret_id on tenants enables rollback path (delete_byodb_secret on provisioning failure)
+- [Phase 02]: Dynamic import for pg/mysql2 — drivers excluded from test module graph
+- [Phase 02]: SupabaseVaultStore accepts optional injected SupabaseClient so unit tests need no env vars
+- [Phase 02]: Rollback wraps only post-store steps; probe failure cannot reach vault.delete
 
 ### Pending Todos
 
@@ -80,6 +84,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-09T09:26:22Z
-Stopped at: Completed 02-01: BYODB credential domain contracts
+Last session: 2026-06-09T09:35:17.767Z
+Stopped at: Completed 02-02: BYODB registration service implementation
 Resume file: None
