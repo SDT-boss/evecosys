@@ -38,7 +38,7 @@
 ### Testing
 
 - [x] **TEST-01**: Unit tests cover all valid state transitions and all invalid transition rejection cases
-- [ ] **TEST-02**: Unit tests cover BYODB registration: successful flow, connectivity failure, rollback on failure
+- [x] **TEST-02**: Unit tests cover BYODB registration: successful flow, connectivity failure, rollback on failure
 - [ ] **TEST-03**: Unit tests assert cross-tenant isolation — Tenant A cannot access Tenant B's data
 - [ ] **TEST-04**: 100% test compliance — test suite passes before PR merge
 
@@ -83,6 +83,6 @@
 | ROLLBACK-02 | Phase 4 | Pending |
 | ROLLBACK-03 | Phase 4 | Pending |
 | TEST-01 | Phase 1 | Complete |
-| TEST-02 | Phase 2 | Pending |
+| TEST-02 | Phase 2 | Complete |
 | TEST-03 | Phase 3 | Pending |
 | TEST-04 | Phase 4 | Pending |
