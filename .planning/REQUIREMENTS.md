@@ -16,10 +16,10 @@
 
 ### BYODB Registration
 
-- [ ] **BYODB-01**: `BYODBRegistrationService` accepts tenant database credentials (connection string or structured credential object)
+- [x] **BYODB-01**: `BYODBRegistrationService` accepts tenant database credentials (connection string or structured credential object)
 - [ ] **BYODB-02**: Service validates real connectivity and schema ownership before accepting credentials
-- [ ] **BYODB-03**: Supports any PostgreSQL-compatible or MySQL-compatible database (Supabase, AWS RDS, Neon, Alibaba Cloud, etc.)
-- [ ] **BYODB-04**: Credentials are stored in Supabase Vault — never logged, cached, or stored as plain text anywhere in the control-plane DB
+- [x] **BYODB-03**: Supports any PostgreSQL-compatible or MySQL-compatible database (Supabase, AWS RDS, Neon, Alibaba Cloud, etc.)
+- [x] **BYODB-04**: Credentials are stored in Supabase Vault — never logged, cached, or stored as plain text anywhere in the control-plane DB
 - [ ] **BYODB-05**: Successful validation transitions tenant state from `Provisioning` → `Active`
 
 ### Security & Tenant Isolation
@@ -70,10 +70,10 @@
 | TENANT-01 | Phase 1 | Complete |
 | TENANT-02 | Phase 1 | Complete |
 | TENANT-03 | Phase 1 | Complete |
-| BYODB-01 | Phase 2 | Pending |
+| BYODB-01 | Phase 2 | Complete |
 | BYODB-02 | Phase 2 | Pending |
-| BYODB-03 | Phase 2 | Pending |
-| BYODB-04 | Phase 2 | Pending |
+| BYODB-03 | Phase 2 | Complete |
+| BYODB-04 | Phase 2 | Complete |
 | BYODB-05 | Phase 2 | Pending |
 | SEC-01 | Phase 3 | Pending |
 | SEC-02 | Phase 3 | Pending |
