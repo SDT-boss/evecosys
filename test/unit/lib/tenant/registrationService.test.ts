@@ -23,8 +23,8 @@ function makeVault(secretId = 'secret-uuid-1'): VaultStore & {
   delete: ReturnType<typeof vi.fn>
 } {
   return {
-    store: vi.fn<[string, string], Promise<StoredSecret>>().mockResolvedValue({ secretId }),
-    delete: vi.fn<[string], Promise<void>>().mockResolvedValue(undefined),
+    store: vi.fn().mockResolvedValue({ secretId } satisfies StoredSecret),
+    delete: vi.fn().mockResolvedValue(undefined),
   }
 }
 
