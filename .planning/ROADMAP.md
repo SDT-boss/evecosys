@@ -29,7 +29,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Calling a valid transition (e.g., `Registered → Provisioning`) succeeds and updates state before any DB write
   3. Calling an invalid transition (e.g., `Decommissioned → Active`) throws a descriptive error and leaves state unchanged
   4. Unit test suite covers every valid transition path and every invalid transition rejection case with all tests passing
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 01-01-PLAN.md — Tenant domain types & pure state machine (TENANT-01/02/03)
+- [ ] 01-02-PLAN.md — Supabase migration: tenants table with state CHECK + RLS (TENANT-01)
+- [ ] 01-03-PLAN.md — Exhaustive Vitest state-machine suite (TEST-01)
 
 ### Phase 2: BYODB Registration Service
 **Goal**: A tenant can submit database credentials, have them validated via a real connectivity probe, and have them stored securely in Supabase Vault — with the tenant transitioned to `Active` on success.
