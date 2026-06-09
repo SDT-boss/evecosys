@@ -25,8 +25,8 @@
 ### Security & Tenant Isolation
 
 - [x] **SEC-01**: All tenant-scoped read/write operations require a validated Supabase Auth session
-- [ ] **SEC-02**: Supabase RLS policies enforce cross-tenant isolation at the database layer
-- [ ] **SEC-03**: Admin/service-role operations use the Supabase service role key — never exposed to client-side code
+- [x] **SEC-02**: Supabase RLS policies enforce cross-tenant isolation at the database layer
+- [x] **SEC-03**: Admin/service-role operations use the Supabase service role key — never exposed to client-side code
 - [x] **SEC-04**: Zero cross-tenant config visibility: Tenant A cannot read Tenant B's control-plane configuration under any code path
 
 ### Rollback & Error Recovery
@@ -39,7 +39,7 @@
 
 - [x] **TEST-01**: Unit tests cover all valid state transitions and all invalid transition rejection cases
 - [x] **TEST-02**: Unit tests cover BYODB registration: successful flow, connectivity failure, rollback on failure
-- [ ] **TEST-03**: Unit tests assert cross-tenant isolation — Tenant A cannot access Tenant B's data
+- [x] **TEST-03**: Unit tests assert cross-tenant isolation — Tenant A cannot access Tenant B's data
 - [ ] **TEST-04**: 100% test compliance — test suite passes before PR merge
 
 ---
@@ -76,13 +76,13 @@
 | BYODB-04 | Phase 2 | Complete |
 | BYODB-05 | Phase 2 | Complete |
 | SEC-01 | Phase 3 | Complete |
-| SEC-02 | Phase 3 | Pending |
-| SEC-03 | Phase 3 | Pending |
+| SEC-02 | Phase 3 | Complete |
+| SEC-03 | Phase 3 | Complete |
 | SEC-04 | Phase 3 | Complete |
 | ROLLBACK-01 | Phase 4 | Complete |
 | ROLLBACK-02 | Phase 4 | Complete |
 | ROLLBACK-03 | Phase 4 | Complete |
 | TEST-01 | Phase 1 | Complete |
 | TEST-02 | Phase 2 | Complete |
-| TEST-03 | Phase 3 | Pending |
+| TEST-03 | Phase 3 | Complete |
 | TEST-04 | Phase 4 | Pending |
