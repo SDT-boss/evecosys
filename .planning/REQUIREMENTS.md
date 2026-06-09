@@ -67,22 +67,22 @@
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| TENANT-01 | TBD | Pending |
-| TENANT-02 | TBD | Pending |
-| TENANT-03 | TBD | Pending |
-| BYODB-01 | TBD | Pending |
-| BYODB-02 | TBD | Pending |
-| BYODB-03 | TBD | Pending |
-| BYODB-04 | TBD | Pending |
-| BYODB-05 | TBD | Pending |
-| SEC-01 | TBD | Pending |
-| SEC-02 | TBD | Pending |
-| SEC-03 | TBD | Pending |
-| SEC-04 | TBD | Pending |
-| ROLLBACK-01 | TBD | Pending |
-| ROLLBACK-02 | TBD | Pending |
-| ROLLBACK-03 | TBD | Pending |
-| TEST-01 | TBD | Pending |
-| TEST-02 | TBD | Pending |
-| TEST-03 | TBD | Pending |
-| TEST-04 | TBD | Pending |
+| TENANT-01 | Phase 1 | Pending |
+| TENANT-02 | Phase 1 | Pending |
+| TENANT-03 | Phase 1 | Pending |
+| BYODB-01 | Phase 2 | Pending |
+| BYODB-02 | Phase 2 | Pending |
+| BYODB-03 | Phase 2 | Pending |
+| BYODB-04 | Phase 2 | Pending |
+| BYODB-05 | Phase 2 | Pending |
+| SEC-01 | Phase 3 | Pending |
+| SEC-02 | Phase 3 | Pending |
+| SEC-03 | Phase 3 | Pending |
+| SEC-04 | Phase 3 | Pending |
+| ROLLBACK-01 | Phase 4 | Pending |
+| ROLLBACK-02 | Phase 4 | Pending |
+| ROLLBACK-03 | Phase 4 | Pending |
+| TEST-01 | Phase 1 | Pending |
+| TEST-02 | Phase 2 | Pending |
+| TEST-03 | Phase 3 | Pending |
+| TEST-04 | Phase 4 | Pending |
