@@ -159,7 +159,7 @@ describe('BYODBRegistrationService rollback', () => {
       ProvisioningRollbackError,
     )
 
-    const thrownError = await svc
+    await svc
       .register(PROVISIONING_TENANT, VALID_STRUCTURED_INPUT)
       .catch(e => e)
 
