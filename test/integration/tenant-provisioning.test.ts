@@ -18,7 +18,8 @@
  */
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
-import ws from 'ws'
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const ws = require('ws') as typeof WebSocket
 import * as stateMachineMod from '@/lib/tenant/stateMachine'
 import { BYODBRegistrationService } from '@/lib/tenant/registrationService'
 import { SupabaseVaultStore } from '@/lib/tenant/vaultStore'
