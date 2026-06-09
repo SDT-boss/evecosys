@@ -215,8 +215,6 @@ describe.skipIf(!suiteEnabled)('BYODB Tenant Provisioning Integration', () => {
         throw new Error('Forced post-store failure for rollback test')
       })
 
-    let capturedSecretId: string | undefined
-
     try {
       // The service stores the secret, then the spy throws — triggering vault.delete
       await svc.register(tenantA, VALID_INPUT)
@@ -227,20 +225,6 @@ describe.skipIf(!suiteEnabled)('BYODB Tenant Provisioning Integration', () => {
       expect((err as Error).message).toBe('Forced post-store failure for rollback test')
     } finally {
       spy.mockRestore()
-    }
-
-    // Verify no orphaned secret: if rollback worked, the secret was deleted.
-    // We confirm by attempting to delete again (should either silently succeed or the id is unknown).
-    // The cleanest signal: the delete RPC must not throw if the secret already doesn't exist.
-    // We verify by querying vault.secrets; if not accessible, we trust the vault.delete call path.
-    if (capturedSecretId) {
-      // If we somehow captured it, verify it's gone
-      const { data: rows } = await admin
-        .schema('vault')
-        .from('secrets')
-        .select('id')
-        .eq('id', capturedSecretId)
-      expect(rows ?? []).toHaveLength(0)
     }
 
     // Primary assertion: vault.delete was called (the spy forced transition to throw AFTER store,
