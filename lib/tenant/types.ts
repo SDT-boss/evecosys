@@ -49,3 +49,15 @@ export class TenantAccessError extends Error {
     this.name = 'TenantAccessError'
   }
 }
+
+export class ProvisioningRollbackError extends Error {
+  constructor(
+    public readonly originalError: Error,
+    public readonly rollbackError: Error,
+  ) {
+    super(
+      `Provisioning rollback failed: ${rollbackError.message} (original error: ${originalError.message})`,
+    )
+    this.name = 'ProvisioningRollbackError'
+  }
+}
