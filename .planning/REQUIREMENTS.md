@@ -1,0 +1,88 @@
+# Requirements — Control-Plane & Tenant Provisioning Engine
+
+**Version:** v1  
+**Status:** Active  
+**Last updated:** 2026-06-09
+
+---
+
+## v1 Requirements
+
+### Tenant Lifecycle Management
+
+- [ ] **TENANT-01**: Tenant entity has explicit states: `Registered`, `Provisioning`, `Active`, `Suspended`, `Decommissioned`
+- [ ] **TENANT-02**: State machine enforces valid transitions only — invalid transitions (e.g., `Decommissioned → Active`) are rejected with a descriptive error
+- [ ] **TENANT-03**: All state transition validation runs before any database write is committed
+
+### BYODB Registration
+
+- [ ] **BYODB-01**: `BYODBRegistrationService` accepts tenant database credentials (connection string or structured credential object)
+- [ ] **BYODB-02**: Service validates real connectivity and schema ownership before accepting credentials
+- [ ] **BYODB-03**: Supports any PostgreSQL-compatible or MySQL-compatible database (Supabase, AWS RDS, Neon, Alibaba Cloud, etc.)
+- [ ] **BYODB-04**: Credentials are stored in Supabase Vault — never logged, cached, or stored as plain text anywhere in the control-plane DB
+- [ ] **BYODB-05**: Successful validation transitions tenant state from `Provisioning` → `Active`
+
+### Security & Tenant Isolation
+
+- [ ] **SEC-01**: All tenant-scoped read/write operations require a validated Supabase Auth session
+- [ ] **SEC-02**: Supabase RLS policies enforce cross-tenant isolation at the database layer
+- [ ] **SEC-03**: Admin/service-role operations use the Supabase service role key — never exposed to client-side code
+- [ ] **SEC-04**: Zero cross-tenant config visibility: Tenant A cannot read Tenant B's control-plane configuration under any code path
+
+### Rollback & Error Recovery
+
+- [ ] **ROLLBACK-01**: If any provisioning step fails during the `Provisioning` state, an automatic rollback is triggered
+- [ ] **ROLLBACK-02**: Rollback resets tenant state to `Registered` and wipes all partial provisioning state
+- [ ] **ROLLBACK-03**: Failed or partial credentials are never persisted in Supabase Vault during a rolled-back provisioning attempt
+
+### Testing
+
+- [ ] **TEST-01**: Unit tests cover all valid state transitions and all invalid transition rejection cases
+- [ ] **TEST-02**: Unit tests cover BYODB registration: successful flow, connectivity failure, rollback on failure
+- [ ] **TEST-03**: Unit tests assert cross-tenant isolation — Tenant A cannot access Tenant B's data
+- [ ] **TEST-04**: 100% test compliance — test suite passes before PR merge
+
+---
+
+## v2 Requirements (Deferred)
+
+- Multi-cloud credential replication across secrets providers (e.g., AWS Secrets Manager sync)
+- Frontend management UI for tenant lifecycle operations
+- Non-relational BYODB support (MongoDB, Redis)
+- Automated tenant health checks / connectivity re-validation on schedule
+- Tenant suspension / reactivation self-service API for tenants
+
+---
+
+## Out of Scope
+
+- **Frontend UI for control-plane** — this feature is API/service layer only; UI is a separate phase
+- **Non-relational databases** — MongoDB, Redis, etc. are not supported in v1
+- **Third-party secrets managers** — only Supabase Vault for v1 (AWS Secrets Manager, HashiCorp Vault deferred)
+- **Multi-cloud secrets replication** — single vault for v1 scope
+
+---
+
+## Traceability
+
+| REQ-ID | Phase | Status |
+|--------|-------|--------|
+| TENANT-01 | TBD | Pending |
+| TENANT-02 | TBD | Pending |
+| TENANT-03 | TBD | Pending |
+| BYODB-01 | TBD | Pending |
+| BYODB-02 | TBD | Pending |
+| BYODB-03 | TBD | Pending |
+| BYODB-04 | TBD | Pending |
+| BYODB-05 | TBD | Pending |
+| SEC-01 | TBD | Pending |
+| SEC-02 | TBD | Pending |
+| SEC-03 | TBD | Pending |
+| SEC-04 | TBD | Pending |
+| ROLLBACK-01 | TBD | Pending |
+| ROLLBACK-02 | TBD | Pending |
+| ROLLBACK-03 | TBD | Pending |
+| TEST-01 | TBD | Pending |
+| TEST-02 | TBD | Pending |
+| TEST-03 | TBD | Pending |
+| TEST-04 | TBD | Pending |
