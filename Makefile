@@ -1,6 +1,7 @@
 .PHONY: help setup dev build test lint typecheck tokens audit \
         db-start db-stop db-reset db-status migrate \
-        e2e docker-build docker-run docker-stop
+        e2e docker-build docker-run docker-stop \
+        test-integration
 
 # ── Default ───────────────────────────────────────────────────────────────────
 help:
@@ -35,6 +36,9 @@ test: ## Run Vitest unit tests
 
 test-watch: ## Run Vitest in watch mode
 	npm test
+
+test-integration: ## Run Vitest integration tests against local Supabase (requires `make db-start`)
+	npx vitest run --config vitest.integration.config.mts
 
 tokens: ## Build design tokens (Style Dictionary)
 	npm run build:tokens
