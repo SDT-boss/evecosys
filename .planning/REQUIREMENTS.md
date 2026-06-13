@@ -66,25 +66,25 @@
 
 ## Traceability
 
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| AUTH-01 | Phase 1 | Pending |
-| AUTH-02 | Phase 1 | Pending |
-| AUTH-03 | Phase 1 | Pending |
-| AUTH-04 | Phase 1 | Pending |
-| PADM-01 | Phase 2 | Pending |
-| PADM-02 | Phase 2 | Pending |
-| PADM-03 | Phase 2 | Pending |
-| PADM-04 | Phase 2 | Pending |
-| SWIT-01 | Phase 3 | Pending |
-| SWIT-02 | Phase 3 | Pending |
-| SWIT-03 | Phase 3 | Pending |
-| SWIT-04 | Phase 3 | Pending |
-| BSET-01 | Phase 4 | Pending |
-| BSET-02 | Phase 4 | Pending |
-| BSET-03 | Phase 4 | Pending |
-| BSET-04 | Phase 4 | Pending |
-| STRB-01 | Phase 5 | Pending |
+| Requirement | Phase | Phase Name | Status |
+|-------------|-------|------------|--------|
+| AUTH-01 | Phase 1 | Auth & Role Foundation | Pending |
+| AUTH-02 | Phase 1 | Auth & Role Foundation | Pending |
+| AUTH-03 | Phase 1 | Auth & Role Foundation | Pending |
+| AUTH-04 | Phase 1 | Auth & Role Foundation | Pending |
+| PADM-01 | Phase 2 | Platform Admin Shell | Pending |
+| PADM-02 | Phase 2 | Platform Admin Shell | Pending |
+| PADM-03 | Phase 2 | Platform Admin Shell | Pending |
+| PADM-04 | Phase 2 | Platform Admin Shell | Pending |
+| SWIT-01 | Phase 3 | Tenant Switcher States | Pending |
+| SWIT-02 | Phase 3 | Tenant Switcher States | Pending |
+| SWIT-03 | Phase 3 | Tenant Switcher States | Pending |
+| SWIT-04 | Phase 3 | Tenant Switcher States | Pending |
+| BSET-01 | Phase 4 | Board Tenant Settings | Pending |
+| BSET-02 | Phase 4 | Board Tenant Settings | Pending |
+| BSET-03 | Phase 4 | Board Tenant Settings | Pending |
+| BSET-04 | Phase 4 | Board Tenant Settings | Pending |
+| STRB-01 | Phase 5 | Storybook Coverage | Pending |
 
 **Coverage:**
 - v1 requirements: 17 total
@@ -93,4 +93,4 @@
 
 ---
 *Requirements defined: 2026-06-13*
-*Last updated: 2026-06-13 after initial definition*
+*Last updated: 2026-06-13 after roadmap creation — phase names confirmed*
