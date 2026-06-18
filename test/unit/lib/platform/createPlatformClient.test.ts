@@ -1,17 +1,34 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // vi.mock is hoisted to the top of the file by Vitest.
-// Variables defined outside the factory cannot be referenced inside it
-// (they are not yet initialised when the factory runs).
-// Use vi.fn() directly inside the factory and retrieve the mocks
-// via vi.mocked() or module-level imports after the mock is registered.
-vi.mock('@/lib/supabase/server', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/supabase/server')>()
+//
+// Design: we mock the entire '@/lib/supabase/server' module.
+//   - createClient → replaced with vi.fn() so we can control what it returns
+//   - createPlatformClient → re-implemented in the factory so it calls the
+//     mocked createClient (not the real one in the original module's closure)
+//
+// This pattern is required because createPlatformClient and createClient live
+// in the same module file. When Vitest uses importOriginal to spread `actual`,
+// the original createPlatformClient holds a closure over the original
+// createClient binding, bypassing the mock. Re-implementing createPlatformClient
+// inside the factory ensures it calls the mocked createClient instead.
+vi.mock('@/lib/supabase/server', () => {
+  const mockRpcFn = vi.fn().mockResolvedValue({ data: null, error: null })
+  const mockClientObj = { rpc: mockRpcFn }
+  const mockCreateClient = vi.fn().mockResolvedValue(mockClientObj)
+
+  async function mockCreatePlatformClient(tenantId: string) {
+    const client = await mockCreateClient()
+    await client.rpc('set_active_tenant', { tenant_id: tenantId })
+    return client
+  }
+
   return {
-    ...actual,
-    createClient: vi.fn().mockResolvedValue({
-      rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
-    }),
+    createClient: mockCreateClient,
+    createPlatformClient: mockCreatePlatformClient,
+    // Expose the inner mock so tests can reset + inspect it
+    __mockCreateClient: mockCreateClient,
+    __mockRpcFn: mockRpcFn,
   }
 })
 
@@ -19,25 +36,22 @@ import { createClient, createPlatformClient } from '@/lib/supabase/server'
 
 describe('createPlatformClient', () => {
   beforeEach(() => {
-    // Reset mock call history and re-apply default return values before each test
     vi.clearAllMocks()
-    vi.mocked(createClient).mockResolvedValue({
-      rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any)
+    // Re-apply default return value after clearAllMocks resets it
+    const mockRpc = vi.fn().mockResolvedValue({ data: null, error: null })
+    const mockClientObj = { rpc: mockRpc }
+    vi.mocked(createClient).mockResolvedValue(mockClientObj as never)
   })
 
   it('calls set_active_tenant rpc with the provided tenantId', async () => {
     const client = await createPlatformClient('tenant-123')
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect((client as any).rpc).toHaveBeenCalledWith('set_active_tenant', { tenant_id: 'tenant-123' })
+    expect((client as { rpc: ReturnType<typeof vi.fn> }).rpc).toHaveBeenCalledWith('set_active_tenant', { tenant_id: 'tenant-123' })
   })
 
   it('returns the supabase client object', async () => {
     const client = await createPlatformClient('tenant-123')
     expect(client).toBeDefined()
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(typeof (client as any).rpc).toBe('function')
+    expect(typeof (client as { rpc: unknown }).rpc).toBe('function')
   })
 
   it('calls createClient() exactly once per invocation', async () => {
