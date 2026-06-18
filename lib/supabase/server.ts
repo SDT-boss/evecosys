@@ -23,3 +23,9 @@ export async function createClient() {
     }
   )
 }
+
+// TODO(Task 2): Implement createPlatformClient — calls set_active_tenant RPC before returning client.
+// This stub exists to satisfy TypeScript; tests will remain RED until Task 2 lands the implementation.
+export async function createPlatformClient(_tenantId: string) {
+  throw new Error('createPlatformClient: not yet implemented')
+}
