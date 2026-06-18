@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Phase 1 complete (2026-06-18)
+status: ready_to_execute
+stopped_at: Phase 2 planned (2026-06-18)
 last_updated: "2026-06-18T00:00:00Z"
-last_activity: 2026-06-18 — Phase 1 complete; 3/3 plans done, 8/8 must-haves verified, SC-2 gap closed
+last_activity: 2026-06-18 — Phase 2 planned; 3 plans in 3 waves; verification passed
 progress:
   total_phases: 5
   completed_phases: 1
-  total_plans: 3
+  total_plans: 6
   completed_plans: 3
   percent: 20
 ---
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-13)
 
 **Core value:** Platform admins can always see which tenant they're operating in and switch context without any cross-tenant data leakage or user confusion.
-**Current focus:** Phase 1 — Auth & Role Foundation
+**Current focus:** Phase 2 — Platform Admin Shell
 
 ## Current Position
 
-Phase: 1 of 5 complete — next: Phase 2 (Platform Admin Shell)
-Plan: 3 of 3 complete
-Status: Phase 1 verified and complete (2026-06-18)
-Last activity: 2026-06-18 — Phase 1 complete; SC-2 gap closed; 8/8 must-haves verified
+Phase: 2 of 5 — ready to execute (Phase 1 complete 2026-06-18)
+Plan: 3 plans created (Wave 0–2)
+Status: Phase 2 planned and verified; ready to execute (2026-06-18)
+Last activity: 2026-06-18 — Phase 2 planned; 3 plans in 3 waves; verification passed
 
 Progress: [██░░░░░░░░] 20%
 

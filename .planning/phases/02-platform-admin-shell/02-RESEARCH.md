@@ -568,7 +568,7 @@ export default async function PlatformPage() {
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **`Tenant` type needs `name` field**
    - What we know: `lib/tenant/types.ts` defines `Tenant` interface without `name` (the column doesn't exist yet in the DB schema)

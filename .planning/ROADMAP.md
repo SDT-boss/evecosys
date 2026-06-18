@@ -64,7 +64,7 @@ Wave 0:
 Wave 1 *(blocked on Wave 0 completion)*:
 - [ ] 02-02-PLAN.md — ActiveTenantIndicator + bespoke PlatformShell + layout cookie-read wiring (PADM-03)
 
-Wave 2 *(blocked on Wave 1 completion)*:
+Wave 2 *(blocked on Wave 0 + Wave 1 completion)*:
 - [ ] 02-03-PLAN.md — setActiveTenant Server Action + TenantList + tenant-list page + active-row highlight (PADM-01, PADM-02, PADM-04)
 
 ### Phase 3: Tenant Switcher States
@@ -113,7 +113,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Auth & Role Foundation | 3/3 | Complete | 2026-06-18 |
-| 2. Platform Admin Shell | 0/3 | Not started | - |
+| 2. Platform Admin Shell | 0/3 | Planned | - |
 | 3. Tenant Switcher States | 0/TBD | Not started | - |
 | 4. Board Tenant Settings | 0/TBD | Not started | - |
 | 5. Storybook Coverage | 0/TBD | Not started | - |
