@@ -1,5 +1,5 @@
 ---
-status: partial
+status: complete
 phase: 01-auth-role-foundation
 source: [01-VERIFICATION.md]
 started: 2026-06-18T10:35:00Z
@@ -8,7 +8,7 @@ updated: 2026-06-18T11:15:00Z
 
 ## Current Test
 
-[awaiting human testing]
+[testing complete]
 
 ## Tests
 
@@ -28,28 +28,15 @@ result: pass
 
 ### 4. Full `make e2e` passes
 expected: `make e2e` exits 0 — platform_admin can reach `/platform`, manager cannot, board user with tenant can reach `/board/settings`, unauthenticated GET /platform redirects to /login
-result: issue
-reported: "global-setup fails: loginViaAPI board navigates to /board but lands at /login (15s timeout). Page shows login form — board user login itself may be failing after make db-reset."
-severity: blocker
+result: pass
 
 ## Summary
 
 total: 4
-passed: 2
-issues: 1
+passed: 3
+issues: 0
 pending: 0
 skipped: 0
 blocked: 1
 
 ## Gaps
-
-- truth: "E2E global-setup creates valid auth sessions for all roles including board"
-  status: failed
-  reason: "User reported: loginViaAPI for board role times out — navigates to /board but lands at /login. Board user login credentials invalid or public.users row missing after make db-reset."
-  severity: blocker
-  test: 4
-  artifacts:
-    - e2e/global-setup.ts
-    - e2e/helpers/auth.helpers.ts
-    - supabase/seed.sql
-  missing: []
