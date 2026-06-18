@@ -45,7 +45,8 @@ describe('createPlatformClient', () => {
 
   it('calls set_active_tenant rpc with the provided tenantId', async () => {
     const client = await createPlatformClient('tenant-123')
-    expect((client as { rpc: ReturnType<typeof vi.fn> }).rpc).toHaveBeenCalledWith('set_active_tenant', { tenant_id: 'tenant-123' })
+    const rpc = (client as unknown as { rpc: ReturnType<typeof vi.fn> }).rpc
+    expect(rpc).toHaveBeenCalledWith('set_active_tenant', { tenant_id: 'tenant-123' })
   })
 
   it('returns the supabase client object', async () => {
