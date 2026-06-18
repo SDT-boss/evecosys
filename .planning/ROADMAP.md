@@ -30,11 +30,18 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. A board member can reach their tenant settings route; a non-board user is denied
   3. RLS policies prevent a platform admin query from returning rows that belong to a different tenant context
   4. The `platform_admin` value is valid in the `users.role` enum and recognised by `AppUser` / `UserRole` types
-**Plans:** 2 plans
+**Plans:** 3 plans
 
 Plans:
+
+Wave 1:
 - [ ] 01-01-PLAN.md — DB migration, seed, TypeScript types, server helper, and Wave 0 test infrastructure (AUTH-01, AUTH-04)
+
+Wave 2 *(blocked on Wave 1 completion)*:
 - [ ] 01-02-PLAN.md — Schema push [BLOCKING] + /platform and /board/settings route guards and stub pages (AUTH-02, AUTH-03)
+
+Wave 3 — Gap Closure *(blocked on Wave 2 completion)*:
+- [ ] 01-03-PLAN.md — board_no_tenant E2E test: SC-2 negative case (board member with no tenant → /login) (AUTH-03)
 
 ### Phase 2: Platform Admin Shell
 **Goal**: Platform admins can navigate to `/platform`, see all registered tenants with their provisioning status, and have the current active tenant persistently shown in the header across navigations
