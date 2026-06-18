@@ -16,7 +16,7 @@ import { loginViaAPI, TEST_USERS, FORCED_RESET_USER, AUTH_STATE_PATH } from './h
 
 dotenv.config({ path: '.env.local' })
 
-type UserSpec = { email: string; password: string; name: string; role: 'manager' | 'driver' | 'board' }
+type UserSpec = { email: string; password: string; name: string; role: 'manager' | 'driver' | 'board' | 'platform_admin' }
 
 async function ensureUser(user: UserSpec): Promise<string> {
   const { data: existing } = await adminClient
@@ -65,12 +65,13 @@ export default async function globalSetup(config: FullConfig) {
       ensureTestUser('manager'),
       ensureTestUser('driver'),
       ensureTestUser('board'),
+      ensureTestUser('platform_admin'),
       ensureUser(FORCED_RESET_USER), // dedicated user for forced-reset tests
     ])
 
     // Generate auth state for each role in parallel
     await Promise.all(
-      (['manager', 'driver', 'board'] as const).map(async (role) => {
+      (['manager', 'driver', 'board', 'platform_admin'] as const).map(async (role) => {
         const ctx = await browser.newContext({ baseURL })
         const page = await ctx.newPage()
         try {
