@@ -53,8 +53,19 @@ Wave 3 — Gap Closure *(blocked on Wave 2 completion)*:
   2. Platform admin can click a tenant row to make it the active context
   3. The active tenant name appears in the `/platform` shell header at all times
   4. Navigating between pages within `/platform` does not reset the active tenant — it persists for the session
-**Plans**: TBD
+**Plans:** 3 plans
 **UI hint**: yes
+
+Plans:
+
+Wave 0:
+- [ ] 02-01-PLAN.md — DB migration (tenants.name) + schema push [BLOCKING] + Tenant type sync + status utility + 4 Wave 0 test files (PADM-01..04)
+
+Wave 1 *(blocked on Wave 0 completion)*:
+- [ ] 02-02-PLAN.md — ActiveTenantIndicator + bespoke PlatformShell + layout cookie-read wiring (PADM-03)
+
+Wave 2 *(blocked on Wave 1 completion)*:
+- [ ] 02-03-PLAN.md — setActiveTenant Server Action + TenantList + tenant-list page + active-row highlight (PADM-01, PADM-02, PADM-04)
 
 ### Phase 3: Tenant Switcher States
 **Goal**: The tenant-switching action provides clear, real-time feedback for every outcome — in-progress, success, error, and blocked — so platform admins always know what happened and what to do next
@@ -102,7 +113,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Auth & Role Foundation | 3/3 | Complete | 2026-06-18 |
-| 2. Platform Admin Shell | 0/TBD | Not started | - |
+| 2. Platform Admin Shell | 0/3 | Not started | - |
 | 3. Tenant Switcher States | 0/TBD | Not started | - |
 | 4. Board Tenant Settings | 0/TBD | Not started | - |
 | 5. Storybook Coverage | 0/TBD | Not started | - |
