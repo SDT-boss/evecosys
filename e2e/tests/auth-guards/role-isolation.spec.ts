@@ -157,3 +157,14 @@ test.describe('Manager — cannot access /board/settings', () => {
     await expect(page).toHaveURL('/login', { timeout: 10_000 })
   })
 })
+
+// ─── Board member WITHOUT tenant accessing /board/settings ───────────────────
+
+test.describe('Board member WITHOUT tenant — cannot access /board/settings', () => {
+  test.use({ storageState: 'e2e/.auth/board-no-tenant.json' })
+
+  test('board user with no tenant GET /board/settings → /login', async ({ page }) => {
+    await page.goto('/board/settings')
+    await expect(page).toHaveURL('/login', { timeout: 10_000 })
+  })
+})

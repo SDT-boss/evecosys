@@ -66,12 +66,13 @@ export default async function globalSetup(config: FullConfig) {
       ensureTestUser('driver'),
       ensureTestUser('board'),
       ensureTestUser('platform_admin'),
+      ensureTestUser('board_no_tenant'),
       ensureUser(FORCED_RESET_USER), // dedicated user for forced-reset tests
     ])
 
     // Generate auth state for each role in parallel
     await Promise.all(
-      (['manager', 'driver', 'board', 'platform_admin'] as const).map(async (role) => {
+      (['manager', 'driver', 'board', 'board_no_tenant', 'platform_admin'] as const).map(async (role) => {
         const ctx = await browser.newContext({ baseURL })
         const page = await ctx.newPage()
         try {
