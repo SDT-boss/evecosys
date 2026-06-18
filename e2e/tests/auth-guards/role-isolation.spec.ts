@@ -24,6 +24,16 @@ test.describe('Unauthenticated — protected routes redirect to /login', () => {
     await page.goto('/board')
     await expect(page).toHaveURL('/login', { timeout: 10_000 })
   })
+
+  test('GET /platform → /login', async ({ page }) => {
+    await page.goto('/platform')
+    await expect(page).toHaveURL('/login', { timeout: 10_000 })
+  })
+
+  test('GET /board/settings → /login', async ({ page }) => {
+    await page.goto('/board/settings')
+    await expect(page).toHaveURL('/login', { timeout: 10_000 })
+  })
 })
 
 // ─── Driver accessing manager / board ────────────────────────────────────────
@@ -103,5 +113,47 @@ test.describe('Board — can access /board', () => {
     await page.goto('/board')
     await expect(page).not.toHaveURL('/login')
     await expect(page).toHaveURL(/\/board/)
+  })
+})
+
+// ─── Platform admin route access ─────────────────────────────────────────────
+
+test.describe('Platform admin — can access /platform', () => {
+  test.use({ storageState: 'e2e/.auth/platform-admin.json' })
+
+  test('platform_admin can access /platform', async ({ page }) => {
+    await page.goto('/platform')
+    await expect(page).not.toHaveURL('/login', { timeout: 10_000 })
+    await expect(page).toHaveURL(/\/platform/, { timeout: 10_000 })
+  })
+})
+
+test.describe('Manager — cannot access /platform', () => {
+  test.use({ storageState: 'e2e/.auth/manager.json' })
+
+  test('manager GET /platform → /login', async ({ page }) => {
+    await page.goto('/platform')
+    await expect(page).toHaveURL('/login', { timeout: 10_000 })
+  })
+})
+
+// ─── Board settings route access ─────────────────────────────────────────────
+
+test.describe('Board member with tenant — can access /board/settings', () => {
+  test.use({ storageState: 'e2e/.auth/board.json' })
+
+  test('board user with tenant can access /board/settings', async ({ page }) => {
+    await page.goto('/board/settings')
+    await expect(page).not.toHaveURL('/login', { timeout: 10_000 })
+    await expect(page).toHaveURL(/\/board\/settings/, { timeout: 10_000 })
+  })
+})
+
+test.describe('Manager — cannot access /board/settings', () => {
+  test.use({ storageState: 'e2e/.auth/manager.json' })
+
+  test('manager GET /board/settings → /login', async ({ page }) => {
+    await page.goto('/board/settings')
+    await expect(page).toHaveURL('/login', { timeout: 10_000 })
   })
 })

@@ -20,6 +20,12 @@ export const TEST_USERS = {
     name: 'E2E Board',
     role: 'board' as const,
   },
+  platform_admin: {
+    email: process.env.E2E_PLATFORM_ADMIN_EMAIL ?? 'e2e-platform-admin@evecosys-test.com',
+    password: process.env.E2E_TEST_PASSWORD ?? 'TestPassword123!',
+    name: 'E2E Platform Admin',
+    role: 'platform_admin' as const,
+  },
 } as const
 
 export type RoleKey = keyof typeof TEST_USERS
@@ -41,6 +47,7 @@ export const AUTH_STATE_PATH: Record<RoleKey, string> = {
   manager: 'e2e/.auth/manager.json',
   driver: 'e2e/.auth/driver.json',
   board: 'e2e/.auth/board.json',
+  platform_admin: 'e2e/.auth/platform-admin.json',
 }
 
 /**
@@ -68,6 +75,7 @@ export async function loginViaUI(
     manager: '/manager',
     driver: '/driver',
     board: '/board',
+    platform_admin: '/platform',
   }
   await page.waitForURL(destinations[role] + '**', { timeout: 15_000 })
 }
@@ -118,6 +126,7 @@ export async function loginViaAPI(page: Page, role: RoleKey): Promise<void> {
     manager: '/manager',
     driver: '/driver',
     board: '/board',
+    platform_admin: '/platform',
   }
   await page.goto(destinations[role])
   await page.waitForURL(destinations[role] + '**', { timeout: 15_000 })
