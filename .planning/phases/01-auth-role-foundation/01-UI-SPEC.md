@@ -1,10 +1,11 @@
 ---
 phase: 1
 slug: auth-role-foundation
-status: draft
+status: approved
 shadcn_initialized: false
 preset: none
 created: 2026-06-18
+reviewed_at: 2026-06-18T00:00:00Z
 ---
 
 # Phase 1 — UI Design Contract
@@ -89,7 +90,12 @@ Declared from `design-system/tokens/variables.css` and `app/globals.css`:
 | Body base | `--ds-font-size-base` | 16px (1rem) | 400 (`--ds-font-weight-normal`) | 1.5 (`--ds-font-line-height-normal`) | Global default via `globals.css` body (14px Barlow) |
 | Label / caption | `--ds-font-size-sm` | 14px (0.875rem) | 400 | 1.5 | Placeholder body text in stubs |
 | Heading h1 | `--ds-font-size-2xl` | 24px (1.5rem) | 600 (`--ds-font-weight-semibold`) | 1.25 (`--ds-font-line-height-tight`) | `<h1>` in both stub pages |
-| Display | `--ds-font-size-3xl` | 30px (1.875rem) | 700 (`--ds-font-weight-bold`) | 1.25 | Not used in Phase 1; reserved for Phase 2 platform shell header |
+
+**Weights in use:** exactly 2 — 400 (normal) and 600 (semibold).
+
+**Display size reserved:** `--ds-font-size-3xl` (30px) at weight 700 (`--ds-font-weight-bold`) is
+NOT declared for Phase 1. No Phase 1 stub renders a display-scale heading. Display size and weight
+will be declared in `02-UI-SPEC.md` when Phase 2 builds the Platform Admin Shell.
 
 **Body font in globals.css:** `font-family: 'Barlow', sans-serif; font-size: 14px; line-height: 1.5`
 
@@ -176,6 +182,8 @@ Both stub pages use the same minimal layout:
   <p style={{ color: 'var(--text3)' }}>{placeholder}</p>
 </main>
 ```
+
+**Primary visual anchor:** `<h1>` heading.
 
 **No `DashboardShell` wrapper** — Phase 1 layouts return `<>{children}</>` directly (no nav, no
 topbar, no sidebar). The authenticated user sees a bare page with heading + placeholder text.
