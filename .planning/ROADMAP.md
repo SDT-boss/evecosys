@@ -12,7 +12,7 @@ This milestone adds a Platform Admin area and Board-level tenant settings to EVE
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Auth & Role Foundation** - Add `platform_admin` role to DB, RLS, types, and route guards
+- [x] **Phase 1: Auth & Role Foundation** - Add `platform_admin` role to DB, RLS, types, and route guards *(completed 2026-06-18)*
 - [ ] **Phase 2: Platform Admin Shell** - `/platform` route with tenant list, active indicator, and session persistence
 - [ ] **Phase 3: Tenant Switcher States** - Full switch flow UI — loading, success, failure, and blocked states
 - [ ] **Phase 4: Board Tenant Settings** - Four-tab settings area: Branding, Users, BYODB, Feature Toggles
@@ -35,13 +35,13 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 
 Wave 1:
-- [ ] 01-01-PLAN.md — DB migration, seed, TypeScript types, server helper, and Wave 0 test infrastructure (AUTH-01, AUTH-04)
+- [x] 01-01-PLAN.md — DB migration, seed, TypeScript types, server helper, and Wave 0 test infrastructure (AUTH-01, AUTH-04)
 
 Wave 2 *(blocked on Wave 1 completion)*:
-- [ ] 01-02-PLAN.md — Schema push [BLOCKING] + /platform and /board/settings route guards and stub pages (AUTH-02, AUTH-03)
+- [x] 01-02-PLAN.md — Schema push [BLOCKING] + /platform and /board/settings route guards and stub pages (AUTH-02, AUTH-03)
 
 Wave 3 — Gap Closure *(blocked on Wave 2 completion)*:
-- [ ] 01-03-PLAN.md — board_no_tenant E2E test: SC-2 negative case (board member with no tenant → /login) (AUTH-03)
+- [x] 01-03-PLAN.md — board_no_tenant E2E test: SC-2 negative case (board member with no tenant → /login) (AUTH-03)
 
 ### Phase 2: Platform Admin Shell
 **Goal**: Platform admins can navigate to `/platform`, see all registered tenants with their provisioning status, and have the current active tenant persistently shown in the header across navigations
@@ -101,7 +101,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Auth & Role Foundation | 0/2 | Not started | - |
+| 1. Auth & Role Foundation | 3/3 | Complete | 2026-06-18 |
 | 2. Platform Admin Shell | 0/TBD | Not started | - |
 | 3. Tenant Switcher States | 0/TBD | Not started | - |
 | 4. Board Tenant Settings | 0/TBD | Not started | - |
