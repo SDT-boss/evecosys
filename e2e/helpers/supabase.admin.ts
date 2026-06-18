@@ -18,7 +18,7 @@ export const adminClient = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
 export interface TestUser {
   id: string
   email: string
-  role: 'manager' | 'driver' | 'board'
+  role: 'manager' | 'driver' | 'board' | 'platform_admin'
 }
 
 export interface TestVehicle {
@@ -48,7 +48,7 @@ export async function createTestUser(params: {
   email: string
   password: string
   full_name: string
-  role: 'manager' | 'driver' | 'board'
+  role: 'manager' | 'driver' | 'board' | 'platform_admin'
 }): Promise<TestUser> {
   const { data, error } = await adminClient.auth.admin.createUser({
     email: params.email,
