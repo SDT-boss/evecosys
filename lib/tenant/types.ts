@@ -13,6 +13,7 @@ export const INITIAL_TENANT_STATE: TenantState = 'Registered'
 export interface Tenant {
   id: string
   owner_id: string
+  name: string        // added Phase 2 — display name from tenants.name
   state: TenantState
   created_at: string
   updated_at: string
