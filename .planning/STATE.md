@@ -3,15 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: ~
-last_updated: "2026-06-20T00:00:00.000Z"
-last_activity: 2026-06-20 -- Phase 3 planned (3 plans, ready to execute)
+last_updated: "2026-06-20T18:00:00.000Z"
+last_activity: 2026-06-20 -- Phase 4 planned (5/5 plans, verification passed)
 progress:
   total_phases: 5
-  completed_phases: 2
-  total_plans: 9
-  completed_plans: 6
-  percent: 40
+  completed_phases: 3
+  total_plans: 14
+  completed_plans: 9
+  percent: 64
 ---
 
 # Project State
@@ -21,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-13)
 
 **Core value:** Platform admins can always see which tenant they're operating in and switch context without any cross-tenant data leakage or user confusion.
-**Current focus:** Phase 3 — tenant-switcher-states
+**Current focus:** Phase 4 — board-tenant-settings
 
 ## Current Position
 
-Phase: 3 (tenant-switcher-states) — READY TO EXECUTE
-Plan: 0 of 3
-Status: Phase 3 planned (3 plans in 3 waves), ready to execute
-Last activity: 2026-06-20 -- Phase 3 planned (3/3 plans, verification passed)
+Phase: 4 (board-tenant-settings) — READY TO EXECUTE
+Plan: 0 of 5
+Status: Phase 4 planned (5 plans in 3 waves), ready to execute
+Last activity: 2026-06-20 -- Phase 4 planned (5/5 plans, verification passed)
 
 Progress: [██░░░░░░░░] 20%
 
@@ -70,8 +69,9 @@ None yet.
 
 ### Blockers/Concerns
 
-- No API routes expose `lib/tenant/` yet — Phase 4 (BSET-03) depends on Phase 3 completing the tenant-switching API wiring first
-- `platform_admin` role does not exist in DB or RLS today — Phase 1 must land before any other phase can be verified
+- `users.tenant_id` column does not exist yet — Phase 4 Wave 0 migration must run before Users tab can be verified
+- BYODBRegistrationService requires tenant.state = 'Provisioning' — Phase 4 BYODB API route handles the state transition (Registered → Provisioning) before calling register()
+- No Supabase Storage buckets exist — Phase 4 Wave 0 migration creates the tenant-assets bucket via SQL
 
 ## Deferred Items
 
@@ -81,6 +81,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-18T17:00:16.770Z
-Stopped at: context exhaustion at 77% (2026-06-18)
+Last session: 2026-06-20T14:17:28.729Z
+Stopped at: context exhaustion at 76% (2026-06-20)
 Resume file: None
