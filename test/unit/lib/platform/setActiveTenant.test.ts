@@ -63,3 +63,29 @@ describe('setActiveTenant', () => {
     expect(cookieName).toBe('platform_active_tenant')
   })
 })
+
+describe('setActiveTenant — ActionResult return type (Phase 3)', () => {
+  it('resolves to { ok: true } when cookie write succeeds', async () => {
+    const result = await setActiveTenant('tenant-uuid-123')
+    expect(result).toEqual({ ok: true })
+  })
+
+  it('resolves to { ok: false, error } when cookieStore.set throws an Error', async () => {
+    const mockCookieStore = await vi.mocked(cookies)()
+    vi.mocked(mockCookieStore.set).mockImplementation(() => {
+      throw new Error('Storage quota exceeded')
+    })
+    const result = await setActiveTenant('tenant-uuid-123')
+    expect(result).toEqual({ ok: false, error: 'Storage quota exceeded' })
+  })
+
+  it('resolves to { ok: false, error: "Cookie write failed" } when cookieStore.set throws a non-Error value', async () => {
+    const mockCookieStore = await vi.mocked(cookies)()
+    vi.mocked(mockCookieStore.set).mockImplementation(() => {
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
+      throw 'some string error'
+    })
+    const result = await setActiveTenant('tenant-uuid-123')
+    expect(result).toEqual({ ok: false, error: 'Cookie write failed' })
+  })
+})

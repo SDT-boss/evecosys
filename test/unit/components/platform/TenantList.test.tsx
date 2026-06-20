@@ -2,7 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 
 vi.mock('@/app/(dashboard)/platform/actions', () => ({
-  setActiveTenant: vi.fn().mockResolvedValue(undefined),
+  setActiveTenant: vi.fn().mockResolvedValue({ ok: true }),
+}))
+
+vi.mock('@/components/platform/TenantContext', () => ({
+  useTenantContext: vi.fn().mockReturnValue({ activeTenantName: null, setActiveTenantName: vi.fn() }),
 }))
 
 import { TenantList } from '@/components/platform/TenantList'
