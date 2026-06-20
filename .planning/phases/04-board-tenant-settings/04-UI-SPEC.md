@@ -54,7 +54,7 @@ Exceptions:
 
 | Role | Size Token | Raw Value | Weight Token | Raw Weight | Line Height Token | Usage |
 |------|-----------|-----------|--------------|------------|-------------------|-------|
-| Body | `var(--ds-font-size-sm)` | 0.875rem / 14px | `var(--ds-font-weight-normal)` | 400 | `var(--ds-font-line-height-normal)` / 1.5 | Table cell text, form helper text, Alert description, flag descriptions |
+| Body | `var(--ds-font-size-sm)` | 0.875rem / 14px | `var(--ds-font-weight-medium)` | 500 | `var(--ds-font-line-height-normal)` / 1.5 | Table cell text, form helper text, Alert description, flag descriptions |
 | Label | `var(--ds-font-size-sm)` | 0.875rem / 14px | `var(--ds-font-weight-medium)` | 500 | `var(--ds-font-line-height-normal)` / 1.5 | FormField labels, Switch labels, tab trigger text |
 | Heading | `var(--ds-font-size-lg)` | 1.125rem / 18px | `var(--ds-font-weight-semibold)` | 600 | `var(--ds-font-line-height-tight)` / 1.25 | Section headings within each tab (e.g. "Logo", "Brand colour"), EmptyState title |
 | Page heading | `var(--ds-font-size-xl)` | 1.25rem / 20px | `var(--ds-font-weight-semibold)` | 600 | `var(--ds-font-line-height-tight)` / 1.25 | Top-of-page "Tenant Settings" title rendered in the settings layout |
