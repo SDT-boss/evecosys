@@ -82,22 +82,54 @@ export async function POST(req: NextRequest) {
   try {
     const result = await service.register(workingTenant, input as Parameters<typeof service.register>[1])
 
-    // Persist the new Active state from result
-    await admin.from('tenants').update({ state: result.tenant.state }).eq('id', tenant.id)
+    // Persist the new Active state from result — CR-01: check for write error
+    const { error: activateError } = await admin
+      .from('tenants')
+      .update({ state: result.tenant.state })
+      .eq('id', tenant.id)
+    if (activateError) {
+      // Vault secret already stored — log the secretId for manual reconciliation
+      return NextResponse.json(
+        { error: 'Registration succeeded but failed to persist state. Please contact support.' },
+        { status: 500 },
+      )
+    }
 
     return NextResponse.json({ ok: true, state: result.tenant.state })
   } catch (err) {
     if (err instanceof CredentialValidationError) {
       // Compensating rollback: restore Registered state only if this route caused the transition
+      // CR-02: check rollback error and escalate when rollback itself fails
       if (initialState === 'Registered') {
-        await admin.from('tenants').update({ state: 'Registered' }).eq('id', tenant.id)
+        const { error: rollbackError } = await admin
+          .from('tenants')
+          .update({ state: 'Registered' })
+          .eq('id', tenant.id)
+        if (rollbackError) {
+          // State is stuck in Provisioning — surface a 500 so ops can investigate
+          return NextResponse.json(
+            { error: 'Registration failed and state rollback also failed. Please contact support.' },
+            { status: 500 },
+          )
+        }
       }
       return NextResponse.json({ error: (err as Error).message }, { status: 400 })
     }
     if (err instanceof ConnectivityError) {
       // Compensating rollback: restore Registered state only if this route caused the transition
+      // CR-02: check rollback error and escalate when rollback itself fails
       if (initialState === 'Registered') {
-        await admin.from('tenants').update({ state: 'Registered' }).eq('id', tenant.id)
+        const { error: rollbackError } = await admin
+          .from('tenants')
+          .update({ state: 'Registered' })
+          .eq('id', tenant.id)
+        if (rollbackError) {
+          // State is stuck in Provisioning — surface a 500 so ops can investigate
+          return NextResponse.json(
+            { error: 'Registration failed and state rollback also failed. Please contact support.' },
+            { status: 500 },
+          )
+        }
       }
       return NextResponse.json({ error: (err as Error).message }, { status: 400 })
     }
