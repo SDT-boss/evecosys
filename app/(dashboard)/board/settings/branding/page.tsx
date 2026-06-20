@@ -14,5 +14,7 @@ export default async function BrandingPage() {
     .eq('owner_id', user.id)
     .single()
 
+  if (!tenant) redirect('/board/settings')
+
   return <BrandingForm initialData={tenant} />
 }
