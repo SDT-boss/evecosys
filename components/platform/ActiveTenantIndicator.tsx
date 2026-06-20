@@ -1,11 +1,11 @@
+'use client'
+
 import { Building2 } from 'lucide-react'
+import { useTenantContext } from '@/components/platform/TenantContext'
 
-interface ActiveTenantIndicatorProps {
-  name: string | null
-}
-
-export function ActiveTenantIndicator({ name }: ActiveTenantIndicatorProps) {
-  const isActive = Boolean(name)
+export function ActiveTenantIndicator() {
+  const { activeTenantName } = useTenantContext()
+  const isActive = Boolean(activeTenantName)
   return (
     <div className="flex items-center gap-[var(--ds-space-xs)]">
       <Building2
@@ -22,7 +22,7 @@ export function ActiveTenantIndicator({ name }: ActiveTenantIndicatorProps) {
           transition: 'color var(--ds-motion-duration-base) var(--ds-motion-easing-standard)',
         }}
       >
-        {name ?? 'No workspace selected'}
+        {activeTenantName ?? 'No workspace selected'}
       </span>
     </div>
   )

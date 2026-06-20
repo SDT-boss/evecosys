@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { Logo } from '@/components/ui/Logo'
 import { ActiveTenantIndicator } from '@/components/platform/ActiveTenantIndicator'
+import { TenantProvider } from '@/components/platform/TenantContext'
 import type { AppUser } from '@/types'
 
 const NAV_TABS = [
@@ -30,6 +31,7 @@ export function PlatformShell({ children, user, activeTenantName }: PlatformShel
   }
 
   return (
+    <TenantProvider initialName={activeTenantName}>
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg)' }}>
 
       {/* Topbar */}
@@ -45,7 +47,7 @@ export function PlatformShell({ children, user, activeTenantName }: PlatformShel
 
         <div className="flex items-center gap-4">
           {/* Active tenant indicator */}
-          <ActiveTenantIndicator name={activeTenantName} />
+          <ActiveTenantIndicator />
 
           <ThemeToggle />
 
@@ -111,5 +113,6 @@ export function PlatformShell({ children, user, activeTenantName }: PlatformShel
         </div>
       </main>
     </div>
+    </TenantProvider>
   )
 }

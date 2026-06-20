@@ -1,25 +1,43 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
+
+vi.mock('@/components/platform/TenantContext', () => ({
+  useTenantContext: vi.fn(),
+}))
+
 import { ActiveTenantIndicator } from '@/components/platform/ActiveTenantIndicator'
+import { useTenantContext } from '@/components/platform/TenantContext'
 
 describe('ActiveTenantIndicator', () => {
-  it('renders placeholder text when name is null', () => {
-    render(<ActiveTenantIndicator name={null} />)
+  it('renders placeholder text when activeTenantName is null', () => {
+    vi.mocked(useTenantContext).mockReturnValue({ activeTenantName: null, setActiveTenantName: vi.fn() })
+    render(<ActiveTenantIndicator />)
     expect(screen.getByText('No workspace selected')).toBeInTheDocument()
   })
 
-  it('renders tenant name when name is provided', () => {
-    render(<ActiveTenantIndicator name="Acme Fleet" />)
+  it('renders tenant name when activeTenantName is provided', () => {
+    vi.mocked(useTenantContext).mockReturnValue({ activeTenantName: 'Acme Fleet', setActiveTenantName: vi.fn() })
+    render(<ActiveTenantIndicator />)
     expect(screen.getByText('Acme Fleet')).toBeInTheDocument()
   })
 
-  it('does not render placeholder when name is provided', () => {
-    render(<ActiveTenantIndicator name="Acme Fleet" />)
+  it('does not render placeholder when activeTenantName is provided', () => {
+    vi.mocked(useTenantContext).mockReturnValue({ activeTenantName: 'Acme Fleet', setActiveTenantName: vi.fn() })
+    render(<ActiveTenantIndicator />)
     expect(screen.queryByText('No workspace selected')).not.toBeInTheDocument()
   })
 })
 
 describe('ActiveTenantIndicator — Phase 3 context integration (SWIT-02)', () => {
-  it.todo('reads activeTenantName from TenantContext')
-  it.todo('shows "No workspace selected" when context name is null')
+  it('reads activeTenantName from TenantContext', () => {
+    vi.mocked(useTenantContext).mockReturnValue({ activeTenantName: 'Beta Corp', setActiveTenantName: vi.fn() })
+    render(<ActiveTenantIndicator />)
+    expect(screen.getByText('Beta Corp')).toBeInTheDocument()
+  })
+
+  it('shows "No workspace selected" when context name is null', () => {
+    vi.mocked(useTenantContext).mockReturnValue({ activeTenantName: null, setActiveTenantName: vi.fn() })
+    render(<ActiveTenantIndicator />)
+    expect(screen.getByText('No workspace selected')).toBeInTheDocument()
+  })
 })
