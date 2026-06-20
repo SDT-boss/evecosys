@@ -77,8 +77,19 @@ Wave 2 *(blocked on Wave 0 + Wave 1 completion)*:
   2. After a successful switch, a confirmation state (toast or inline banner) tells the admin which workspace is now active
   3. If the switch fails (network error or permissions denial), an error state is shown with a clear message — the previous context remains intact
   4. If the admin navigates to a URL that is inaccessible in the current tenant context, a blocked/no-access screen appears rather than a blank page or raw error
-**Plans**: TBD
+**Plans:** 3 plans
 **UI hint**: yes
+
+Plans:
+
+Wave 0:
+- [ ] 03-01-PLAN.md — middleware.ts + TenantContext + BlockedScreen + all test scaffolding and mock updates (SWIT-01, SWIT-02, SWIT-03, SWIT-04)
+
+Wave 1 *(blocked on Wave 0 completion)*:
+- [ ] 03-02-PLAN.md — setActiveTenant ActionResult + TenantList state machine + PlatformShell TenantProvider + ActiveTenantIndicator context migration (SWIT-01, SWIT-02, SWIT-03)
+
+Wave 2 *(blocked on Wave 0 + Wave 1 completion)*:
+- [ ] 03-03-PLAN.md — platform/layout.tsx blocked-screen guard + full E2E test implementation (SWIT-04, SWIT-01, SWIT-02, SWIT-03)
 
 ### Phase 4: Board Tenant Settings
 **Goal**: Board members can configure their own tenant's branding, membership, BYODB connection, and feature toggles through a dedicated settings area within the main dashboard — without affecting other tenants
@@ -114,6 +125,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Auth & Role Foundation | 3/3 | Complete | 2026-06-18 |
 | 2. Platform Admin Shell | 3/3 | Complete | 2026-06-20 |
-| 3. Tenant Switcher States | 0/TBD | Not started | - |
+| 3. Tenant Switcher States | 0/3 | Not started | - |
 | 4. Board Tenant Settings | 0/TBD | Not started | - |
 | 5. Storybook Coverage | 0/TBD | Not started | - |
