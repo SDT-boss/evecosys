@@ -7,5 +7,17 @@ test.describe('Board — Feature Toggles', () => {
     await page.goto('/board/settings/toggles')
   })
 
-  test.todo('board member can save feature flag changes')
+  test('feature toggles page renders both groups and all 8 switches', async ({ page }) => {
+    await expect(page.getByText('Platform features')).toBeVisible()
+    await expect(page.getByText('Administrative tools')).toBeVisible()
+    const switches = page.locator('button[role="switch"]')
+    await expect(switches).toHaveCount(8)
+  })
+
+  test('clicking Save changes sends flags and shows success alert', async ({ page }) => {
+    await page.getByRole('button', { name: 'Save changes' }).click()
+    await expect(page.getByRole('alert')).toContainText('Feature flags saved')
+  })
+
+  test.todo('board member can toggle individual flags and verify persistence after reload')
 })
