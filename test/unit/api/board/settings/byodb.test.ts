@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { describe, it, vi, beforeEach, expect } from 'vitest'
 import { ConnectivityError } from '@/lib/tenant/probe'
+import { CredentialValidationError } from '@/lib/tenant/credentials'
 
 const mockGetUser = vi.fn()
 const mockFrom = vi.fn()
@@ -185,6 +186,66 @@ describe('POST /api/board/settings/byodb', () => {
     expect(res.status).toBe(400)
     const body = await res.json()
     expect(body.error).toContain('probe failed')
+  })
+
+  it('rolls back tenant state to Registered when register() throws ConnectivityError after Registered→Provisioning transition', async () => {
+    const { POST } = await import('@/app/api/board/settings/byodb/route')
+    mockGetUser.mockResolvedValue({ data: { user: { id: 'u1' } } })
+
+    let callCount = 0
+    mockFrom.mockImplementation(() => {
+      callCount++
+      if (callCount === 1) return profileChain('board')
+      return tenantChain({ id: 'tenant-1', state: 'Registered', owner_id: 'u1', name: 'Acme', created_at: '', updated_at: '' })
+    })
+
+    const provisioningUpdateEq = vi.fn().mockResolvedValue({ error: null })
+    const rollbackUpdateEq = vi.fn().mockResolvedValue({ error: null })
+    const updateFn = vi.fn()
+      .mockReturnValueOnce({ eq: provisioningUpdateEq })   // first update: Registered → Provisioning
+      .mockReturnValueOnce({ eq: rollbackUpdateEq })        // second update: rollback → Registered
+
+    mockAdminFrom.mockReturnValue({ update: updateFn })
+    mockRegister.mockRejectedValue(new ConnectivityError('host unreachable'))
+
+    const res = await POST(makeRequest(validInput))
+
+    expect(res.status).toBe(400)
+    // First update must set state to Provisioning
+    expect(updateFn).toHaveBeenNthCalledWith(1, { state: 'Provisioning' })
+    // Second update must roll back to Registered
+    expect(updateFn).toHaveBeenNthCalledWith(2, { state: 'Registered' })
+    expect(rollbackUpdateEq).toHaveBeenCalledWith('id', 'tenant-1')
+  })
+
+  it('rolls back tenant state to Registered when register() throws CredentialValidationError after Registered→Provisioning transition', async () => {
+    const { POST } = await import('@/app/api/board/settings/byodb/route')
+    mockGetUser.mockResolvedValue({ data: { user: { id: 'u1' } } })
+
+    let callCount = 0
+    mockFrom.mockImplementation(() => {
+      callCount++
+      if (callCount === 1) return profileChain('board')
+      return tenantChain({ id: 'tenant-1', state: 'Registered', owner_id: 'u1', name: 'Acme', created_at: '', updated_at: '' })
+    })
+
+    const provisioningUpdateEq = vi.fn().mockResolvedValue({ error: null })
+    const rollbackUpdateEq = vi.fn().mockResolvedValue({ error: null })
+    const updateFn = vi.fn()
+      .mockReturnValueOnce({ eq: provisioningUpdateEq })   // first update: Registered → Provisioning
+      .mockReturnValueOnce({ eq: rollbackUpdateEq })        // second update: rollback → Registered
+
+    mockAdminFrom.mockReturnValue({ update: updateFn })
+    mockRegister.mockRejectedValue(new CredentialValidationError('bad creds'))
+
+    const res = await POST(makeRequest(validInput))
+
+    expect(res.status).toBe(400)
+    // First update must set state to Provisioning
+    expect(updateFn).toHaveBeenNthCalledWith(1, { state: 'Provisioning' })
+    // Second update must roll back to Registered
+    expect(updateFn).toHaveBeenNthCalledWith(2, { state: 'Registered' })
+    expect(rollbackUpdateEq).toHaveBeenCalledWith('id', 'tenant-1')
   })
 
   it('returns 200 and updates tenant state on successful registration', async () => {
