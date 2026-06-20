@@ -9,6 +9,7 @@ const NAV = [
   { label: 'Fleet',    icon: 'layout-grid',       href: '/board/fleet' },
   { label: 'Carbon',   icon: 'leaf',              href: '/board/carbon' },
   { label: 'Trips',    icon: 'map',               href: '/board/trips' },
+  { label: 'Settings', icon: 'settings',          href: '/board/settings' },
 ]
 
 export default async function BoardLayout({ children }: { children: React.ReactNode }) {

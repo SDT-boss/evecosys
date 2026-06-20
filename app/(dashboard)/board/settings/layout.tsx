@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { SettingsTabNav } from '@/components/board/settings/SettingsTabNav'
 
 export default async function BoardSettingsLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -23,5 +24,20 @@ export default async function BoardSettingsLayout({ children }: { children: Reac
 
   if (!tenant) redirect('/login')
 
-  return <>{children}</>
+  return (
+    <div style={{ padding: 'var(--ds-space-lg)' }}>
+      <h1 style={{
+        fontSize: 'var(--ds-font-size-xl)',
+        fontWeight: 'var(--ds-font-weight-semibold)',
+        color: 'var(--ds-color-neutral-ink)',
+        marginBottom: 'var(--ds-space-md)',
+      }}>
+        Tenant Settings
+      </h1>
+      <SettingsTabNav />
+      <div style={{ marginTop: 'var(--ds-space-lg)' }}>
+        {children}
+      </div>
+    </div>
+  )
 }
