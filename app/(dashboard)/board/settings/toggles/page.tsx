@@ -14,10 +14,12 @@ export default async function TogglesPage() {
     .eq('owner_id', user.id)
     .single()
 
+  if (!tenant) redirect('/board/settings')
+
   return (
     <ToggleForm
-      tenantId={tenant?.id ?? ''}
-      initialFlags={(tenant?.feature_flags ?? {}) as Record<string, boolean>}
+      tenantId={tenant.id}
+      initialFlags={(tenant.feature_flags ?? {}) as Record<string, boolean>}
     />
   )
 }
