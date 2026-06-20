@@ -111,7 +111,7 @@ Wave 0:
 
 Wave 1 *(blocked on Wave 0 completion)*:
 - [x] 04-02-PLAN.md — Settings nav entry + layout shell + root redirect + SettingsTabNav + Branding tab (RSC page + BrandingForm + API route) (BSET-01)
-- [ ] 04-03-PLAN.md — Users tab (RSC page + InviteForm + MemberTable + invite + remove API routes) (BSET-02)
+- [x] 04-03-PLAN.md — Users tab (RSC page + InviteForm + MemberTable + invite + remove API routes) (BSET-02)
 
 Wave 2 *(blocked on Wave 0 + Wave 1 completion)*:
 - [ ] 04-04-PLAN.md — BYODB tab (RSC page + BYODBForm + API route with state transition + registrationService) (BSET-03)
@@ -139,5 +139,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Auth & Role Foundation | 3/3 | Complete | 2026-06-18 |
 | 2. Platform Admin Shell | 3/3 | Complete | 2026-06-20 |
 | 3. Tenant Switcher States | 3/3 | Complete | 2026-06-20 |
-| 4. Board Tenant Settings | 2/5 | Executing (Wave 1 in progress) | - |
+| 4. Board Tenant Settings | 3/5 | Executing (Wave 2 ready) | - |
 | 5. Storybook Coverage | 0/TBD | Not started | - |
