@@ -7,5 +7,10 @@ test.describe('Board — Users Settings', () => {
     await page.goto('/board/settings/users')
   })
 
-  test.todo('board member can invite a new member')
+  test('users page shows team members heading and send invitation button', async ({ page }) => {
+    await expect(page.getByRole('heading', { name: /team members/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: /send invitation/i })).toBeVisible()
+  })
+
+  test.todo('board member can invite and remove a member')
 })
