@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Users } from 'lucide-react'
 import {
   Table,
@@ -49,6 +49,7 @@ export function MemberTable({ members, authTroubleshootingEnabled }: MemberTable
   const [resetPending, setResetPending] = useState<string | null>(null)
   const [resetSuccess, setResetSuccess] = useState<string | null>(null)
   const [resetError, setResetError] = useState<string | null>(null)
+  const resetErrorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   async function handleRemove(userId: string) {
     setRemovePending(userId)
@@ -73,6 +74,9 @@ export function MemberTable({ members, authTroubleshootingEnabled }: MemberTable
   }
 
   async function handleForceReset(userId: string) {
+    // WR-02: clear any pending error-clear timer so a rapid retry does not
+    // silently wipe the error for the second request while it is in-flight.
+    if (resetErrorTimerRef.current) clearTimeout(resetErrorTimerRef.current)
     setResetPending(userId)
     setResetError(null)
     try {
@@ -87,11 +91,11 @@ export function MemberTable({ members, authTroubleshootingEnabled }: MemberTable
       } else {
         const data = await res.json().catch(() => ({}))
         setResetError(data.error ?? 'Password reset failed')
-        setTimeout(() => setResetError(null), 5000)
+        resetErrorTimerRef.current = setTimeout(() => setResetError(null), 5000)
       }
     } catch {
       setResetError('Password reset failed')
-      setTimeout(() => setResetError(null), 5000)
+      resetErrorTimerRef.current = setTimeout(() => setResetError(null), 5000)
     } finally {
       setResetPending(null)
     }
