@@ -13,7 +13,7 @@ This milestone adds a Platform Admin area and Board-level tenant settings to EVE
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Auth & Role Foundation** - Add `platform_admin` role to DB, RLS, types, and route guards *(completed 2026-06-18)*
-- [ ] **Phase 2: Platform Admin Shell** - `/platform` route with tenant list, active indicator, and session persistence
+- [x] **Phase 2: Platform Admin Shell** - `/platform` route with tenant list, active indicator, and session persistence *(completed 2026-06-20)*
 - [ ] **Phase 3: Tenant Switcher States** - Full switch flow UI — loading, success, failure, and blocked states
 - [ ] **Phase 4: Board Tenant Settings** - Four-tab settings area: Branding, Users, BYODB, Feature Toggles
 - [ ] **Phase 5: Storybook Coverage** - Stories for every new shell component and all switch-state variants
