@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Auth & Role Foundation** - Add `platform_admin` role to DB, RLS, types, and route guards *(completed 2026-06-18)*
 - [x] **Phase 2: Platform Admin Shell** - `/platform` route with tenant list, active indicator, and session persistence *(completed 2026-06-20)*
 - [ ] **Phase 3: Tenant Switcher States** - Full switch flow UI — loading, success, failure, and blocked states
-- [ ] **Phase 4: Board Tenant Settings** - Four-tab settings area: Branding, Users, BYODB, Feature Toggles
+- [x] **Phase 4: Board Tenant Settings** - Four-tab settings area: Branding, Users, BYODB, Feature Toggles *(completed 2026-06-21)*
 - [ ] **Phase 5: Storybook Coverage** - Stories for every new shell component and all switch-state variants
 
 ## Phase Details
@@ -117,6 +117,14 @@ Wave 2 *(blocked on Wave 0 + Wave 1 completion)*:
 - [x] 04-04-PLAN.md — BYODB tab (RSC page + BYODBForm + API route with state transition + registrationService) (BSET-03)
 - [x] 04-05-PLAN.md — Feature Toggles tab (RSC page + ToggleForm + PATCH API route) (BSET-04) *(completed 2026-06-20)*
 
+Wave 6 — Gap Closure *(blocked on Wave 2 completion)*:
+- [x] 04-06-PLAN.md — CR-03: tenant-assets storage DELETE+UPDATE RLS migration + schema push; CR-04: null guards on branding/toggles/users RSC pages (BSET-01, BSET-02, BSET-04) *(completed 2026-06-21)*
+- [x] 04-07-PLAN.md — CR-01: BYODB route compensating rollback on ConnectivityError/CredentialValidationError + unit tests; CR-02: reset-password route → 501 Not Implemented (BSET-02, BSET-03) *(completed 2026-06-21)*
+
+Cross-cutting constraints:
+- CR-03 migration push must complete (Task 2 in 04-06) before Phase 4 verification can re-run
+- Both wave 6 plans are independent of each other and can execute in parallel
+
 ### Phase 5: Storybook Coverage
 **Goal**: Every new design-system component and all switch-state variants have Storybook stories, so components can be reviewed and tested in isolation without a running app
 **Mode:** mvp
@@ -127,7 +135,20 @@ Wave 2 *(blocked on Wave 0 + Wave 1 completion)*:
   2. `ActiveTenantIndicator` has a story for each of its display modes
   3. `BoardSettingsTabs` has a story for each of its four tabs (Branding, Users, BYODB, Feature Toggles)
   4. All new stories render without console errors in Storybook and pass the tokens pipeline (`make tokens`)
-**Plans**: TBD
+**Plans:** 5 plans
+
+Plans:
+
+Wave 1 *(parallel — no dependencies between 05-01 and 05-02)*:
+- [ ] 05-01-PLAN.md — LeftRailShell + sub-components (BrandHeader, SidebarSearch, NavItem, AccountBlock, AskEveLauncher, ContentUtilityBar, TenantSwitcher) from DesignSync spec + LeftRailShell unit tests (STRB-01)
+- [ ] 05-02-PLAN.md — ContentStates (LoadingState, EmptyState, ErrorState, RestrictedState, UnavailableState, Skel) + InviteStateRow (5 lifecycle states + LimitedAccess) + ResendConfirm + AccessDenied + unit tests (STRB-01)
+
+Wave 2 *(blocked on Wave 1 completion)*:
+- [ ] 05-03-PLAN.md — Migrate board/driver/manager layouts + PlatformShell to LeftRailShell; update error.tsx to ErrorState; wire InviteStateRow to users page (mock data); retire DashboardShell.tsx + update story [has human verify checkpoint] (STRB-01)
+
+Wave 3 *(blocked on Wave 2 completion — parallel)*:
+- [ ] 05-04-PLAN.md — Storybook stories: TenantSwitcher (5 stories), ActiveTenantIndicator (3 stories), BoardSettingsTabs/SettingsTabNav (4 stories) (STRB-01)
+- [ ] 05-05-PLAN.md — Storybook stories: ContentStates (6 stories), InviteStateRow (6 stories) + phase gate make check + build-storybook (STRB-01)
 
 ## Progress
 
@@ -139,5 +160,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Auth & Role Foundation | 3/3 | Complete | 2026-06-18 |
 | 2. Platform Admin Shell | 3/3 | Complete | 2026-06-20 |
 | 3. Tenant Switcher States | 3/3 | Complete | 2026-06-20 |
-| 4. Board Tenant Settings | 5/5 | Complete | 2026-06-20 |
-| 5. Storybook Coverage | 0/TBD | Not started | - |
+| 4. Board Tenant Settings | 7/7 | Complete | 2026-06-21 |
+| 5. Storybook Coverage | 0/5 | Not started | - |
