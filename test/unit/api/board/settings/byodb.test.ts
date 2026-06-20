@@ -277,4 +277,28 @@ describe('POST /api/board/settings/byodb', () => {
     // tenants.update called with Active state
     expect(updateFn).toHaveBeenCalledWith({ state: 'Active' })
   })
+
+  it('returns 500 when final Active state write fails after successful registration', async () => {
+    // WR-04: regression test for CR-01 — ensures the route does not return ok:true
+    // when the final DB state write fails after service.register() succeeds.
+    const { POST } = await import('@/app/api/board/settings/byodb/route')
+    mockGetUser.mockResolvedValue({ data: { user: { id: 'u1' } } })
+
+    let callCount = 0
+    mockFrom.mockImplementation(() => {
+      callCount++
+      if (callCount === 1) return profileChain('board')
+      return tenantChain({ id: 'tenant-1', state: 'Provisioning', owner_id: 'u1', name: 'Acme', created_at: '', updated_at: '' })
+    })
+
+    const updateEqFn = vi.fn().mockResolvedValue({ error: { message: 'DB write failed' } })
+    const updateFn = vi.fn().mockReturnValue({ eq: updateEqFn })
+    mockAdminFrom.mockReturnValue({ update: updateFn })
+    mockRegister.mockResolvedValue({ tenant: { state: 'Active' }, secretId: 'sec-1' })
+
+    const res = await POST(makeRequest(validInput))
+    expect(res.status).toBe(500)
+    const body = await res.json()
+    expect(body.error).toMatch(/failed to persist state/i)
+  })
 })
