@@ -18,3 +18,8 @@ describe('ActiveTenantIndicator', () => {
     expect(screen.queryByText('No workspace selected')).not.toBeInTheDocument()
   })
 })
+
+describe('ActiveTenantIndicator — Phase 3 context integration (SWIT-02)', () => {
+  it.todo('reads activeTenantName from TenantContext')
+  it.todo('shows "No workspace selected" when context name is null')
+})
