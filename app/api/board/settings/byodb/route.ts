@@ -50,6 +50,9 @@ export async function POST(req: NextRequest) {
 
   const admin = createServiceClient()
 
+  // Capture the initial state before any transition — used to guard compensating rollback
+  const initialState = tenant.state
+
   // State transition: Registered → Provisioning (if needed)
   let workingTenant = { ...tenant }
   if (tenant.state === 'Registered') {
@@ -85,9 +88,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, state: result.tenant.state })
   } catch (err) {
     if (err instanceof CredentialValidationError) {
+      // Compensating rollback: restore Registered state only if this route caused the transition
+      if (initialState === 'Registered') {
+        await admin.from('tenants').update({ state: 'Registered' }).eq('id', tenant.id)
+      }
       return NextResponse.json({ error: (err as Error).message }, { status: 400 })
     }
     if (err instanceof ConnectivityError) {
+      // Compensating rollback: restore Registered state only if this route caused the transition
+      if (initialState === 'Registered') {
+        await admin.from('tenants').update({ state: 'Registered' }).eq('id', tenant.id)
+      }
       return NextResponse.json({ error: (err as Error).message }, { status: 400 })
     }
     // Unexpected error — let Next.js 500 handler log it

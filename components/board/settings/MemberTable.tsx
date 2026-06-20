@@ -48,6 +48,7 @@ export function MemberTable({ members, authTroubleshootingEnabled }: MemberTable
   const [removePending, setRemovePending] = useState<string | null>(null)
   const [resetPending, setResetPending] = useState<string | null>(null)
   const [resetSuccess, setResetSuccess] = useState<string | null>(null)
+  const [resetError, setResetError] = useState<string | null>(null)
 
   async function handleRemove(userId: string) {
     setRemovePending(userId)
@@ -73,16 +74,24 @@ export function MemberTable({ members, authTroubleshootingEnabled }: MemberTable
 
   async function handleForceReset(userId: string) {
     setResetPending(userId)
+    setResetError(null)
     try {
-      await fetch('/api/board/settings/users/reset-password', {
+      const res = await fetch('/api/board/settings/users/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId }),
       })
-      setResetSuccess(userId)
-      setTimeout(() => setResetSuccess(null), 3000)
+      if (res.ok) {
+        setResetSuccess(userId)
+        setTimeout(() => setResetSuccess(null), 3000)
+      } else {
+        const data = await res.json().catch(() => ({}))
+        setResetError(data.error ?? 'Password reset failed')
+        setTimeout(() => setResetError(null), 5000)
+      }
     } catch {
-      // silent fail — stub endpoint
+      setResetError('Password reset failed')
+      setTimeout(() => setResetError(null), 5000)
     } finally {
       setResetPending(null)
     }
@@ -116,6 +125,13 @@ export function MemberTable({ members, authTroubleshootingEnabled }: MemberTable
           <Alert variant="destructive" style={{ marginBottom: 'var(--ds-space-md)' }}>
             <AlertTitle>Remove failed</AlertTitle>
             <AlertDescription>{removeError}</AlertDescription>
+          </Alert>
+        )}
+
+        {resetError && (
+          <Alert variant="destructive" style={{ marginBottom: 'var(--ds-space-md)' }}>
+            <AlertTitle>Reset failed</AlertTitle>
+            <AlertDescription>{resetError}</AlertDescription>
           </Alert>
         )}
 
