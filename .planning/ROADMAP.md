@@ -101,8 +101,21 @@ Wave 2 *(blocked on Wave 0 + Wave 1 completion)*:
   2. Board member can invite a new manager or driver by email and remove an existing user from their tenant
   3. Board member can enter BYODB credentials and register them via the `lib/tenant/` provisioning stack through a new API route — success and failure states are communicated
   4. Board member can toggle each platform feature flag on or off for their tenant — the toggle state reflects the saved value after reload
-**Plans**: TBD
+**Plans:** 5 plans
 **UI hint**: yes
+
+Plans:
+
+Wave 0:
+- [ ] 04-01-PLAN.md — DB migrations (logo_url, primary_color, feature_flags, users.tenant_id, storage bucket) + schema push [BLOCKING] + Wave 0 test scaffolding (BSET-01, BSET-02, BSET-03, BSET-04)
+
+Wave 1 *(blocked on Wave 0 completion)*:
+- [ ] 04-02-PLAN.md — Settings nav entry + layout shell + root redirect + SettingsTabNav + Branding tab (RSC page + BrandingForm + API route) (BSET-01)
+- [ ] 04-03-PLAN.md — Users tab (RSC page + InviteForm + MemberTable + invite + remove API routes) (BSET-02)
+
+Wave 2 *(blocked on Wave 0 + Wave 1 completion)*:
+- [ ] 04-04-PLAN.md — BYODB tab (RSC page + BYODBForm + API route with state transition + registrationService) (BSET-03)
+- [ ] 04-05-PLAN.md — Feature Toggles tab (RSC page + ToggleForm + PATCH API route) (BSET-04)
 
 ### Phase 5: Storybook Coverage
 **Goal**: Every new design-system component and all switch-state variants have Storybook stories, so components can be reviewed and tested in isolation without a running app
@@ -126,5 +139,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Auth & Role Foundation | 3/3 | Complete | 2026-06-18 |
 | 2. Platform Admin Shell | 3/3 | Complete | 2026-06-20 |
 | 3. Tenant Switcher States | 3/3 | Complete | 2026-06-20 |
-| 4. Board Tenant Settings | 0/TBD | Not started | - |
+| 4. Board Tenant Settings | 0/5 | Ready to execute | - |
 | 5. Storybook Coverage | 0/TBD | Not started | - |
