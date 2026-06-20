@@ -115,7 +115,7 @@ Wave 1 *(blocked on Wave 0 completion)*:
 
 Wave 2 *(blocked on Wave 0 + Wave 1 completion)*:
 - [x] 04-04-PLAN.md — BYODB tab (RSC page + BYODBForm + API route with state transition + registrationService) (BSET-03)
-- [ ] 04-05-PLAN.md — Feature Toggles tab (RSC page + ToggleForm + PATCH API route) (BSET-04)
+- [x] 04-05-PLAN.md — Feature Toggles tab (RSC page + ToggleForm + PATCH API route) (BSET-04) *(completed 2026-06-20)*
 
 ### Phase 5: Storybook Coverage
 **Goal**: Every new design-system component and all switch-state variants have Storybook stories, so components can be reviewed and tested in isolation without a running app
@@ -139,5 +139,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Auth & Role Foundation | 3/3 | Complete | 2026-06-18 |
 | 2. Platform Admin Shell | 3/3 | Complete | 2026-06-20 |
 | 3. Tenant Switcher States | 3/3 | Complete | 2026-06-20 |
-| 4. Board Tenant Settings | 4/5 | Executing (Wave 2 in progress) | - |
+| 4. Board Tenant Settings | 5/5 | Complete | 2026-06-20 |
 | 5. Storybook Coverage | 0/TBD | Not started | - |

@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 last_updated: "2026-06-20T23:30:00.000Z"
-last_activity: 2026-06-20 -- Phase 4 Plan 4 complete (Wave 2: BYODB tab — BYODBForm + API route + state machine + registrationService)
+last_activity: 2026-06-20 -- Phase 4 Plan 5 complete (Wave 2: Feature Toggles tab — ToggleForm + PATCH API route + 6 unit tests + E2E smoke test)
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 14
-  completed_plans: 9
-  percent: 64
+  completed_plans: 10
+  percent: 71
 ---
 
 # Project State
@@ -24,12 +24,12 @@ See: .planning/PROJECT.md (updated 2026-06-13)
 
 ## Current Position
 
-Phase: 4 (board-tenant-settings) — EXECUTING
-Plan: 4 of 5 complete (Wave 2 in progress; Feature Toggles tab next)
-Status: Phase 4 executing — Wave 1 complete (Branding + Users tabs done); BYODB tab done; Feature Toggles tab next
-Last activity: 2026-06-20 -- 04-04 complete: BYODB tab — BYODBForm + API route with state machine + registrationService
+Phase: 4 (board-tenant-settings) — COMPLETE
+Plan: 5 of 5 complete (all plans done; Phase 4 execution complete)
+Status: Phase 4 complete — all 4 tabs delivered (Branding, Users, BYODB, Feature Toggles); Phase 5 (Storybook Coverage) is next
+Last activity: 2026-06-20 -- 04-05 complete: Feature Toggles tab — ToggleForm + PATCH API route + 6 unit tests + E2E smoke test
 
-Progress: [███░░░░░░░] 30%
+Progress: [████░░░░░░] 71%
 
 ## Performance Metrics
 
@@ -81,6 +81,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-20T23:40:00.000Z
-Stopped at: Completed 04-04-PLAN.md (Wave 2: BYODB tab — BYODBForm + API route + state machine + registrationService)
+Last session: 2026-06-20T23:50:00.000Z
+Stopped at: Completed 04-05-PLAN.md (Wave 2: Feature Toggles tab — ToggleForm + PATCH API route + 6 unit tests + E2E smoke test); Phase 4 all 5 plans done
 Resume file: None
