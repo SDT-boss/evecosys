@@ -16,11 +16,19 @@ export interface NavItemConfig {
   href: string
 }
 
+export interface TenantOption {
+  id: string
+  name: string
+}
+
 export interface LeftRailShellProps {
   navItems: NavItemConfig[]
   user: AppUser
   alertBell?: React.ReactNode
   children: React.ReactNode
+  /** Tenants for platform admin switcher. Only rendered when non-empty. */
+  tenants?: TenantOption[]
+  onTenantSelect?: (id: string) => void
 }
 
 const RAIL_WIDTH_EXPANDED = 264
@@ -31,6 +39,8 @@ export function LeftRailShell({
   user,
   alertBell,
   children,
+  tenants = [],
+  onTenantSelect,
 }: LeftRailShellProps) {
   const [collapsed, setCollapsed] = useState(false)
   const railWidth = collapsed ? RAIL_WIDTH_COLLAPSED : RAIL_WIDTH_EXPANDED
@@ -97,9 +107,9 @@ export function LeftRailShell({
         {/* Search */}
         {!collapsed && <SidebarSearch />}
 
-        {/* Tenant switcher — platform admin only */}
-        {!collapsed && isPlatformAdmin && (
-          <TenantSwitcher tenants={[]} onSelect={() => {}} />
+        {/* Tenant switcher — platform admin only; only render when tenants are available */}
+        {!collapsed && isPlatformAdmin && tenants.length > 0 && (
+          <TenantSwitcher tenants={tenants} onSelect={onTenantSelect ?? (() => {})} />
         )}
 
         {/* Divider */}
