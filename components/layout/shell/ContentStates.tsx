@@ -163,20 +163,20 @@ function ErrorState({ onRetry, onReport }: ErrorStateProps) {
         fontFamily: 'var(--ds-font-family-sans)',
       }}
     >
-      {/* Icon circle — red */}
+      {/* Icon circle — red; #fdeaea and #f5c0c0 have no ds-token equivalents */}
       <div
         aria-hidden="true"
         style={{
           width: '64px',
           height: '64px',
           borderRadius: 'var(--ds-radius-full)',
-          background: '#fdeaea',
-          border: '1px solid #f5c0c0',
+          background: '#fdeaea', /* no ds-token equivalent */
+          border: '1px solid #f5c0c0', /* no ds-token equivalent */
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           fontSize: '28px',
-          color: '#ef4444',
+          color: 'var(--ds-color-status-error)',
         }}
       >
         {/* cloud_off Material symbol equivalent via text */}
@@ -244,19 +244,19 @@ function RestrictedState({ onBack, onRequestAccess }: RestrictedStateProps) {
         fontFamily: 'var(--ds-font-family-sans)',
       }}
     >
-      {/* Icon circle — red (same as ErrorState) */}
+      {/* Icon circle — red; #fdeaea and #f5c0c0 have no ds-token equivalents */}
       <div
         aria-hidden="true"
         style={{
           width: '64px',
           height: '64px',
           borderRadius: 'var(--ds-radius-full)',
-          background: '#fdeaea',
-          border: '1px solid #f5c0c0',
+          background: '#fdeaea', /* no ds-token equivalent */
+          border: '1px solid #f5c0c0', /* no ds-token equivalent */
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#ef4444',
+          color: 'var(--ds-color-status-error)',
         }}
       >
         <svg
@@ -332,19 +332,19 @@ function UnavailableState({ onUpgrade, onLearnMore }: UnavailableStateProps) {
         fontFamily: 'var(--ds-font-family-sans)',
       }}
     >
-      {/* Icon circle — purple */}
+      {/* Icon circle — purple; #efe7fb and #d6c4f0 have no ds-token equivalents */}
       <div
         aria-hidden="true"
         style={{
           width: '64px',
           height: '64px',
           borderRadius: 'var(--ds-radius-full)',
-          background: '#efe7fb',
-          border: '1px solid #d6c4f0',
+          background: '#efe7fb', /* no ds-token equivalent */
+          border: '1px solid #d6c4f0', /* no ds-token equivalent */
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#7c3aed',
+          color: 'var(--ds-color-brand-tertiary)',
         }}
       >
         <svg

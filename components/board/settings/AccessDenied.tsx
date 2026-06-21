@@ -31,18 +31,18 @@ export function AccessDenied({ role, onBack, onRequestAccess }: AccessDeniedProp
         fontFamily: 'var(--ds-font-family-sans)',
       }}
     >
-      {/* 72px lock circle — background #fce4e4 per spec */}
+      {/* 72px lock circle — #fce4e4 bg has no ds-token equivalent */}
       <div
         aria-hidden="true"
         style={{
           width: '72px',
           height: '72px',
           borderRadius: 'var(--ds-radius-full)',
-          background: '#fce4e4',
+          background: '#fce4e4', /* no ds-token equivalent */
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#ef4444',
+          color: 'var(--ds-color-status-error)',
           flexShrink: 0,
         }}
       >

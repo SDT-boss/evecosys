@@ -67,8 +67,8 @@ export function ResendConfirm({
             position: 'absolute',
             bottom: 'calc(100% + var(--ds-space-sm))',
             right: 0,
-            background: '#1a1a1a',
-            color: '#ffffff',
+            background: '#1a1a1a', /* no ds-token equivalent */
+            color: '#ffffff', /* no ds-token equivalent */
             padding: 'var(--ds-space-sm) var(--ds-space-md)',
             borderRadius: 'var(--ds-radius-md)',
             display: 'flex',
@@ -88,7 +88,7 @@ export function ResendConfirm({
             height="16"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#7cc242"
+            stroke="#7cc242" /* no ds-token equivalent */
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"

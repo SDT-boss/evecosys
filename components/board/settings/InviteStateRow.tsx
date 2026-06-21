@@ -41,8 +41,8 @@ export interface InviteStateRowProps {
 
 const BADGE_STYLES: Record<InviteState, React.CSSProperties> = {
   sent: {
-    backgroundColor: '#f59e0b',
-    color: '#1c2120',
+    backgroundColor: 'var(--ds-color-status-warning)',
+    color: 'var(--ds-color-neutral-grey-80)',
     padding: '2px 8px',
     borderRadius: '9999px',
     fontSize: '0.75rem',
@@ -51,8 +51,8 @@ const BADGE_STYLES: Record<InviteState, React.CSSProperties> = {
     alignItems: 'center',
   },
   expiring: {
-    backgroundColor: '#f59e0b',
-    color: '#1c2120',
+    backgroundColor: 'var(--ds-color-status-warning)',
+    color: 'var(--ds-color-neutral-grey-80)',
     padding: '2px 8px',
     borderRadius: '9999px',
     fontSize: '0.75rem',
@@ -62,7 +62,7 @@ const BADGE_STYLES: Record<InviteState, React.CSSProperties> = {
   },
   accepted: {
     backgroundColor: 'var(--ds-color-brand-primary)',
-    color: '#ffffff',
+    color: '#ffffff', /* no ds-token equivalent */
     padding: '2px 8px',
     borderRadius: '9999px',
     fontSize: '0.75rem',
@@ -71,8 +71,8 @@ const BADGE_STYLES: Record<InviteState, React.CSSProperties> = {
     alignItems: 'center',
   },
   expired: {
-    backgroundColor: '#6b7280',
-    color: '#ffffff',
+    backgroundColor: '#6b7280', /* no ds-token equivalent */
+    color: '#ffffff', /* no ds-token equivalent */
     padding: '2px 8px',
     borderRadius: '9999px',
     fontSize: '0.75rem',
@@ -81,8 +81,8 @@ const BADGE_STYLES: Record<InviteState, React.CSSProperties> = {
     alignItems: 'center',
   },
   revoked: {
-    backgroundColor: '#ef4444',
-    color: '#ffffff',
+    backgroundColor: 'var(--ds-color-status-error)',
+    color: '#ffffff', /* no ds-token equivalent */
     padding: '2px 8px',
     borderRadius: '9999px',
     fontSize: '0.75rem',

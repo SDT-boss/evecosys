@@ -75,7 +75,7 @@ export function TenantSwitcher({ tenants, onSelect }: TenantSwitcherProps) {
             left: 'var(--ds-space-md)',
             right: 'var(--ds-space-md)',
             marginTop: 'var(--ds-space-xs)',
-            background: 'white',
+            background: 'white', /* no ds-token equivalent */
             border: '1px solid var(--ds-color-neutral-grey-20)',
             borderRadius: 'var(--ds-radius-md)',
             boxShadow: 'var(--ds-shadow-md)',
