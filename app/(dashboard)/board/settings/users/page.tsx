@@ -73,42 +73,43 @@ export default async function UsersPage() {
         members={members ?? []}
         authTroubleshootingEnabled={tenant?.feature_flags?.auth_troubleshooting ?? false}
       />
-      {/* Invite lifecycle showcase — all 5 states + isLimitedAccess example */}
-      {/* TODO: replace mock data with DB query when invitations table is added */}
-      <section
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 0,
-          border: '1px solid var(--ds-color-neutral-grey-10)',
-          borderRadius: 'var(--ds-radius-lg)',
-          padding: 'var(--ds-space-md)',
-          fontFamily: 'var(--ds-font-family-sans)',
-        }}
-      >
-        <p
+      {/* Invite lifecycle showcase — dev only; replace with DB query when invitations table is added */}
+      {process.env.NODE_ENV !== 'production' && (
+        <section
           style={{
-            fontSize: 'var(--ds-font-size-sm)',
-            fontWeight: 'var(--ds-font-weight-semibold)',
-            color: 'var(--ds-color-neutral-ink)',
-            margin: '0 0 var(--ds-space-sm)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 0,
+            border: '1px solid var(--ds-color-neutral-grey-10)',
+            borderRadius: 'var(--ds-radius-lg)',
+            padding: 'var(--ds-space-md)',
+            fontFamily: 'var(--ds-font-family-sans)',
           }}
         >
-          Pending Invitations
-        </p>
-        {MOCK_INVITES.map((invite) => (
-          <InviteStateRow
-            key={invite.email}
-            state={invite.state}
-            email={invite.email}
-            name={invite.name}
-            expiresAt={invite.expiresAt}
-            joinedAt={invite.joinedAt}
-            revokedAt={invite.revokedAt}
-            isLimitedAccess={invite.isLimitedAccess}
-          />
-        ))}
-      </section>
+          <p
+            style={{
+              fontSize: 'var(--ds-font-size-sm)',
+              fontWeight: 'var(--ds-font-weight-semibold)',
+              color: 'var(--ds-color-neutral-ink)',
+              margin: '0 0 var(--ds-space-sm)',
+            }}
+          >
+            Pending Invitations
+          </p>
+          {MOCK_INVITES.map((invite) => (
+            <InviteStateRow
+              key={invite.email}
+              state={invite.state}
+              email={invite.email}
+              name={invite.name}
+              expiresAt={invite.expiresAt}
+              joinedAt={invite.joinedAt}
+              revokedAt={invite.revokedAt}
+              isLimitedAccess={invite.isLimitedAccess}
+            />
+          ))}
+        </section>
+      )}
     </div>
   )
 }
