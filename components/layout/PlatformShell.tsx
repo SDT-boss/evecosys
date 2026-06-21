@@ -11,12 +11,13 @@ const NAV = [
 interface PlatformShellProps {
   children: React.ReactNode
   user: AppUser
+  activeTenantId?: string | null
   activeTenantName: string | null
 }
 
-export function PlatformShell({ children, user, activeTenantName }: PlatformShellProps) {
+export function PlatformShell({ children, user, activeTenantId, activeTenantName }: PlatformShellProps) {
   return (
-    <TenantProvider initialName={activeTenantName}>
+    <TenantProvider initialId={activeTenantId} initialName={activeTenantName}>
       <LeftRailShell
         navItems={NAV}
         user={user}

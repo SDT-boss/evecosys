@@ -15,10 +15,11 @@ interface TenantSwitcherProps {
 }
 
 export function TenantSwitcher({ tenants, onSelect }: TenantSwitcherProps) {
-  const { activeTenantName } = useTenantContext()
+  const { activeTenantId, activeTenantName } = useTenantContext()
   const [open, setOpen] = useState(false)
 
-  const activeTenant = tenants.find((t) => t.name === activeTenantName)
+  // Use id for identity comparison — name is display-only and may not be unique
+  const activeTenant = tenants.find((t) => t.id === activeTenantId)
 
   function handleSelect(id: string) {
     onSelect(id)

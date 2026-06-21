@@ -25,7 +25,7 @@ const meta: Meta<typeof TenantSwitcher> = {
   component: TenantSwitcher,
   decorators: [
     (Story) => (
-      <TenantProvider initialName="Acme Fleet">
+      <TenantProvider initialId="1" initialName="Acme Fleet">
         <Story />
       </TenantProvider>
     ),
@@ -58,7 +58,7 @@ export const DefaultList: Story = {
   name: "Default — tenant list",
   decorators: [
     (Story) => (
-      <TenantProvider initialName={null}>
+      <TenantProvider initialId={null} initialName={null}>
         <div style={{ width: 240 }}>
           <Story />
         </div>
@@ -89,7 +89,7 @@ export const ActiveRowHighlighted: Story = {
   name: "Active row highlighted",
   decorators: [
     (Story) => (
-      <TenantProvider initialName="Acme Fleet">
+      <TenantProvider initialId="1" initialName="Acme Fleet">
         <div style={{ width: 240 }}>
           <Story />
         </div>
@@ -183,7 +183,7 @@ function SwitchingInProgressWrapper() {
 export const SwitchingInProgress: StoryObj = {
   name: "Switching in progress (SWIT-02)",
   render: () => (
-    <TenantProvider initialName="Acme Fleet">
+    <TenantProvider initialId="1" initialName="Acme Fleet">
       <SwitchingInProgressWrapper />
     </TenantProvider>
   ),
@@ -200,7 +200,7 @@ export const SwitchingInProgress: StoryObj = {
 export const SwitchFailure: StoryObj = {
   name: "Switch failure (SWIT-03)",
   render: () => (
-    <TenantProvider initialName="BrightGrid">
+    <TenantProvider initialId="2" initialName="BrightGrid">
       <div>
         <Alert
           variant="destructive"
@@ -244,7 +244,7 @@ export const SwitchFailure: StoryObj = {
 export const EmptyTenants: StoryObj = {
   name: "Empty tenant list",
   render: () => (
-    <TenantProvider initialName={null}>
+    <TenantProvider initialId={null} initialName={null}>
       <EmptyState
         title="No tenants found"
         description="No tenants have been registered yet. New tenants will appear here once provisioning begins."

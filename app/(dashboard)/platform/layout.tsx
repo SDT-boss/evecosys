@@ -29,7 +29,7 @@ export default async function PlatformLayout({ children }: { children: React.Rea
   const isSubRoute = pathname !== '/platform' && pathname !== '/platform/'
   if (isSubRoute && !tenantId) {
     return (
-      <PlatformShell user={profile as AppUser} activeTenantName={null}>
+      <PlatformShell user={profile as AppUser} activeTenantId={null} activeTenantName={null}>
         <BlockedScreen />
       </PlatformShell>
     )
@@ -48,6 +48,7 @@ export default async function PlatformLayout({ children }: { children: React.Rea
   return (
     <PlatformShell
       user={profile as AppUser}
+      activeTenantId={tenantId}
       activeTenantName={activeTenantName}
     >
       {children}

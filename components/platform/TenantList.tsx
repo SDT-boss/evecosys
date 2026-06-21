@@ -36,11 +36,12 @@ export function TenantList({ tenants, activeTenantId: initialActiveTenantId, err
   const [pendingTenantId, setPendingTenantId] = useState<string | null>(null)
   const [activeTenantId, setActiveTenantId] = useState(initialActiveTenantId ?? null)
   const [switchError, setSwitchError] = useState<string | null>(null)
-  const { setActiveTenantName } = useTenantContext()
+  const { setActiveTenantId: setContextTenantId, setActiveTenantName } = useTenantContext()
 
   function handleRowClick(tenant: TenantRow) {
     const previousId = activeTenantId
     setActiveTenantId(tenant.id)
+    setContextTenantId(tenant.id)
     setActiveTenantName(tenant.name)
     setSwitchError(null)
     setPendingTenantId(tenant.id)
@@ -49,6 +50,7 @@ export function TenantList({ tenants, activeTenantId: initialActiveTenantId, err
       const result = await setActiveTenant(tenant.id)
       if (!result.ok) {
         setActiveTenantId(previousId)
+        setContextTenantId(previousId)
         setActiveTenantName(tenants.find((t) => t.id === previousId)?.name ?? null)
         setSwitchError(
           result.error
