@@ -22,12 +22,14 @@ describe('Skel', () => {
 describe('LoadingState', () => {
   it('renders shimmer grid using Skel components with no text content', () => {
     const { container } = render(<LoadingState />)
-    // Should have Skel divs, no meaningful text
+    // Should have multiple Skel divs (no visible text content — strip style tags)
+    const styleEls = container.querySelectorAll('style')
+    styleEls.forEach((el) => el.remove())
     const text = container.textContent?.trim()
     expect(text).toBe('')
     // Should have multiple skeleton divs
-    const skels = container.querySelectorAll('div')
-    expect(skels.length).toBeGreaterThan(1)
+    const divs = container.querySelectorAll('div')
+    expect(divs.length).toBeGreaterThan(1)
   })
 })
 
