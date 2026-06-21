@@ -1,15 +1,16 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { DashboardShell } from '@/components/layout/DashboardShell'
+import { LeftRailShell } from '@/components/layout/LeftRailShell'
 import { AlertBellWrapper } from '@/components/layout/AlertBellWrapper'
+import { LayoutDashboard, LayoutGrid, Leaf, Map, Settings } from 'lucide-react'
 import type { AppUser } from '@/types'
 
 const NAV = [
-  { label: 'Overview', icon: 'layout-dashboard', href: '/board' },
-  { label: 'Fleet',    icon: 'layout-grid',       href: '/board/fleet' },
-  { label: 'Carbon',   icon: 'leaf',              href: '/board/carbon' },
-  { label: 'Trips',    icon: 'map',               href: '/board/trips' },
-  { label: 'Settings', icon: 'settings',          href: '/board/settings' },
+  { label: 'Overview', icon: <LayoutDashboard size={20} />, href: '/board' },
+  { label: 'Fleet',    icon: <LayoutGrid size={20} />,       href: '/board/fleet' },
+  { label: 'Carbon',   icon: <Leaf size={20} />,             href: '/board/carbon' },
+  { label: 'Trips',    icon: <Map size={20} />,              href: '/board/trips' },
+  { label: 'Settings', icon: <Settings size={20} />,         href: '/board/settings' },
 ]
 
 export default async function BoardLayout({ children }: { children: React.ReactNode }) {
@@ -27,8 +28,8 @@ export default async function BoardLayout({ children }: { children: React.ReactN
   if (!profile || profile.role !== 'board') redirect('/login')
 
   return (
-    <DashboardShell navItems={NAV} user={profile as AppUser} alertBell={<AlertBellWrapper role="board" />}>
+    <LeftRailShell navItems={NAV} user={profile as AppUser} alertBell={<AlertBellWrapper role="board" />}>
       {children}
-    </DashboardShell>
+    </LeftRailShell>
   )
 }

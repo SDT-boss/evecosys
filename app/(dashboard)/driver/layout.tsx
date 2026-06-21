@@ -1,13 +1,14 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { DashboardShell } from '@/components/layout/DashboardShell'
+import { LeftRailShell } from '@/components/layout/LeftRailShell'
 import { AlertBellWrapper } from '@/components/layout/AlertBellWrapper'
+import { Car, Map, Bell } from 'lucide-react'
 import type { AppUser } from '@/types'
 
 const NAV = [
-  { label: 'My Vehicle', icon: 'car',  href: '/driver' },
-  { label: 'My Trips',   icon: 'map',  href: '/driver/trips' },
-  { label: 'Alerts',     icon: 'bell', href: '/driver/alerts' },
+  { label: 'My Vehicle', icon: <Car size={20} />,  href: '/driver' },
+  { label: 'My Trips',   icon: <Map size={20} />,  href: '/driver/trips' },
+  { label: 'Alerts',     icon: <Bell size={20} />, href: '/driver/alerts' },
 ]
 
 export default async function DriverLayout({ children }: { children: React.ReactNode }) {
@@ -25,8 +26,8 @@ export default async function DriverLayout({ children }: { children: React.React
   if (!profile || profile.role !== 'driver') redirect('/login')
 
   return (
-    <DashboardShell navItems={NAV} user={profile as AppUser} alertBell={<AlertBellWrapper role="driver" />}>
+    <LeftRailShell navItems={NAV} user={profile as AppUser} alertBell={<AlertBellWrapper role="driver" />}>
       {children}
-    </DashboardShell>
+    </LeftRailShell>
   )
 }
