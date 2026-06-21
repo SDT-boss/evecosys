@@ -97,8 +97,8 @@ describe('InviteStateRow — Expiring state', () => {
         onRevoke={vi.fn()}
       />
     )
-    expect(screen.getByText(/expires in/i)).toBeInTheDocument()
-    expect(screen.getByText(/hours/i)).toBeInTheDocument()
+    // Exact pattern: must end after the unit — prevents regression of "8 hours hours" double-unit bug
+    expect(screen.getByText(/expires in \d+ hours?$/i)).toBeInTheDocument()
   })
 
   it('renders Resend and Revoke buttons', () => {
