@@ -30,8 +30,8 @@ export function SidebarSearch({ placeholder = 'Search…' }: SidebarSearchProps)
         <input
           type="text"
           placeholder={placeholder}
-          // no-op: search integration deferred to separate milestone
-          onChange={() => {}}
+          // Search integration deferred to separate milestone — readOnly prevents silent no-op input
+          readOnly
           style={{
             background: 'transparent',
             border: 'none',
