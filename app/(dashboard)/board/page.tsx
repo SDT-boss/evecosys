@@ -30,7 +30,7 @@ export default async function BoardOverviewPage() {
   const iceCo2Kg = Math.round(totalKm * 0.21 * 1000)
   const savedKg = iceCo2Kg - totalCo2Kg
   const savingsPct = iceCo2Kg > 0 ? Math.round((savedKg / iceCo2Kg) * 100) : 0
-  const online = vList.filter(v => v.status !== 'Maintenance').length
+  const online = vList.filter(v => v.status !== 'OFFLINE').length
   const health = calcFleetHealth(vList, aList)
 
   const behaviorScoresMap = dList.map(d => {
@@ -50,7 +50,7 @@ export default async function BoardOverviewPage() {
   const maxKm = Math.max(...Object.values(brandMap).map(b => b.km), 1)
 
   // ── Fleet tab computations ─────────────────────────────────────────────────
-  const statusCounts = { Moving: 0, Parked: 0, Charging: 0, Maintenance: 0 }
+  const statusCounts = { IDLE: 0, DISPATCHED: 0, PATROLLING: 0, ROUTING_TO_CHARGER: 0, CHARGING: 0, OFFLINE: 0 }
   const socGroups = { lt20: 0, s2050: 0, s5080: 0, gt80: 0 }
   const sohGroups = { lt20: 0, s2050: 0, s5080: 0, gt80: 0 }
   for (const v of vList) {
