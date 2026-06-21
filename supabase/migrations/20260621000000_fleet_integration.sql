@@ -31,26 +31,39 @@ create index if not exists shifts_vehicle_idx  on public.shifts(vehicle_id);
 alter table public.vehicles
   drop constraint if exists vehicles_status_check;
 
--- 3b. Migrate existing status values to dispatch statuses
+-- 3b. Preflight: abort if any unrecognised status value exists (prevents silent bad-data migration)
+do $$
+begin
+  if exists (
+    select 1 from public.vehicles
+    where status not in ('Moving','Parked','Charging','Maintenance',
+                         'IDLE','DISPATCHED','PATROLLING','ROUTING_TO_CHARGER','CHARGING','OFFLINE')
+  ) then
+    raise exception 'vehicles.status contains unrecognised values; migration aborted. '
+                    'Fix the data before re-running.';
+  end if;
+end $$;
+
+-- 3c. Migrate existing status values to dispatch statuses
 update public.vehicles set status = 'PATROLLING'        where status = 'Moving';
 update public.vehicles set status = 'IDLE'              where status = 'Parked';
 update public.vehicles set status = 'CHARGING'          where status = 'Charging';
 update public.vehicles set status = 'OFFLINE'           where status = 'Maintenance';
 
--- 3c. Add new status constraint
+-- 3d. Add new status constraint (IF NOT EXISTS — safe to re-run)
 alter table public.vehicles
-  add constraint vehicles_status_check
+  add constraint if not exists vehicles_status_check
   check (status in ('IDLE','DISPATCHED','PATROLLING','ROUTING_TO_CHARGER','CHARGING','OFFLINE'));
 
--- 3d. Add dispatch columns
+-- 3e. Add dispatch columns
 alter table public.vehicles
   add column if not exists current_shift_id    uuid null,
   add column if not exists assigned_charger_id uuid null
     references public.charging_stations(id) on delete set null;
 
--- 3e. Add FK from vehicles.current_shift_id → shifts (now that shifts exists)
+-- 3f. Add FK from vehicles.current_shift_id → shifts (IF NOT EXISTS — safe to re-run)
 alter table public.vehicles
-  add constraint vehicles_current_shift_id_fkey
+  add constraint if not exists vehicles_current_shift_id_fkey
   foreign key (current_shift_id) references public.shifts(id) on delete set null;
 
 -- ─── 4. Create dispatch_events ────────────────────────────────────────────────
