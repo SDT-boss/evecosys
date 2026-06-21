@@ -113,7 +113,7 @@ export interface BoardData {
   maxKm: number
   behaviorScoresMap: { id: string; name: string; overall: number; color: string; grade: string }[]
   // Fleet
-  statusCounts: { Moving: number; Parked: number; Charging: number; Maintenance: number }
+  statusCounts: { IDLE: number; DISPATCHED: number; PATROLLING: number; ROUTING_TO_CHARGER: number; CHARGING: number; OFFLINE: number }
   socGroups: { lt20: number; s2050: number; s5080: number; gt80: number }
   sohGroups: { lt20: number; s2050: number; s5080: number; gt80: number }
   avgSoh: number
@@ -239,7 +239,7 @@ function OverviewTab({ d }: { d: BoardData }) {
           <div className="mt-4 pt-4 grid grid-cols-2 gap-2" style={{ borderTop: '1px solid var(--border)' }}>
             {d.vList.map((v: Vehicle) => (
               <div key={v.id} className="flex items-center gap-2 text-xs">
-                <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: v.status === 'Moving' ? '#7cc242' : v.status === 'Maintenance' ? '#c02020' : '#c07800' }} />
+                <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: v.status === 'PATROLLING' ? '#7cc242' : v.status === 'OFFLINE' ? '#c02020' : '#c07800' }} />
                 <span className="truncate" style={{ color: 'var(--text2)' }}>{v.plate_no}</span>
                 <span className="ml-auto font-semibold flex-shrink-0" style={{ color: 'var(--text3)' }}>{v.soc}%</span>
               </div>
@@ -288,7 +288,8 @@ function OverviewTab({ d }: { d: BoardData }) {
 function FleetTab({ d }: { d: BoardData }) {
   const vLen = d.vList.length || 1
   const statusColors: Record<string, string> = {
-    Moving: '#7cc242', Parked: '#1a7080', Charging: '#c07800', Maintenance: '#c02020',
+    IDLE: '#c07800', DISPATCHED: '#1a7080', PATROLLING: '#7cc242',
+    ROUTING_TO_CHARGER: '#d06000', CHARGING: '#1a9080', OFFLINE: '#c02020',
   }
   const socGroupData = [
     { label: '< 20% (Critical)', value: d.socGroups.lt20, color: '#c02020' },
@@ -307,7 +308,7 @@ function FleetTab({ d }: { d: BoardData }) {
     <>
       {/* Status breakdown */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
-        {(['Moving', 'Parked', 'Charging', 'Maintenance'] as const).map(s => (
+        {(['IDLE', 'DISPATCHED', 'PATROLLING', 'ROUTING_TO_CHARGER', 'CHARGING', 'OFFLINE'] as const).map(s => (
           <KpiCard
             key={s}
             label={s}

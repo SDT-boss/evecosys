@@ -133,7 +133,7 @@ export function DriversClient({
                       Grade {score.grade}
                     </Badge>
                     {d.vehicle ? (
-                      <Badge variant={d.vehicle.status === 'Moving' ? 'green' : 'amber'} dot>
+                      <Badge variant={d.vehicle.status === 'PATROLLING' ? 'green' : 'amber'} dot>
                         {d.vehicle.plate_no}
                       </Badge>
                     ) : (

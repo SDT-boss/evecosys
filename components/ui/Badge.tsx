@@ -1,6 +1,6 @@
 import { clsx } from 'clsx'
 
-type BadgeVariant = 'green' | 'teal' | 'amber' | 'red' | 'gray'
+type BadgeVariant = 'green' | 'teal' | 'amber' | 'red' | 'gray' | 'blue'
 
 const styles: Record<BadgeVariant, { bg: string; color: string; border: string }> = {
   green: { bg: '#eaf5d8', color: '#3a7010', border: '#c0dfa0' },
@@ -8,6 +8,7 @@ const styles: Record<BadgeVariant, { bg: string; color: string; border: string }
   amber: { bg: '#fef3dc', color: '#8a5500', border: '#f0d080' },
   red:   { bg: '#fdeaea', color: '#8a1010', border: '#f5c0c0' },
   gray:  { bg: 'var(--surface2)', color: 'var(--text3)', border: 'var(--border)' },
+  blue:  { bg: '#dbeafe', color: '#1e40af', border: '#93c5fd' },
 }
 
 export function Badge({

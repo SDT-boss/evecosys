@@ -11,11 +11,13 @@ const BRAND_COLORS: Record<string, string> = {
   BYD: '#7cc242', AION: '#1a7080', JAC: '#5a9e2f', Foton: '#0d4e5a',
 }
 
-function statusVariant(s: string): 'green' | 'amber' | 'red' | 'teal' {
-  if (s === 'Moving') return 'green'
-  if (s === 'Parked') return 'amber'
-  if (s === 'Maintenance') return 'red'
-  return 'teal'
+function statusVariant(s: string): 'green' | 'amber' | 'red' | 'teal' | 'blue' {
+  if (s === 'PATROLLING') return 'green'
+  if (s === 'IDLE') return 'amber'
+  if (s === 'OFFLINE') return 'red'
+  if (s === 'DISPATCHED') return 'blue'
+  if (s === 'CHARGING') return 'teal'
+  return 'amber'
 }
 
 export function AssetManagementClient({
@@ -33,7 +35,7 @@ export function AssetManagementClient({
   const [selected, setSelected] = useState<Vehicle | null>(null)
 
   const brands = ['all', ...Array.from(new Set(vehicles.map(v => v.brand)))]
-  const statuses = ['all', 'Moving', 'Parked', 'Charging', 'Maintenance']
+  const statuses = ['all', 'IDLE', 'DISPATCHED', 'PATROLLING', 'ROUTING_TO_CHARGER', 'CHARGING', 'OFFLINE']
 
   const filtered = useMemo(() => vehicles.filter(v => {
     const matchSearch = !search ||

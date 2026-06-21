@@ -17,7 +17,7 @@ export default async function AssetsPage() {
   const tList = (trips ?? []) as Trip[]
   const aList = (alerts ?? []) as Alert[]
 
-  const online = vList.filter(v => v.status !== 'Maintenance').length
+  const online = vList.filter(v => v.status !== 'OFFLINE').length
 
   return (
     <div className="fade-in">

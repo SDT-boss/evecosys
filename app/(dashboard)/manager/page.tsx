@@ -65,7 +65,7 @@ export default async function ManagerOverviewPage() {
 
   const totalKm = vList.reduce((s, v) => s + v.odometer, 0)
   const avgSoc = vList.length ? Math.round(vList.reduce((s, v) => s + v.soc, 0) / vList.length) : 0
-  const online = vList.filter(v => v.status !== 'Maintenance').length
+  const online = vList.filter(v => v.status !== 'OFFLINE').length
   const totalKwh = Math.round(totalKm * 0.18)
   const totalCo2 = Math.round(totalKwh * 0.654)
 
