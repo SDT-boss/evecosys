@@ -22,7 +22,7 @@ export function calcFleetHealth(vehicles: Vehicle[], alerts: Alert[]): FleetHeal
   const batteryHealth = Math.round((avgSoh / 100) * 100)
 
   // Availability — % not in maintenance
-  const available = vehicles.filter(v => v.status !== 'Maintenance').length
+  const available = vehicles.filter(v => v.status !== 'OFFLINE').length
   const availability = Math.round((available / vehicles.length) * 100)
 
   // Alert load — penalise active alerts per vehicle
