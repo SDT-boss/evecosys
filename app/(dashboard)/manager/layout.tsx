@@ -1,17 +1,18 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { DashboardShell } from '@/components/layout/DashboardShell'
+import { LeftRailShell } from '@/components/layout/LeftRailShell'
 import { AlertBellWrapper } from '@/components/layout/AlertBellWrapper'
+import { LayoutDashboard, Truck, Users, Route, Zap, Bell, Settings } from 'lucide-react'
 import type { AppUser } from '@/types'
 
 const NAV = [
-  { label: 'Overview',          icon: 'layout-dashboard', href: '/manager' },
-  { label: 'Asset Management',  icon: 'truck',            href: '/manager/assets' },
-  { label: 'Drivers',           icon: 'users',            href: '/manager/drivers' },
-  { label: 'Trips',             icon: 'route',            href: '/manager/trips' },
-  { label: 'Charging Stations', icon: 'zap',              href: '/manager/charging' },
-  { label: 'Alerts',            icon: 'bell',             href: '/manager/alerts' },
-  { label: 'Users',             icon: 'settings',         href: '/manager/users' },
+  { label: 'Overview',          icon: <LayoutDashboard size={20} />, href: '/manager' },
+  { label: 'Asset Management',  icon: <Truck size={20} />,           href: '/manager/assets' },
+  { label: 'Drivers',           icon: <Users size={20} />,           href: '/manager/drivers' },
+  { label: 'Trips',             icon: <Route size={20} />,           href: '/manager/trips' },
+  { label: 'Charging Stations', icon: <Zap size={20} />,             href: '/manager/charging' },
+  { label: 'Alerts',            icon: <Bell size={20} />,            href: '/manager/alerts' },
+  { label: 'Users',             icon: <Settings size={20} />,        href: '/manager/users' },
 ]
 
 export default async function ManagerLayout({ children }: { children: React.ReactNode }) {
@@ -29,8 +30,8 @@ export default async function ManagerLayout({ children }: { children: React.Reac
   if (!profile || profile.role !== 'manager') redirect('/login')
 
   return (
-    <DashboardShell navItems={NAV} user={profile as AppUser} alertBell={<AlertBellWrapper role="manager" />}>
+    <LeftRailShell navItems={NAV} user={profile as AppUser} alertBell={<AlertBellWrapper role="manager" />}>
       {children}
-    </DashboardShell>
+    </LeftRailShell>
   )
 }
