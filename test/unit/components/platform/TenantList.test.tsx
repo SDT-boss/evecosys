@@ -6,7 +6,12 @@ vi.mock('@/app/(dashboard)/platform/actions', () => ({
 }))
 
 vi.mock('@/components/platform/TenantContext', () => ({
-  useTenantContext: vi.fn().mockReturnValue({ activeTenantName: null, setActiveTenantName: vi.fn() }),
+  useTenantContext: vi.fn().mockReturnValue({
+    activeTenantId: null,
+    setActiveTenantId: vi.fn(),
+    activeTenantName: null,
+    setActiveTenantName: vi.fn(),
+  }),
 }))
 
 import { TenantList } from '@/components/platform/TenantList'
@@ -114,6 +119,8 @@ describe('TenantList — optimistic update (SWIT-02)', () => {
   it('calls setActiveTenantName immediately on row click', async () => {
     const mockSetActiveTenantName = vi.fn()
     vi.mocked(useTenantContext).mockReturnValue({
+      activeTenantId: null,
+      setActiveTenantId: vi.fn(),
       activeTenantName: null,
       setActiveTenantName: mockSetActiveTenantName,
     })
