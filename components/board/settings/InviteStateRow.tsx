@@ -201,7 +201,7 @@ export function InviteStateRow({
           <span
             style={{ fontSize: 'var(--ds-font-size-sm)', color: 'var(--ds-color-neutral-grey-60)' }}
           >
-            Expires in {formatHoursFromNow(expiresAt)} hours
+            Expires in {formatHoursFromNow(expiresAt)}
           </span>
         ) : null
 
