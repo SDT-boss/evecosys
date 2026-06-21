@@ -1,9 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { LayoutDashboard, Car, Users, Zap, Bell, Settings, MapPin } from "lucide-react";
-import { Badge } from "@/design-system/components/Badge";
-import { Button } from "@/design-system/components/Button";
-import { StatCard } from "@/design-system/components/StatCard";
-import { Card, CardHeader, CardTitle, CardContent } from "@/design-system/components/Card";
+import { Badge, Button, StatCard, Card, CardHeader, CardTitle, CardContent } from "@evecosys/design-system";
 
 /**
  * Static mock of the LeftRailShell layout pattern.
