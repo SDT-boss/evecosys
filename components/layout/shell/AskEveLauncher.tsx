@@ -9,7 +9,7 @@ export function AskEveLauncher() {
        */}
       <button
         // AskEVE AI integration deferred to separate milestone
-        onClick={() => {}}
+        disabled
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -22,11 +22,10 @@ export function AskEveLauncher() {
           color: 'var(--ds-color-neutral-grey-40)',
           fontSize: 'var(--ds-font-size-xs)',
           fontWeight: 'var(--ds-font-weight-medium)',
-          cursor: 'default',
+          cursor: 'not-allowed',
           fontFamily: 'var(--ds-font-family-sans)',
         }}
-        tabIndex={-1}
-        aria-disabled="true"
+        aria-label="Ask EVE (coming soon)"
       >
         <Sparkles size={14} />
         Ask EVE
