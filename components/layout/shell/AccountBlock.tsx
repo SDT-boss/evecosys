@@ -24,12 +24,13 @@ export function AccountBlock({ user }: AccountBlockProps) {
     router.refresh()
   }
 
-  const initials = user.name
+  const initials = (user.name ?? '')
     .split(' ')
-    .map((n) => n[0])
+    .map((n) => n[0] ?? '')
+    .filter(Boolean)
     .slice(0, 2)
     .join('')
-    .toUpperCase()
+    .toUpperCase() || '?'
 
   return (
     <div
