@@ -1,7 +1,7 @@
 'use client'
 
-import { ErrorCard } from '@/components/ui/ErrorCard'
+import { ErrorState } from '@/components/layout/shell/ContentStates'
 
-export default function DriverError({ error, reset }: { error: Error; reset: () => void }) {
-  return <ErrorCard title="Failed to load vehicle data" message={error.message} onReset={reset} />
+export default function DriverError({ reset }: { error: Error; reset: () => void }) {
+  return <ErrorState onRetry={reset} />
 }
