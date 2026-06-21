@@ -3,45 +3,16 @@
 -- Applied automatically by: make db-reset (supabase db reset)
 -- DO NOT run against production.
 --
--- Creates a platform_admin dev user for local testing of the /platform route.
--- Credentials are intentionally hardcoded — this is a private, local-dev-only file.
-
--- pgcrypto is required for crypt() / gen_salt() used in encrypted_password below.
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
+-- Auth users are created via GoTrue admin API in seed-users.mjs (called by make db-reset).
+-- Direct INSERT into auth.users is intentionally omitted — pgcrypto.crypt() produces bcrypt
+-- hashes that GoTrue cannot verify (GoTrue uses argon2id in newer versions).
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- 1. Create the auth user in Supabase auth.users
---    handle_new_user() trigger fires on INSERT and creates the public.users row.
---    The manual public.users INSERT below is a safety net in case the trigger
---    does not fire in the seed context (e.g. seed runs before trigger is active).
--- ─────────────────────────────────────────────────────────────────────────────
-
-INSERT INTO auth.users (
-  id,
-  email,
-  encrypted_password,
-  email_confirmed_at,
-  raw_user_meta_data,
-  created_at,
-  updated_at,
-  aud,
-  role
-) VALUES (
-  'a0000000-0000-0000-0000-000000000001',
-  'platform-admin@evecosys.local',
-  crypt('DevPassword123!', gen_salt('bf')),
-  NOW(),
-  '{"role": "platform_admin", "full_name": "Dev Platform Admin"}'::jsonb,
-  NOW(),
-  NOW(),
-  'authenticated',
-  'authenticated'
-) ON CONFLICT (id) DO NOTHING;
-
--- ─────────────────────────────────────────────────────────────────────────────
--- 2. Ensure the public.users row exists (idempotent safety net)
---    The trigger inserts this row on auth.users INSERT; this INSERT is a
---    belt-and-suspenders guard for seed runs where trigger order may vary.
+-- 1. Public users safety net
+--    handle_new_user() trigger creates this row on auth.users INSERT.
+--    This INSERT is a belt-and-suspenders guard in case the trigger fires
+--    before seed-users.mjs has created the auth row (should not happen in
+--    practice since seed-users.mjs runs after db reset completes).
 -- ─────────────────────────────────────────────────────────────────────────────
 
 INSERT INTO public.users (id, email, full_name, role)

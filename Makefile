@@ -57,6 +57,7 @@ db-stop: ## Stop local Supabase
 
 db-reset: ## Reset local Supabase DB and re-apply all migrations
 	npx supabase db reset
+	node supabase/seed-users.mjs
 
 db-status: ## Show local Supabase service status and credentials
 	npx supabase status
