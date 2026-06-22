@@ -56,7 +56,7 @@ const NavigationItem = React.forwardRef<HTMLAnchorElement, NavigationItemProps>(
           "group flex items-center gap-[var(--ds-space-sm)] px-[var(--ds-space-sm)] py-[var(--ds-space-xs)]",
           "rounded-[var(--ds-radius-md)] w-full",
           "text-[var(--ds-font-size-sm)] font-[var(--ds-font-weight-medium)]",
-          "transition-colors duration-[var(--ds-motion-duration-fast)]",
+          "transition-colors duration-(--ds-motion-duration-fast)",
           "border-l-2 border-transparent",
           // Default
           "text-[var(--ds-color-neutral-grey-60)]",

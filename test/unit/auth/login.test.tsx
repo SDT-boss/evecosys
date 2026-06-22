@@ -3,7 +3,10 @@ import LoginPage from '@/app/(auth)/login/page'
 
 const mockPush = vi.fn()
 const mockRefresh = vi.fn()
-vi.mock('next/navigation', () => ({ useRouter: () => ({ push: mockPush, refresh: mockRefresh }) }))
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: mockPush, refresh: mockRefresh }),
+  useSearchParams: () => ({ get: () => null }),
+}))
 
 const mockSignIn = vi.fn()
  
@@ -30,7 +33,7 @@ describe('LoginPage', () => {
 
   it('renders email, password fields and sign-in button — no Google button', () => {
     render(<LoginPage />)
-    expect(screen.getByPlaceholderText(/you@evecosys.com/i)).toBeInTheDocument()
+    expect(screen.getByPlaceholderText(/you@company\.com/i)).toBeInTheDocument()
     expect(screen.getByPlaceholderText(/••••••••/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument()
     expect(screen.queryByText(/continue with google/i)).not.toBeInTheDocument()
@@ -40,7 +43,7 @@ describe('LoginPage', () => {
     mockSignIn.mockResolvedValue({ data: { user: null }, error: { message: 'Invalid login credentials' } })
     render(<LoginPage />)
 
-    fireEvent.change(screen.getByPlaceholderText(/you@evecosys.com/i), { target: { value: 'bad@example.com' } })
+    fireEvent.change(screen.getByPlaceholderText(/you@company\.com/i), { target: { value: 'bad@example.com' } })
     fireEvent.change(screen.getByPlaceholderText(/••••••••/), { target: { value: 'wrongpass' } })
     fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
 
@@ -54,7 +57,7 @@ describe('LoginPage', () => {
     })
     render(<LoginPage />)
 
-    fireEvent.change(screen.getByPlaceholderText(/you@evecosys.com/i), { target: { value: 'driver@example.com' } })
+    fireEvent.change(screen.getByPlaceholderText(/you@company\.com/i), { target: { value: 'driver@example.com' } })
     fireEvent.change(screen.getByPlaceholderText(/••••••••/), { target: { value: 'password123' } })
     fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
 
@@ -68,7 +71,7 @@ describe('LoginPage', () => {
     })
     render(<LoginPage />)
 
-    fireEvent.change(screen.getByPlaceholderText(/you@evecosys.com/i), { target: { value: 'manager@example.com' } })
+    fireEvent.change(screen.getByPlaceholderText(/you@company\.com/i), { target: { value: 'manager@example.com' } })
     fireEvent.change(screen.getByPlaceholderText(/••••••••/), { target: { value: 'password123' } })
     fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
 
@@ -83,7 +86,7 @@ describe('LoginPage', () => {
     })
     render(<LoginPage />)
 
-    fireEvent.change(screen.getByPlaceholderText(/you@evecosys.com/i), { target: { value: 'driver@example.com' } })
+    fireEvent.change(screen.getByPlaceholderText(/you@company\.com/i), { target: { value: 'driver@example.com' } })
     fireEvent.change(screen.getByPlaceholderText(/••••••••/), { target: { value: 'password123' } })
     fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
 

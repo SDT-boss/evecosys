@@ -24,8 +24,10 @@ function isForceResetDue(forcePasswordResetAt: string | null): boolean {
 }
 
 export async function proxy(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request })
   const { pathname } = request.nextUrl
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-pathname', pathname)
+  let supabaseResponse = NextResponse.next({ request: { headers: requestHeaders } })
 
   const isPublic = PUBLIC_ROUTES.some(r => pathname.startsWith(r))
 
@@ -41,7 +43,7 @@ export async function proxy(request: NextRequest) {
         getAll() { return request.cookies.getAll() },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({ request })
+          supabaseResponse = NextResponse.next({ request: { headers: requestHeaders } })
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           )

@@ -56,7 +56,7 @@ const TabsTrigger = React.forwardRef<
       "rounded-[var(--ds-radius-sm)] px-3 py-1.5",
       "text-[var(--ds-font-size-sm)] font-[var(--ds-font-weight-medium)]",
       "ring-offset-white",
-      "transition-all duration-[var(--ds-motion-duration-fast)]",
+      "transition-all duration-(--ds-motion-duration-fast)",
       "focus-visible:outline-none focus-visible:ring-2",
       "focus-visible:ring-[var(--ds-color-brand-primary)] focus-visible:ring-offset-2",
       "disabled:pointer-events-none disabled:text-[var(--ds-color-neutral-grey-40)]",

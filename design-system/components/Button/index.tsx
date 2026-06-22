@@ -32,7 +32,7 @@ const buttonVariants = cva(
   [
     "inline-flex items-center justify-center gap-2 whitespace-nowrap",
     "rounded-[var(--ds-radius-md)] text-sm font-semibold",
-    "transition-colors duration-[var(--ds-motion-duration-base)]",
+    "transition-colors duration-(--ds-motion-duration-base)",
     "focus-visible:outline-none focus-visible:ring-2",
     "focus-visible:ring-[var(--ds-color-brand-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-white",
     "disabled:pointer-events-none disabled:bg-[var(--ds-color-neutral-grey-10)]",

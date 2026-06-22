@@ -1,11 +1,60 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Eye, EyeOff, Loader2, CheckCircle, ShieldAlert } from 'lucide-react'
+import { Eye, EyeOff, Loader2, CheckCircle, ShieldAlert, Bolt, LockKeyhole } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
-import { Logo } from '@/components/ui/Logo'
+
+const PANEL_GRADIENT = 'linear-gradient(150deg, #0e3d2a 0%, #1a7080 100%)'
+const BG = '#eef3f0'
+const GREEN = '#7cc242'
+const FOCUS_RING = '0 0 0 3px rgba(124,194,66,.20)'
+const BORDER = '#dde6df'
+const TEXT = '#16201b'
+const TEXT2 = '#46524a'
+const TEXT3 = '#8a978c'
+
+function BrandPanel() {
+  return (
+    <div style={{
+      position: 'relative', flex: '0 0 42%', maxWidth: 460, minWidth: 340,
+      padding: '40px 40px 32px', display: 'flex', flexDirection: 'column',
+      color: '#fff', overflow: 'hidden', background: PANEL_GRADIENT,
+    }}>
+      <div style={{ position: 'absolute', top: -90, right: -70, width: 300, height: 300, borderRadius: 9999, background: 'rgba(255,255,255,.08)' }} />
+      <div style={{ position: 'absolute', bottom: -120, left: -80, width: 320, height: 320, borderRadius: 9999, background: 'rgba(255,255,255,.06)' }} />
+
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 11 }}>
+        <span style={{ width: 38, height: 38, borderRadius: 11, background: 'rgba(255,255,255,.16)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Bolt size={20} color="#fff" />
+        </span>
+        <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-.4px' }}>EVEcosys</div>
+      </div>
+
+      <div style={{ position: 'relative', marginTop: 'auto', paddingTop: 36 }}>
+        <div style={{ width: 56, height: 56, borderRadius: 9999, background: 'rgba(255,255,255,.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+          <LockKeyhole size={26} color="#fff" />
+        </div>
+        <h1 style={{ fontSize: 27, fontWeight: 800, lineHeight: 1.18, letterSpacing: '-.6px', margin: 0 }}>
+          Secure your account.
+        </h1>
+        <p style={{ fontSize: 13.5, lineHeight: 1.5, opacity: .9, marginTop: 12, maxWidth: 310 }}>
+          Your new password is encrypted end-to-end and never stored in plaintext. Choose something strong — you won&apos;t need to share it with anyone.
+        </p>
+        <div style={{ marginTop: 24, padding: '13px 15px', borderRadius: 14, background: 'rgba(255,255,255,.12)', backdropFilter: 'blur(2px)' }}>
+          <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: '.2px', marginBottom: 7 }}>Password tips</div>
+          {['At least 12 characters', 'Mix uppercase, numbers & symbols', 'Don\'t reuse a previous password'].map(tip => (
+            <div key={tip} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, marginBottom: 5, opacity: .92 }}>
+              <div style={{ width: 5, height: 5, borderRadius: 9999, background: GREEN, flexShrink: 0 }} />
+              {tip}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ position: 'relative', marginTop: 28, fontSize: 11, opacity: .7 }}>© 2026 EVEcosys · Jakarta, Indonesia</div>
+    </div>
+  )
+}
 
 function ResetPasswordForm() {
   const router = useRouter()
@@ -29,11 +78,9 @@ function ResetPasswordForm() {
 
     const supabase = createClient()
 
-    // Update password
     const { error: updateError } = await supabase.auth.updateUser({ password })
     if (updateError) { setError('Failed to update password. Please try again.'); setLoading(false); return }
 
-    // Clear forced reset flag — set next reset date 30 days from now
     const getUserRes = await supabase.auth.getUser()
     const currentUser = getUserRes?.data?.user
     if (currentUser) {
@@ -54,110 +101,98 @@ function ResetPasswordForm() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg)' }}>
-      <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
-  <Logo src="/evecosys-light.png" />
-        <ThemeToggle />
-      </div>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '40px 24px', background: BG, overflowY: 'auto' }}>
+      <div style={{ width: '100%', maxWidth: 380 }}>
+        <h2 style={{ fontSize: 23, fontWeight: 800, color: TEXT, letterSpacing: '-.4px', margin: 0 }}>
+          {isForced ? 'Update your password' : 'Set new password'}
+        </h2>
+        <p style={{ fontSize: 13, color: TEXT3, marginTop: 5, lineHeight: 1.5 }}>
+          Choose a strong password — minimum 8 characters.
+        </p>
 
-      <div className="flex-1 flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-sm fade-in">
-
-          {isForced && !done && (
-            <div
-              className="flex items-center gap-3 rounded-xl px-4 py-3 mb-6 text-sm"
-              style={{ background: '#fef3dc', border: '1px solid #f0d080', color: '#8a5500' }}
-            >
-              <ShieldAlert size={16} style={{ flexShrink: 0 }} />
-              Your password has expired. Please set a new password to continue.
-            </div>
-          )}
-
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold tracking-tight mb-1" style={{ color: 'var(--text)' }}>
-              {isForced ? 'Update your password' : 'Set new password'}
-            </h1>
-            <p className="text-sm" style={{ color: 'var(--text3)' }}>
-              Choose a strong password — minimum 8 characters.
-            </p>
+        {isForced && !done && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '11px 13px', borderRadius: 12, background: '#fef3dc', border: '1px solid #f0d080', color: '#8a5500', fontSize: 13, marginTop: 16 }}>
+            <ShieldAlert size={16} style={{ flexShrink: 0 }} />
+            Your password has expired. Please set a new password to continue.
           </div>
+        )}
 
-          <div
-            className="rounded-2xl p-8"
-            style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }}
-          >
-            {done ? (
-              <div className="text-center py-4">
-                <div className="flex justify-center mb-4">
-                  <CheckCircle size={40} style={{ color: '#7cc242' }} />
-                </div>
-                <p className="font-600 mb-2" style={{ color: 'var(--text)', fontWeight: 600 }}>Password updated</p>
-                <p className="text-sm" style={{ color: 'var(--text3)' }}>Redirecting you to your dashboard…</p>
+        <div style={{ marginTop: 22 }}>
+          {done ? (
+            <div style={{ textAlign: 'center', padding: '28px 0' }}>
+              <div style={{ width: 60, height: 60, borderRadius: 9999, background: '#d7f0c4', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                <CheckCircle size={30} color={GREEN} />
               </div>
-            ) : (
-              <form onSubmit={handleReset} className="space-y-5">
-                {error && (
-                  <div data-testid="auth-error" className="rounded-lg px-4 py-3 text-sm font-medium" style={{ background: '#fdeaea', color: '#8a1010', border: '1px solid #f5c0c0' }}>
-                    {error}
-                  </div>
-                )}
+              <div style={{ fontSize: 16, fontWeight: 800, color: TEXT }}>Password updated</div>
+              <div style={{ fontSize: 13, color: TEXT3, marginTop: 6 }}>Redirecting you to your dashboard…</div>
+            </div>
+          ) : (
+            <form onSubmit={handleReset} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {error && (
+                <div data-testid="auth-error" style={{ borderRadius: 10, padding: '10px 13px', fontSize: 13, background: '#fdeaea', color: '#8a1010', border: '1px solid #f5c0c0' }}>
+                  {error}
+                </div>
+              )}
 
-                {['New password', 'Confirm password'].map((label, idx) => {
-                  const val = idx === 0 ? password : confirm
-                  const setter = idx === 0 ? setPassword : setConfirm
-                  return (
-                    <div key={label}>
-                      <label className="block text-xs uppercase tracking-wide mb-2" style={{ color: 'var(--text3)', letterSpacing: '0.5px', fontWeight: 700 }}>
-                        {label}
-                      </label>
-                      <div className="relative">
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          value={val}
-                          onChange={e => setter(e.target.value)}
-                          required
-                          placeholder="••••••••"
-                          className="w-full rounded-lg px-4 py-3 pr-11 text-sm outline-none transition-all duration-150"
-                          style={{ background: 'var(--surface2)', border: '1px solid var(--border)', color: 'var(--text)' }}
-                          onFocus={e => (e.target.style.borderColor = '#7cc242')}
-                          onBlur={e => (e.target.style.borderColor = 'var(--border)')}
-                        />
-                        {idx === 0 && (
-                          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text3)' }} tabIndex={-1}>
-                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  )
-                })}
+              {(['New password', 'Confirm password'] as const).map((label, idx) => {
+                const val = idx === 0 ? password : confirm
+                const setter = idx === 0 ? setPassword : setConfirm
+                return (
+                  <PwField key={label} label={label} value={val} onChange={setter} showToggle={idx === 0} showPassword={showPassword} onToggle={() => setShowPassword(p => !p)} />
+                )
+              })}
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full rounded-lg py-3 text-sm font-700 text-white transition-all duration-150 flex items-center justify-center gap-2"
-                  style={{ background: '#7cc242', fontWeight: 700, opacity: loading ? 0.8 : 1 }}
-                >
-                  {loading && <Loader2 size={15} className="animate-spin" />}
-                  {loading ? 'Updating…' : 'Update password'}
-                </button>
-              </form>
-            )}
-          </div>
+              <button
+                type="submit" disabled={loading}
+                style={{ width: '100%', padding: '13px', borderRadius: 12, border: 'none', background: loading ? '#5a9e2f' : GREEN, color: '#fff', fontSize: 14, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, opacity: loading ? 0.8 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
+              >
+                {loading && <Loader2 size={15} className="animate-spin" />}
+                {loading ? 'Updating…' : 'Update password'}
+              </button>
+            </form>
+          )}
         </div>
-      </div>
-
-      <div className="text-center py-4 text-xs" style={{ color: 'var(--text3)', borderTop: '1px solid var(--border)' }}>
-        © 2026 <span style={{ color: '#7cc242', fontWeight: 600 }}>EVEcosys</span> — Fleet Management System
       </div>
     </div>
   )
 }
 
+function PwField({ label, value, onChange, showToggle, showPassword, onToggle }: {
+  label: string; value: string; onChange: (v: string) => void
+  showToggle: boolean; showPassword: boolean; onToggle: () => void
+}) {
+  const [on, setFoc] = useState(false)
+  return (
+    <label style={{ display: 'block' }}>
+      <div style={{ fontSize: 12, fontWeight: 700, color: TEXT2, marginBottom: 6 }}>{label}</div>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 9, height: 46, padding: '0 13px',
+        borderRadius: 12, background: '#fff', border: `1.5px solid ${on ? GREEN : BORDER}`,
+        boxShadow: on ? FOCUS_RING : 'none', transition: 'all .15s',
+      }}>
+        <input
+          type={showPassword ? 'text' : 'password'} value={value} placeholder="••••••••"
+          onFocus={() => setFoc(true)} onBlur={() => setFoc(false)}
+          onChange={e => onChange(e.target.value)} required
+          style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: 14, color: TEXT, minWidth: 0 }}
+        />
+        {showToggle && (
+          <button type="button" onClick={onToggle} style={{ color: TEXT3, display: 'flex' }}>
+            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+          </button>
+        )}
+      </div>
+    </label>
+  )
+}
+
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<div style={{ minHeight: '100vh', background: 'var(--bg)' }} />}>
-      <ResetPasswordForm />
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: BG }} />}>
+      <div style={{ display: 'flex', minHeight: '100vh', background: BG }}>
+        <BrandPanel />
+        <ResetPasswordForm />
+      </div>
     </Suspense>
   )
 }
