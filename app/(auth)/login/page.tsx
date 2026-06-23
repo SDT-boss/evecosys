@@ -193,15 +193,21 @@ function AuthForms() {
     setLoading(true); setError('')
     const supabase = createClient()
     const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password: pw })
+    console.log('[login] signIn result:', { user: data?.user?.email, error: authError?.message })
     if (authError) { setError('Invalid email or password.'); setLoading(false); return }
     if (data.user) {
-      const { data: profile } = await supabase.from('users').select('role, force_password_reset_at').eq('id', data.user.id).single()
+      const { data: profile, error: profileError } = await supabase.from('users').select('role, force_password_reset_at').eq('id', data.user.id).single()
+      console.log('[login] profile result:', { role: profile?.role, error: profileError?.message })
       if (profile?.force_password_reset_at && new Date(profile.force_password_reset_at) < new Date()) {
         router.push('/reset-password?forced=true'); return
       }
-      const routes: Record<string, string> = { manager: '/manager', board: '/board', driver: '/driver' }
-      router.push(routes[profile?.role ?? 'driver'] ?? '/login')
-      router.refresh()
+      const routes: Record<string, string> = { platform_admin: '/platform', manager: '/manager', board: '/board', driver: '/driver' }
+      const dest = routes[profile?.role ?? 'driver'] ?? '/login'
+      console.log('[login] navigating to:', dest)
+      window.location.href = dest
+    } else {
+      console.log('[login] no user in response')
+      setLoading(false)
     }
   }
 

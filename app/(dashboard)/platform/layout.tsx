@@ -7,15 +7,17 @@ import type { AppUser } from '@/types'
 
 export default async function PlatformLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  console.log('[platform/layout] user:', user?.email ?? 'null', '| error:', userError?.message)
 
   if (!user) redirect('/login')
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from('users')
     .select('*')
     .eq('id', user.id)
     .single()
+  console.log('[platform/layout] profile:', profile?.role ?? 'null', '| error:', profileError?.message)
 
   if (!profile || profile.role !== 'platform_admin') redirect('/login')
 

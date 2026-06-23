@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 const ROLE_ROUTES: Record<string, string> = {
+  platform_admin: '/platform',
   manager: '/manager',
   board: '/board',
   driver: '/driver',
@@ -52,12 +53,17 @@ export async function proxy(request: NextRequest) {
     }
   )
 
+  const cookieNames = request.cookies.getAll().map(c => c.name)
+  console.log('[proxy] pathname:', pathname, '| cookies:', cookieNames)
+
   let user: Awaited<ReturnType<typeof supabase.auth.getUser>>['data']['user'] = null
   try {
     ;({ data: { user } } = await supabase.auth.getUser())
   } catch (err) {
     console.error('[proxy] supabase.auth.getUser failed:', err)
   }
+
+  console.log('[proxy] user:', user?.email ?? 'null')
 
   if (!user) {
     return NextResponse.redirect(new URL('/login', request.url))
