@@ -4,6 +4,10 @@ import { createClient } from '@/lib/supabase/server'
 import type { TripRequest } from '@/lib/trip-planner/types'
 import type { Charger } from '@/lib/trip-planner/types'
 
+const VALID_MODELS: TripRequest['vehicleModel'][] = [
+  'AION_Y_PLUS', 'JAC_T9', 'FOTON_E_VIEW', 'FOTON_E_MILLER', 'FOTON_E_TRUCKMATE',
+]
+
 export async function POST(req: NextRequest) {
   let body: unknown
   try {
@@ -17,7 +21,12 @@ export async function POST(req: NextRequest) {
   if (
     typeof batteryPercent !== 'number' ||
     batteryPercent < 0 || batteryPercent > 100 ||
-    !origin || !destination || !vehicleModel
+    !vehicleModel ||
+    !VALID_MODELS.includes(vehicleModel as TripRequest['vehicleModel']) ||
+    typeof (origin as Record<string, unknown>)?.latitude !== 'number' ||
+    typeof (origin as Record<string, unknown>)?.longitude !== 'number' ||
+    typeof (destination as Record<string, unknown>)?.latitude !== 'number' ||
+    typeof (destination as Record<string, unknown>)?.longitude !== 'number'
   ) {
     return NextResponse.json({ error: 'Missing or invalid fields' }, { status: 400 })
   }
@@ -53,6 +62,6 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
     console.error('[trips/plan]', message)
-    return NextResponse.json({ error: 'Trip planning failed', detail: message }, { status: 500 })
+    return NextResponse.json({ error: 'Trip planning failed' }, { status: 500 })
   }
 }
