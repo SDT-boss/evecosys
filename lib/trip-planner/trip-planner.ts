@@ -46,10 +46,11 @@ function planLeg(
   }
 
   // Need a charging stop — find the best reachable charger.
-  // Use raw battery range (no MIN reserve) for reaching an intermediate charger;
-  // the MIN reserve applies only to final-destination reachability.
+  // Use full battery capacity (not remainingRangeKm) for charger reachability:
+  // the 20% MIN_BATTERY reserve is a destination-arrival constraint, not an
+  // intermediate-charger constraint — the vehicle will recharge at this stop.
   const rawRange = batteryPercent / percentPerKm(model)
-  const reachable = chargers.filter(c => !c.isOccupied && haversineKm(from, c) <= rawRange)
+  const reachable = chargers.filter(c => haversineKm(from, c) <= rawRange)
   const best = getNearestChargerAlongRoute(to, reachable)
 
   if (!best) {
@@ -63,7 +64,7 @@ function planLeg(
   }
 
   const legToCharger = haversineKm(from, best)
-  const batteryAtCharger = batteryPercent - legToCharger * percentPerKm(model)
+  const batteryAtCharger = Math.max(0, batteryPercent - legToCharger * percentPerKm(model))
   const segmentToCharger: TripSegment = {
     from, to: best,
     distanceKm: legToCharger,

@@ -64,6 +64,24 @@ describe('planTrip — trip requiring a charging stop', () => {
   })
 })
 
+describe('planTrip — trip requiring two charging stops', () => {
+  // AION_Y_PLUS at 80%: remainingRangeKm(80) ≈ 360km, rawRange ≈ 400km.
+  // veryFarDest is ~900km from origin — needs at least two stops.
+  const veryFarDest = { latitude: 20.0, longitude: 126.0 }
+  const charger1: Charger = { id: 'c1', latitude: 16.0, longitude: 122.5, type: 'HIGHWAY', isOccupied: false }
+  const charger2: Charger = { id: 'c2', latitude: 18.0, longitude: 124.5, type: 'HIGHWAY', isOccupied: false }
+
+  it('returns a feasible plan with at least two charging stops', () => {
+    const plan = planTrip(
+      request({ destination: veryFarDest, batteryPercent: 80 }),
+      [charger1, charger2]
+    )
+    expect(plan.feasible).toBe(true)
+    expect(plan.chargingStops.length).toBeGreaterThanOrEqual(2)
+    expect(plan.segments.length).toBeGreaterThanOrEqual(3)
+  })
+})
+
 describe('planTrip — infeasible routes', () => {
   it('returns feasible: false when no chargers exist and battery is too low', () => {
     const plan = planTrip(request({ destination: farDest, batteryPercent: 10 }), [])
