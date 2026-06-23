@@ -3,17 +3,23 @@
 import { useState } from 'react'
 import type { AppUser } from '@/types'
 import { BrandHeader } from './shell/BrandHeader'
+import { AskEveLauncher } from './shell/AskEveLauncher'
 import { SidebarSearch } from './shell/SidebarSearch'
 import { NavItem } from './shell/NavItem'
 import { AccountBlock } from './shell/AccountBlock'
-import { AskEveLauncher } from './shell/AskEveLauncher'
 import { ContentUtilityBar } from './shell/ContentUtilityBar'
 import { TenantSwitcher } from './shell/TenantSwitcher'
 
 export interface NavItemConfig {
   label: string
-  icon: React.ReactNode
+  iconName: string
   href: string
+  badge?: number
+}
+
+export interface NavGroup {
+  label?: string
+  items: NavItemConfig[]
 }
 
 export interface TenantOption {
@@ -22,20 +28,19 @@ export interface TenantOption {
 }
 
 export interface LeftRailShellProps {
-  navItems: NavItemConfig[]
+  navGroups: NavGroup[]
   user: AppUser
   alertBell?: React.ReactNode
   children: React.ReactNode
-  /** Tenants for platform admin switcher. Only rendered when non-empty. */
   tenants?: TenantOption[]
   onTenantSelect?: (id: string) => void
 }
 
-const RAIL_WIDTH_EXPANDED = 264
-const RAIL_WIDTH_COLLAPSED = 72
+const RAIL_EXPANDED = 264
+const RAIL_COLLAPSED = 72
 
 export function LeftRailShell({
-  navItems,
+  navGroups,
   user,
   alertBell,
   children,
@@ -43,29 +48,23 @@ export function LeftRailShell({
   onTenantSelect,
 }: LeftRailShellProps) {
   const [collapsed, setCollapsed] = useState(false)
-  const railWidth = collapsed ? RAIL_WIDTH_COLLAPSED : RAIL_WIDTH_EXPANDED
-
+  const railWidth = collapsed ? RAIL_COLLAPSED : RAIL_EXPANDED
   const isPlatformAdmin = user.role === 'platform_admin'
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        minHeight: '100vh',
-        fontFamily: 'var(--ds-font-family-sans)',
-      }}
-    >
+    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'var(--ds-font-family-sans)' }}>
       {/* Left Rail */}
       <aside
         style={{
           width: railWidth,
           minWidth: railWidth,
           maxWidth: railWidth,
-          // rail bg — raw value; no --ds-* token exists for this surface
-          background: '#eef3f0',
-          borderRight: '1px solid var(--ds-color-neutral-grey-20)',
+          background: '#fff',
+          borderRight: '1px solid #e7ece8',
           display: 'flex',
           flexDirection: 'column',
+          gap: 6,
+          padding: collapsed ? '14px 16px' : '14px 14px 14px',
           transition: 'width var(--ds-motion-duration-base) var(--ds-motion-easing-standard)',
           overflow: 'hidden',
           position: 'fixed',
@@ -75,77 +74,67 @@ export function LeftRailShell({
           zIndex: 20,
         }}
       >
-        {/* Brand + collapse toggle */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <BrandHeader collapsed={collapsed} />
-          <button
-            onClick={() => setCollapsed((c) => !c)}
-            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            style={{
-              marginRight: 'var(--ds-space-sm)',
-              width: 28,
-              height: 28,
-              borderRadius: 'var(--ds-radius-sm)',
-              border: '1px solid var(--ds-color-neutral-grey-20)',
-              background: 'transparent',
-              color: 'var(--ds-color-neutral-grey-40)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              flexShrink: 0,
-              fontSize: '10px',
-            }}
-          >
-            {collapsed ? '»' : '«'}
-          </button>
-        </div>
+        <BrandHeader collapsed={collapsed} onToggle={() => setCollapsed((c) => !c)} />
 
-        {/* AskEVE launcher */}
-        {!collapsed && <AskEveLauncher />}
+        <AskEveLauncher collapsed={collapsed} />
 
-        {/* Search */}
-        {!collapsed && <SidebarSearch />}
+        <SidebarSearch collapsed={collapsed} />
 
-        {/* Tenant switcher — platform admin only; only render when tenants are available */}
-        {!collapsed && isPlatformAdmin && tenants.length > 0 && (
+        {isPlatformAdmin && tenants.length > 0 && (
           <TenantSwitcher tenants={tenants} onSelect={onTenantSelect ?? (() => {})} />
         )}
 
         {/* Divider */}
-        <div
-          style={{
-            height: 1,
-            background: 'var(--ds-color-neutral-grey-20)',
-            margin: 'var(--ds-space-xs) var(--ds-space-md)',
-          }}
-        />
+        <div style={{ height: 1, background: '#dde6df', flexShrink: 0, margin: collapsed ? '2px 0' : '2px -2px' }} />
 
-        {/* Nav items */}
+        {/* Nav groups */}
         <nav
           style={{
             flex: 1,
             overflowY: 'auto',
-            padding: `0 ${collapsed ? 'var(--ds-space-xs)' : '0'}`,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            margin: '0 -2px',
+            padding: '0 2px',
           }}
         >
-          {navItems.map((item) => (
-            <NavItem
-              key={item.href}
-              href={item.href}
-              label={collapsed ? '' : item.label}
-              icon={item.icon}
-            />
+          {navGroups.map((group, gi) => (
+            <div key={gi} style={{ marginTop: gi > 0 ? (collapsed ? 0 : 4) : 0 }}>
+              {collapsed ? (
+                gi > 0 ? (
+                  <div style={{ height: 1, background: '#dde6df', margin: '6px 8px 8px' }} />
+                ) : null
+              ) : (
+                group.label ? (
+                  <div style={{
+                    fontSize: 10.5, fontWeight: 700, textTransform: 'uppercase',
+                    letterSpacing: '.6px', color: '#9aa79e', padding: '4px 12px 6px',
+                  }}>
+                    {group.label}
+                  </div>
+                ) : null
+              )}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {group.items.map((item) => (
+                  <NavItem
+                    key={item.href}
+                    href={item.href}
+                    label={item.label}
+                    iconName={item.iconName}
+                    badge={item.badge}
+                    collapsed={collapsed}
+                  />
+                ))}
+              </div>
+            </div>
           ))}
         </nav>
 
         {/* Account block */}
         <AccountBlock
-          user={{
-            name: user.full_name,
-            email: user.email,
-            avatarUrl: user.avatar_url,
-          }}
+          user={{ name: user.full_name, email: user.email, avatarUrl: user.avatar_url }}
+          collapsed={collapsed}
         />
       </aside>
 
@@ -157,18 +146,12 @@ export function LeftRailShell({
           display: 'flex',
           flexDirection: 'column',
           minHeight: '100vh',
-          // page ground — raw value; no --ds-* token exists for this surface
           background: '#f2f5f2',
           transition: 'margin-left var(--ds-motion-duration-base) var(--ds-motion-easing-standard)',
         }}
       >
-        {/* Content utility bar with alertBell slot */}
         <ContentUtilityBar>{alertBell}</ContentUtilityBar>
-
-        {/* Page content */}
-        <main style={{ flex: 1, overflow: 'auto' }}>
-          {children}
-        </main>
+        <main style={{ flex: 1, overflow: 'auto' }}>{children}</main>
       </div>
     </div>
   )

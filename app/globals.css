@@ -138,3 +138,48 @@
    Apply .table-scroll to the wrapper div and let the inner table set a min-width. */
 .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .table-scroll table { min-width: 640px; }
+
+/* ─── Material Symbols icon span (Rounded, FILL=1) ───────────────────────── */
+.msym {
+  font-family: 'Material Symbols Rounded';
+  font-weight: normal;
+  font-style: normal;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  white-space: nowrap;
+  direction: ltr;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'liga';
+  -webkit-font-feature-settings: 'liga';
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* ─── EVEcosys brand gradient (matches design: teal → mid-green → volt) ─── */
+.eve-grad      { background: linear-gradient(135deg, #1a7080 0%, #2aa06a 55%, #7cc242 100%); }
+.eve-grad-soft { background: linear-gradient(135deg, #e7f3ee 0%, #eef7e3 100%); }
+
+/* ─── Auth screen animations (verbatim from rbac.css) ───────────────────── */
+@keyframes rb-fade { from { transform: translateY(6px); } to { transform: none; } }
+.rb-fade { animation: rb-fade .28s ease; }
+
+@keyframes rb-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
+.rb-pulse { animation: rb-pulse 1.6s ease-in-out infinite; }
+
+@keyframes route-bar { from { width: 8%; } to { width: 100%; } }
+.route-bar { animation: route-bar 1.6s cubic-bezier(.4, 0, .2, 1) forwards; }
+
+.eve-shadow    { box-shadow: 0 1px 3px rgba(20,45,32,.05), 0 12px 32px rgba(20,55,38,.07); }
+.eve-shadow-lg { box-shadow: 0 2px 8px rgba(20,45,32,.06), 0 28px 70px rgba(15,50,35,.16); }
+
+/* ─── Auth layout responsive: stack brand panel above form on narrow screens ── */
+@media (max-width: 720px) {
+  .auth-layout { flex-direction: column !important; }
+  .brand-panel { flex: none !important; max-width: none !important; min-width: 0 !important; width: 100%; }
+}

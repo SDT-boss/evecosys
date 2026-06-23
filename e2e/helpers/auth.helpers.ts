@@ -69,7 +69,7 @@ export async function loginViaUI(
 ): Promise<void> {
   const user = TEST_USERS[role]
   await page.goto('/login')
-  await page.getByPlaceholder(/you@evecosys.com/i).fill(user.email)
+  await page.getByPlaceholder(/you@company.com/i).fill(user.email)
   await page.getByPlaceholder(/••••••••/).fill(user.password)
   await page.getByRole('button', { name: /sign in/i }).click()
 

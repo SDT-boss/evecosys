@@ -1,35 +1,44 @@
-import { Sparkles } from 'lucide-react'
-
-export function AskEveLauncher() {
-  return (
-    <div style={{ padding: '0 var(--ds-space-md)', marginBottom: 'var(--ds-space-sm)' }}>
-      {/*
-       * AskEVE AI integration deferred to separate milestone.
-       * This button is intentionally inert — onClick is a no-op placeholder.
-       */}
+export function AskEveLauncher({ collapsed = false }: { collapsed?: boolean }) {
+  if (collapsed) {
+    return (
       <button
-        // AskEVE AI integration deferred to separate milestone
+        title="Ask EVE"
         disabled
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 'var(--ds-space-xs)',
-          width: '100%',
-          padding: 'var(--ds-space-sm) var(--ds-space-md)',
-          borderRadius: 'var(--ds-radius-md)',
-          border: '1px dashed var(--ds-color-neutral-grey-20)',
-          background: 'transparent',
-          color: 'var(--ds-color-neutral-grey-40)',
-          fontSize: 'var(--ds-font-size-xs)',
-          fontWeight: 'var(--ds-font-weight-medium)',
-          cursor: 'not-allowed',
-          fontFamily: 'var(--ds-font-family-sans)',
-        }}
         aria-label="Ask EVE (coming soon)"
+        style={{
+          width: 40, height: 40, borderRadius: 13,
+          margin: '0 auto',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: '#fff', border: '1px solid #e7efe9',
+          cursor: 'not-allowed', flexShrink: 0,
+        }}
       >
-        <Sparkles size={14} />
-        Ask EVE
+        <span className="material-symbols-rounded" aria-hidden="true"
+          style={{ fontSize: 20, lineHeight: 1, userSelect: 'none', color: '#1a7080' }}>
+          auto_awesome
+        </span>
       </button>
-    </div>
+    )
+  }
+  return (
+    <button
+      disabled
+      aria-label="Ask EVE (coming soon)"
+      style={{
+        display: 'flex', alignItems: 'center', gap: 11,
+        width: '100%', padding: '9px 12px', borderRadius: 14,
+        border: '1px solid #d6ecdb', background: 'rgba(26,112,128,.04)',
+        cursor: 'not-allowed', fontFamily: 'var(--ds-font-family-sans)',
+      }}
+    >
+      <span className="material-symbols-rounded" aria-hidden="true"
+        style={{ fontSize: 22, lineHeight: 1, color: '#1a7080', flexShrink: 0 }}>
+        auto_awesome
+      </span>
+      <span style={{ textAlign: 'left', lineHeight: 1.2 }}>
+        <span style={{ display: 'block', fontSize: 13.5, fontWeight: 700, color: '#15402e' }}>Ask EVE</span>
+        <span style={{ display: 'block', fontSize: 11, color: '#5a7a64' }}>Your fleet AI assistant</span>
+      </span>
+    </button>
   )
 }
