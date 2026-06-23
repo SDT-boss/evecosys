@@ -36,10 +36,24 @@ const headers = {
 }
 
 async function lookupByEmail(email) {
-  const res = await fetch(`${SUPABASE_URL}/auth/v1/admin/users?email=${encodeURIComponent(email)}`, { headers })
-  if (!res.ok) return null
-  const data = await res.json()
-  return data?.users?.[0] ?? null
+  // Query the DB directly — the GoTrue admin list API does not reliably filter by email.
+  const { execSync } = await import('child_process')
+  const safe = email.replace(/'/g, "''")
+  try {
+    const out = execSync(
+      `npx supabase db query "SELECT id FROM auth.users WHERE email = '${safe}'" --local`,
+      { stdio: ['pipe', 'pipe', 'pipe'] }
+    ).toString()
+    const match = out.match(/"id":\s*\[([^\]]+)\]/)
+    if (!match) return null
+    // Reconstruct UUID from byte array
+    const bytes = match[1].split(',').map(Number)
+    const hex = bytes.map(b => b.toString(16).padStart(2, '0')).join('')
+    const id = `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`
+    return { id }
+  } catch {
+    return null
+  }
 }
 
 async function deleteStaleRow(email) {
@@ -111,13 +125,39 @@ async function upsertUser({ id, email, password, user_metadata }) {
   throw new Error(`Failed to create ${email}: ${msg}`)
 }
 
+async function upsertPublicUser({ email, full_name, role }) {
+  // Ensures public.users row exists with correct role, resolving the real auth
+  // user ID from auth.users by email (safe when the user was created with a
+  // different UUID in a previous session).
+  const { execSync } = await import('child_process')
+  const safeEmail    = email.replace(/'/g, "''")
+  const safeName     = full_name.replace(/'/g, "''")
+  const q = [
+    `INSERT INTO public.users (id, email, full_name, role)`,
+    `SELECT id, '${safeEmail}', '${safeName}', '${role}' FROM auth.users WHERE email = '${safeEmail}'`,
+    `ON CONFLICT (id) DO UPDATE SET role = EXCLUDED.role, full_name = EXCLUDED.full_name`,
+  ].join(' ')
+  try {
+    execSync(`npx supabase db query "${q}" --local`, { stdio: 'pipe' })
+    console.log(`  [ok] public.users row ensured for ${email}`)
+  } catch (e) {
+    console.warn(`  [warn] could not upsert public.users for ${email}:`, e.message?.split('\n')[0])
+  }
+}
+
+const SEED_USERS = [
+  { id: 'a0000000-0000-0000-0000-000000000001', email: 'platform-admin@evecosys.local', full_name: 'Dev Platform Admin', role: 'platform_admin' },
+  { id: 'a0000000-0000-0000-0000-000000000002', email: 'board@evecosys.local',          full_name: 'Dev Board Member',    role: 'board' },
+  { id: 'a0000000-0000-0000-0000-000000000003', email: 'manager@evecosys.local',        full_name: 'Dev Fleet Manager',   role: 'manager' },
+  { id: 'a0000000-0000-0000-0000-000000000004', email: 'driver@evecosys.local',         full_name: 'Dev Driver',          role: 'driver' },
+]
+
 console.log('Seeding auth users...')
 
-await upsertUser({
-  id: 'a0000000-0000-0000-0000-000000000001',
-  email: 'platform-admin@evecosys.local',
-  password: 'DevPassword123!',
-  user_metadata: { role: 'platform_admin', full_name: 'Dev Platform Admin' },
-})
+for (const u of SEED_USERS) {
+  await upsertUser({ ...u, password: 'DevPassword123!', user_metadata: { role: u.role, full_name: u.full_name } })
+  await upsertPublicUser({ email: u.email, full_name: u.full_name, role: u.role })
+}
 
-console.log('Done. Login: platform-admin@evecosys.local / DevPassword123!')
+console.log('\nDev credentials (all use password: DevPassword123!)')
+for (const u of SEED_USERS) console.log(`  ${u.role.padEnd(14)} ${u.email}`)

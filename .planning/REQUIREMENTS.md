@@ -28,10 +28,10 @@
 
 ### Board Tenant Settings
 
-- [ ] **BSET-01**: Board member can configure tenant branding — logo upload, primary color, and tenant display name
-- [ ] **BSET-02**: Board member can invite new managers and drivers to their tenant and remove existing users
-- [ ] **BSET-03**: Board member can register a BYODB database connection using the existing `lib/tenant/` provisioning stack via API routes
-- [ ] **BSET-04**: Board member can enable or disable platform feature toggles for their tenant
+- [x] **BSET-01**: Board member can configure tenant branding — logo upload, primary color, and tenant display name *(Phase 4 complete 2026-06-21)*
+- [x] **BSET-02**: Board member can invite new managers and drivers to their tenant and remove existing users *(Phase 4 complete 2026-06-21)*
+- [x] **BSET-03**: Board member can register a BYODB database connection using the existing `lib/tenant/` provisioning stack via API routes *(Phase 4 complete 2026-06-21)*
+- [x] **BSET-04**: Board member can enable or disable platform feature toggles for their tenant *(Phase 4 complete 2026-06-21)*
 
 ### Storybook
 

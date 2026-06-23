@@ -24,20 +24,23 @@ Platform admins can always see which tenant they're operating in and switch cont
 - ✓ Design token system (`var(--ds-*)` CSS custom properties) — existing
 - ✓ `@evecosys/design-system` component library — existing
 
+<!-- EVE-145 phases 1–4 shipped -->
+
+- ✓ `platform_admin` role added to auth system, RLS, and DB schema — Phase 1
+- ✓ Platform Admin route (`/platform`) with tenant list — accessible only to platform admins — Phase 2
+- ✓ Active tenant indicator in Platform Admin header showing current workspace — Phase 2
+- ✓ Context persistence across navigation for platform admin sessions — Phase 2
+- ✓ Tenant switcher UI — tenant list, selection, loading / success / failure / blocked states — Phase 3
+- ✓ Blocked / no-access state when a restricted destination is reached — Phase 3
+- ✓ API routes wiring `lib/tenant/` provisioning stack to HTTP endpoints — Phase 4
+- ✓ Board Tenant Settings area — four tabs: Branding, Users, BYODB, Feature Toggles — Phase 4
+
 ### Active
 
-<!-- EVE-145 scope: full feature build — design + React + wired-up logic + Storybook -->
+<!-- EVE-145 remaining scope -->
 
-- [ ] `platform_admin` role added to auth system, RLS, and DB schema
-- [ ] Platform Admin route (`/platform`) with tenant list — accessible only to platform admins
-- [ ] Active tenant indicator in Platform Admin header showing current workspace
-- [ ] Tenant switcher UI — tenant list, selection, loading / success / failure states
-- [ ] Context persistence across navigation for platform admin sessions
-- [ ] Blocked / no-access state when a restricted destination is reached
-- [ ] API routes wiring `lib/tenant/` provisioning stack to HTTP endpoints
-- [ ] Board Tenant Settings area — four tabs: Branding, Users, BYODB, Feature Toggles
-- [ ] Storybook stories for all new shell components and states
-- [ ] E2E test: platform admin switches tenants; sees new context reflected app-wide
+- [ ] Storybook stories for all new shell components and states — Phase 5 (executed, pending UAT)
+- [ ] E2E test: platform admin switches tenants; sees new context reflected app-wide — stubs exist (`test.skip`); full E2E deferred until Supabase local env is stable
 
 ### Out of Scope
 
@@ -80,9 +83,12 @@ Platform admins can always see which tenant they're operating in and switch cont
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Platform Admin route model | Clean separation — platform ops never mixed with tenant UX; industry standard (Vercel, Stripe) | — Pending |
-| Full feature build (design + code + Storybook) | Deliverable must be implementation-ready and immediately usable; not a spec-only phase | — Pending |
-| Board settings within main app | Boards have a natural home in their tenant's dashboard; separate app would be friction | — Pending |
+| Platform Admin route model | Clean separation — platform ops never mixed with tenant UX; industry standard (Vercel, Stripe) | `/platform` standalone route group with its own PlatformShell — Phase 2 |
+| Full feature build (design + code + Storybook) | Deliverable must be implementation-ready and immediately usable; not a spec-only phase | All 4 feature phases shipped with Storybook in Phase 5 — complete |
+| Board settings within main app | Boards have a natural home in their tenant's dashboard; separate app would be friction | `app/(dashboard)/board/settings/` route group inside main dashboard — Phase 4 |
+| Middleware for RSC pathname detection | Keeps `platform/layout.tsx` fully server-rendered; alternative (thin client wrapper) would force a client boundary | `middleware.ts` forwards `x-pathname` header; scoped to non-static routes — Phase 3 |
+| ActionResult pattern for server actions | `{ ok, error }` return instead of throw; lets client components handle errors without try/catch | Applied to `setActiveTenant` and all board-settings API routes — Phases 3–4 |
+| TenantContext for cross-boundary state | Server Components render initial state; Client Components need live updates — context bridges the gap | `TenantProvider` + `useTenantContext()` in `components/platform/TenantContext.tsx` — Phase 3 |
 
 ## Evolution
 
@@ -102,4 +108,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-13 after initialization*
+*Last updated: 2026-06-21 after Phase 3 UAT (code-verified)*

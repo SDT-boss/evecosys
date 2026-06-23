@@ -7,18 +7,6 @@
 -- Direct INSERT into auth.users is intentionally omitted — pgcrypto.crypt() produces bcrypt
 -- hashes that GoTrue cannot verify (GoTrue uses argon2id in newer versions).
 
--- ─────────────────────────────────────────────────────────────────────────────
--- 1. Public users safety net
---    handle_new_user() trigger creates this row on auth.users INSERT.
---    This INSERT is a belt-and-suspenders guard in case the trigger fires
---    before seed-users.mjs has created the auth row (should not happen in
---    practice since seed-users.mjs runs after db reset completes).
--- ─────────────────────────────────────────────────────────────────────────────
-
-INSERT INTO public.users (id, email, full_name, role)
-VALUES (
-  'a0000000-0000-0000-0000-000000000001',
-  'platform-admin@evecosys.local',
-  'Dev Platform Admin',
-  'platform_admin'
-) ON CONFLICT (id) DO NOTHING;
+-- public.users rows are created by the handle_new_user() trigger when
+-- seed-users.mjs creates auth users via the GoTrue admin API (runs after
+-- supabase db reset completes). No direct INSERT needed here.
