@@ -50,10 +50,10 @@ describe('LoginPage', () => {
     await waitFor(() => expect(screen.getByText(/invalid email or password/i)).toBeInTheDocument())
   })
 
-  it('redirects driver to /driver on successful login', async () => {
+  it('shows routing screen with Driver App label on driver login', async () => {
     mockSignIn.mockResolvedValue({ data: { user: { id: 'u1' } }, error: null })
     mockFromImpl = () => ({
-      select: () => ({ eq: () => ({ single: async () => ({ data: { role: 'driver', force_password_reset_at: null } }) }) }),
+      select: () => ({ eq: () => ({ single: async () => ({ data: { role: 'driver' } }) }) }),
     })
     render(<LoginPage />)
 
@@ -61,13 +61,13 @@ describe('LoginPage', () => {
     fireEvent.change(screen.getByPlaceholderText(/••••••••/), { target: { value: 'password123' } })
     fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
 
-    await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/driver'))
+    await waitFor(() => expect(screen.getByText('Driver App')).toBeInTheDocument())
   })
 
-  it('redirects manager to /manager on successful login', async () => {
+  it('shows routing screen with Fleet Manager label on manager login', async () => {
     mockSignIn.mockResolvedValue({ data: { user: { id: 'u2' } }, error: null })
     mockFromImpl = () => ({
-      select: () => ({ eq: () => ({ single: async () => ({ data: { role: 'manager', force_password_reset_at: null } }) }) }),
+      select: () => ({ eq: () => ({ single: async () => ({ data: { role: 'manager' } }) }) }),
     })
     render(<LoginPage />)
 
@@ -75,14 +75,13 @@ describe('LoginPage', () => {
     fireEvent.change(screen.getByPlaceholderText(/••••••••/), { target: { value: 'password123' } })
     fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
 
-    await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/manager'))
+    await waitFor(() => expect(screen.getByText('Fleet Manager')).toBeInTheDocument())
   })
 
-  it('redirects to /reset-password?forced=true when force_password_reset_at is in the past', async () => {
-    const pastDate = new Date(Date.now() - 1000).toISOString()
+  it('shows routing screen on login (forced-reset redirect is handled by middleware)', async () => {
     mockSignIn.mockResolvedValue({ data: { user: { id: 'u3' } }, error: null })
     mockFromImpl = () => ({
-      select: () => ({ eq: () => ({ single: async () => ({ data: { role: 'driver', force_password_reset_at: pastDate } }) }) }),
+      select: () => ({ eq: () => ({ single: async () => ({ data: { role: 'driver' } }) }) }),
     })
     render(<LoginPage />)
 
@@ -90,6 +89,6 @@ describe('LoginPage', () => {
     fireEvent.change(screen.getByPlaceholderText(/••••••••/), { target: { value: 'password123' } })
     fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
 
-    await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/reset-password?forced=true'))
+    await waitFor(() => expect(screen.getByText(/taking you to your workspace/i)).toBeInTheDocument())
   })
 })
