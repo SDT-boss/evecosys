@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { DispatchEngine } from '../dispatch-engine'
 import { MockTelemetryAdapter } from '../adapters/mock-telemetry-adapter'
 import type { FleetRepository } from '../fleet-repository'
