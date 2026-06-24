@@ -80,22 +80,31 @@ jobs:
 
       - name: Push pending migrations to staging
         run: |
+          # urlparse fails in Python 3.12 when the password contains [ or @.
+          # Use plain string splitting instead — only quote() is needed from urllib.
           ENCODED_URL=$(python3 - <<'PYEOF'
-          import os, sys
-          from urllib.parse import urlparse, quote, urlunparse
-          url = os.environ.get('SUPABASE_DB_URL', '')
-          if not url:
-              sys.exit('SUPABASE_DB_URL secret is not set')
-          p = urlparse(url)
-          netloc = '{}:{}@{}'.format(
-              p.username or '',
-              quote(p.password or '', safe=''),
-              p.hostname,
-          )
-          if p.port:
-              netloc += ':{}'.format(p.port)
-          print(urlunparse(p._replace(netloc=netloc)))
-          PYEOF
+import os, sys
+from urllib.parse import quote
+url = os.environ.get('SUPABASE_DB_URL', '')
+if not url:
+    sys.exit('SUPABASE_DB_URL secret is not set')
+scheme_end = url.find('://')
+if scheme_end < 0:
+    print(url); sys.exit(0)
+scheme = url[:scheme_end + 3]        # e.g. 'postgresql://'
+rest   = url[scheme_end + 3:]        # 'user:pass@host:port/db'
+last_at = rest.rfind('@')
+if last_at < 0:
+    print(url); sys.exit(0)
+creds     = rest[:last_at]           # 'user:pass'
+host_part = rest[last_at + 1:]       # 'host:port/db'
+colon = creds.find(':')
+if colon < 0:
+    print(url); sys.exit(0)
+user     = creds[:colon]
+password = creds[colon + 1:]
+print(f"{scheme}{user}:{quote(password, safe='')}@{host_part}")
+PYEOF
           )
           supabase db push --db-url "$ENCODED_URL"
         env:
