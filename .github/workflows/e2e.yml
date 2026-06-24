@@ -73,18 +73,29 @@ jobs:
 
       # Push any pending migrations to staging so the test DB schema matches
       # the branch. supabase db push is idempotent — safe to run on every PR.
-      # Uses --project-ref (management API) — no direct DB connection required,
-      # no IPv6 dependency. Requires SUPABASE_ACCESS_TOKEN secret and
-      # SUPABASE_PROJECT_REF variable set in GitHub repo/environment settings.
+      #
+      # ⚠️  SUPABASE_DB_URL must be the SESSION POOLER connection string —
+      #     the direct connection (db.*.supabase.co) requires IPv6, which
+      #     GitHub Actions runners do not support.
+      #
+      #     Get it from: Supabase Dashboard → your project → Connect →
+      #     "Session pooler" tab → copy the connection string.
+      #     Then update the SUPABASE_DB_URL secret in:
+      #     GitHub → repo → Settings → Secrets and variables → Actions →
+      #     Environments → staging → SUPABASE_DB_URL
+      #
+      #     Session pooler URL format:
+      #     postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:5432/postgres
       - uses: supabase/setup-cli@v1
         with:
           version: latest
 
       - name: Push pending migrations to staging
-        run: supabase db push --project-ref "$SUPABASE_PROJECT_REF"
+        run: |
+          ENCODED_URL=$(python3 -c 'import os; from urllib.parse import quote; u=os.environ.get("SUPABASE_DB_URL",""); s=u.find("://"); r=u[s+3:] if s>=0 else ""; a=r.rfind("@"); c=r[:a].find(":") if a>=0 else -1; print(u[:s+3]+r[:c+1]+quote(r[c+1:a],safe="")+r[a:] if s>=0 and a>=0 and c>=0 else u)')
+          supabase db push --db-url "$ENCODED_URL"
         env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
 
       # global-setup.ts writes storageState files here before tests run
       - name: Create auth state directory
