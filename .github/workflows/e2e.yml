@@ -71,6 +71,14 @@ jobs:
           cp -r public .next/standalone/public
           cp -r .next/static .next/standalone/.next/static
 
+      # Push any pending migrations to staging so the test DB schema matches
+      # the branch. supabase db push is idempotent — safe to run on every PR.
+      - name: Install Supabase CLI
+        run: npm install -g supabase@latest
+
+      - name: Push pending migrations to staging
+        run: supabase db push --db-url "${{ secrets.SUPABASE_DB_URL }}"
+
       # global-setup.ts writes storageState files here before tests run
       - name: Create auth state directory
         run: mkdir -p e2e/.auth
