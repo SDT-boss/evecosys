@@ -56,24 +56,43 @@ export async function createTestUser(params: {
     email_confirm: true,
     user_metadata: { full_name: params.full_name, role: params.role },
   })
-  if (error) throw new Error(`createTestUser failed: ${error.message}`)
+
+  let userId: string
+
+  if (error) {
+    // Staging Supabase may have a handle_new_user trigger that fails on auth.users
+    // INSERT, causing "Database error creating new user". The auth user may or may
+    // not have been created — look it up to decide how to proceed.
+    if (error.message.includes('Database error') || error.message.includes('already been registered')) {
+      const { data: list } = await adminClient.auth.admin.listUsers({ page: 1, perPage: 200 })
+      const existing = list?.users?.find(u => u.email === params.email)
+      if (!existing) throw new Error(`createTestUser failed: ${error.message}`)
+      userId = existing.id
+      await adminClient.auth.admin.updateUserById(userId, { password: params.password })
+    } else {
+      throw new Error(`createTestUser failed: ${error.message}`)
+    }
+  } else {
+    userId = data.user.id
+  }
 
   const nextReset = new Date()
   nextReset.setDate(nextReset.getDate() + 30)
 
-  await adminClient.from('users').upsert({
-    id: data.user.id,
+  const { error: upsertError } = await adminClient.from('users').upsert({
+    id: userId,
     email: params.email,
     full_name: params.full_name,
     role: params.role,
     force_password_reset_at: nextReset.toISOString(),
   })
+  if (upsertError) throw new Error(`createTestUser: users upsert failed: ${upsertError.message}`)
 
   if (params.role === 'driver') {
-    await adminClient.from('drivers').insert({ user_id: data.user.id })
+    await adminClient.from('drivers').upsert({ user_id: userId })
   }
 
-  return { id: data.user.id, email: params.email, role: params.role }
+  return { id: userId, email: params.email, role: params.role }
 }
 
 /** Deletes a user from Supabase Auth and cascades to public.users (via FK or manual delete). */
