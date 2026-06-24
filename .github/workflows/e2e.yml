@@ -73,11 +73,33 @@ jobs:
 
       # Push any pending migrations to staging so the test DB schema matches
       # the branch. supabase db push is idempotent — safe to run on every PR.
+      # The SUPABASE_DB_URL password may contain special characters (@ # etc.)
+      # that Go's net/url parser rejects without percent-encoding — encode first.
       - name: Install Supabase CLI
         run: npm install -g supabase@latest
 
       - name: Push pending migrations to staging
-        run: supabase db push --db-url "${{ secrets.SUPABASE_DB_URL }}"
+        run: |
+          ENCODED_URL=$(python3 - <<'PYEOF'
+          import os, sys
+          from urllib.parse import urlparse, quote, urlunparse
+          url = os.environ.get('SUPABASE_DB_URL', '')
+          if not url:
+              sys.exit('SUPABASE_DB_URL secret is not set')
+          p = urlparse(url)
+          netloc = '{}:{}@{}'.format(
+              p.username or '',
+              quote(p.password or '', safe=''),
+              p.hostname,
+          )
+          if p.port:
+              netloc += ':{}'.format(p.port)
+          print(urlunparse(p._replace(netloc=netloc)))
+          PYEOF
+          )
+          supabase db push --db-url "$ENCODED_URL"
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
 
       # global-setup.ts writes storageState files here before tests run
       - name: Create auth state directory
