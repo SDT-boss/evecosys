@@ -80,32 +80,10 @@ jobs:
 
       - name: Push pending migrations to staging
         run: |
-          # urlparse fails in Python 3.12 when the password contains [ or @.
-          # Use plain string splitting instead — only quote() is needed from urllib.
-          ENCODED_URL=$(python3 - <<'PYEOF'
-import os, sys
-from urllib.parse import quote
-url = os.environ.get('SUPABASE_DB_URL', '')
-if not url:
-    sys.exit('SUPABASE_DB_URL secret is not set')
-scheme_end = url.find('://')
-if scheme_end < 0:
-    print(url); sys.exit(0)
-scheme = url[:scheme_end + 3]        # e.g. 'postgresql://'
-rest   = url[scheme_end + 3:]        # 'user:pass@host:port/db'
-last_at = rest.rfind('@')
-if last_at < 0:
-    print(url); sys.exit(0)
-creds     = rest[:last_at]           # 'user:pass'
-host_part = rest[last_at + 1:]       # 'host:port/db'
-colon = creds.find(':')
-if colon < 0:
-    print(url); sys.exit(0)
-user     = creds[:colon]
-password = creds[colon + 1:]
-print(f"{scheme}{user}:{quote(password, safe='')}@{host_part}")
-PYEOF
-          )
+          # Heredocs start at column 0, which YAML block scalars reject.
+          # Use python3 -c so everything stays at the correct indentation level.
+          # urlparse is avoided — Python 3.12 rejects bracketed hostnames.
+          ENCODED_URL=$(python3 -c 'import os; from urllib.parse import quote; u=os.environ.get("SUPABASE_DB_URL",""); s=u.find("://"); r=u[s+3:] if s>=0 else ""; a=r.rfind("@"); c=r[:a].find(":") if a>=0 else -1; print(u[:s+3]+r[:c+1]+quote(r[c+1:a],safe="")+r[a:] if s>=0 and a>=0 and c>=0 else u)')
           supabase db push --db-url "$ENCODED_URL"
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
