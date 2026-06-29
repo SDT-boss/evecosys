@@ -91,7 +91,6 @@ jobs:
           version: latest
 
       - name: Push pending migrations to staging
-        continue-on-error: true
         run: |
           if [ -z "$SUPABASE_DB_URL" ]; then
             echo "::warning::SUPABASE_DB_URL is not set — skipping migration push"
@@ -104,6 +103,25 @@ jobs:
             exit 0
           fi
           ENCODED_URL=$(python3 -c 'import os; from urllib.parse import quote; u=os.environ.get("SUPABASE_DB_URL",""); s=u.find("://"); r=u[s+3:] if s>=0 else ""; a=r.rfind("@"); c=r[:a].find(":") if a>=0 else -1; print(u[:s+3]+r[:c+1]+quote(r[c+1:a],safe="")+r[a:] if s>=0 and a>=0 and c>=0 else u)')
+
+          # The staging DB was provisioned with the full schema but an EMPTY
+          # migration-history table, so `db push` tries to re-run every migration
+          # from scratch and dies on the first "relation already exists" — never
+          # reaching genuinely-new migrations. Reconcile first: mark every
+          # migration that predates the baseline below as already-applied. This is
+          # idempotent (a no-op once recorded) and self-correcting — migrations at
+          # or after the baseline always flow through `db push` normally.
+          BASELINE=20260624000000
+          versions=()
+          for f in supabase/migrations/*.sql; do
+            v=$(basename "$f" | cut -d_ -f1)
+            if [ "$v" -lt "$BASELINE" ]; then versions+=("$v"); fi
+          done
+          if [ ${#versions[@]} -gt 0 ]; then
+            echo "Reconciling migration history for ${#versions[@]} pre-existing migration(s)..."
+            supabase migration repair --status applied "${versions[@]}" --db-url "$ENCODED_URL"
+          fi
+
           supabase db push --db-url "$ENCODED_URL"
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
