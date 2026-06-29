@@ -86,6 +86,17 @@ export default defineConfig({
       dependencies: ['setup'],
     },
 
+    // Provisioning API tests (EVE-45) — each scenario sets its own storageState.
+    // Scoped to the provisioning spec only; other specs under e2e/tests/platform
+    // (e.g. tenant-switcher) are owned by their own milestones and not wired here.
+    {
+      name: 'platform',
+      testDir: './e2e/tests/platform',
+      testMatch: '**/tenant-provisioning.spec.ts',
+      use: { ...devices['Desktop Chrome'] },
+      dependencies: ['setup'],
+    },
+
   ],
 
   webServer: process.env.CI
