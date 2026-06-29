@@ -131,9 +131,11 @@ test.describe('Platform admin — can access /platform', () => {
 test.describe('Manager — cannot access /platform', () => {
   test.use({ storageState: 'e2e/.auth/manager.json' })
 
-  test('manager GET /platform → /login', async ({ page }) => {
+  // proxy.ts redirects an authenticated user who hits a route outside their
+  // role area back to their own dashboard (not /login — they ARE logged in).
+  test('manager GET /platform → /manager', async ({ page }) => {
     await page.goto('/platform')
-    await expect(page).toHaveURL('/login', { timeout: 10_000 })
+    await expect(page).toHaveURL(/\/manager/, { timeout: 10_000 })
   })
 })
 
@@ -152,9 +154,11 @@ test.describe('Board member with tenant — can access /board/settings', () => {
 test.describe('Manager — cannot access /board/settings', () => {
   test.use({ storageState: 'e2e/.auth/manager.json' })
 
-  test('manager GET /board/settings → /login', async ({ page }) => {
+  // proxy.ts bounces a manager out of the /board area to their own dashboard
+  // before the /board/settings layout's own (stricter) guard ever runs.
+  test('manager GET /board/settings → /manager', async ({ page }) => {
     await page.goto('/board/settings')
-    await expect(page).toHaveURL('/login', { timeout: 10_000 })
+    await expect(page).toHaveURL(/\/manager/, { timeout: 10_000 })
   })
 })
 

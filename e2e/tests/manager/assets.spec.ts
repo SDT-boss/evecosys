@@ -40,8 +40,11 @@ test.describe('Manager — Assets', () => {
     await assetsPage.goto()
     await assetsPage.search(testVehicle.plate_no)
     await assetsPage.clearSearch()
-    const count = await assetsPage.vehicleCards().count()
-    expect(count).toBeGreaterThan(0)
+    // The list re-renders asynchronously after clearing — poll instead of
+    // reading the count once (a one-shot count() races the re-render).
+    await expect
+      .poll(() => assetsPage.vehicleCards().count(), { timeout: 10_000 })
+      .toBeGreaterThan(0)
   })
 
   // ─── Filters ─────────────────────────────────────────────────────────────

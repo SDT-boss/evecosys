@@ -95,6 +95,31 @@ export async function createTestUser(params: {
   return { id: userId, email: params.email, role: params.role }
 }
 
+/**
+ * Ensures a tenant owned by the given user exists (idempotent).
+ * /board/settings is gated on the board member owning a tenant
+ * (tenants.owner_id = user.id), so the persistent "board" test user needs one.
+ * Returns the tenant id.
+ */
+export async function ensureTestTenant(ownerId: string, name = 'E2E Board Tenant'): Promise<string> {
+  const { data: existing } = await adminClient
+    .from('tenants')
+    .select('id')
+    .eq('owner_id', ownerId)
+    .limit(1)
+    .maybeSingle()
+
+  if (existing) return existing.id
+
+  const { data, error } = await adminClient
+    .from('tenants')
+    .insert({ owner_id: ownerId, name, state: 'Active' })
+    .select('id')
+    .single()
+  if (error) throw new Error(`ensureTestTenant failed: ${error.message}`)
+  return data.id
+}
+
 /** Deletes a user from Supabase Auth and cascades to public.users (via FK or manual delete). */
 export async function deleteTestUser(userId: string): Promise<void> {
   await adminClient.from('users').delete().eq('id', userId)

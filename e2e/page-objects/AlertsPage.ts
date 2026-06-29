@@ -27,16 +27,15 @@ export class AlertsPage {
 
   async gotoManager() {
     await this.page.goto('/manager/alerts')
-    await expect(this.allFilterBtn).toBeVisible({timeout: 15000,})
-    await this.page.waitForLoadState('networkidle')
+    // Wait on a concrete render signal, not networkidle — these pages keep
+    // background connections open (alert polling / icon fonts), so networkidle
+    // never settles and times out.
+    await expect(this.allFilterBtn).toBeVisible({ timeout: 15000 })
   }
 
   async gotoDriver() {
-  await this.page.goto('/driver/alerts')
-  await expect(this.page.locator('h1')).toBeVisible({
-    timeout: 15000,
-  })
-  await this.page.waitForLoadState('networkidle')
+    await this.page.goto('/driver/alerts')
+    await expect(this.page.locator('h1')).toBeVisible({ timeout: 15000 })
   }
 
   /** Returns all visible alert row containers. */
@@ -67,7 +66,6 @@ export class AlertsPage {
     resolved: this.resolvedFilterBtn,
   }[filter]
   await btn.click()
-  await this.page.waitForLoadState('networkidle')
 }
 
   async expectEmptyState(filter: 'active' | 'resolved') {

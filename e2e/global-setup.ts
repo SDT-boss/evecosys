@@ -10,6 +10,7 @@ import dotenv from 'dotenv'
 import {
   createTestUser,
   deleteTestUser,
+  ensureTestTenant,
   adminClient,
 } from './helpers/supabase.admin'
 import { loginViaAPI, TEST_USERS, FORCED_RESET_USER, AUTH_STATE_PATH } from './helpers/auth.helpers'
@@ -78,7 +79,7 @@ export default async function globalSetup(config: FullConfig) {
 
   try {
     // Ensure all test users exist in Supabase
-    await Promise.all([
+    const [, , boardId] = await Promise.all([
       ensureTestUser('manager'),
       ensureTestUser('driver'),
       ensureTestUser('board'),
@@ -86,6 +87,10 @@ export default async function globalSetup(config: FullConfig) {
       ensureTestUser('board_no_tenant'),
       ensureUser(FORCED_RESET_USER), // dedicated user for forced-reset tests
     ])
+
+    // /board/settings requires the board member to own a tenant. The
+    // board_no_tenant user intentionally gets none (that's its whole point).
+    await ensureTestTenant(boardId)
 
     // Generate auth state for each role in parallel
     await Promise.all(
