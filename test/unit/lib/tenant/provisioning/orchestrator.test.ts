@@ -139,4 +139,37 @@ describe('ProvisioningOrchestrator', () => {
     expect(getStatus()).toBe('AwaitingManualIntervention')
     expect(run.status).toBe('AwaitingManualIntervention')
   })
+
+  it('continues rollback when a compensate throws, and audits compensate.fail', async () => {
+    const log: string[] = []
+    const audited: string[] = []
+    const { store, getStatus } = memStore()
+    const audit = { record: vi.fn().mockImplementation(async (e: { action: string }) => { audited.push(e.action) }) }
+
+    const failingCompensateStep: ProvisioningStep = {
+      name: 'seed_config',
+      maxAttempts: 1,
+      async run() { log.push('run:seed_config') },
+      async compensate() { log.push('compensate:seed_config'); throw new Error('compensate boom') },
+    }
+
+    const steps = [
+      failingCompensateStep,
+      fakeStep('bootstrap_metering', {}, log),
+      fakeStep('activate', { fail: () => new Error('boom'), maxAttempts: 1 }, log),
+    ]
+    const orch = new ProvisioningOrchestrator(steps, store, audit)
+
+    const run = await orch.provision(ctx())
+
+    // Both completed steps attempt compensation despite seed_config's compensate throwing.
+    expect(log).toContain('compensate:bootstrap_metering')
+    expect(log).toContain('compensate:seed_config')
+    // Reverse order: bootstrap_metering compensated before seed_config.
+    expect(log.indexOf('compensate:bootstrap_metering')).toBeLessThan(log.indexOf('compensate:seed_config'))
+    // A compensate.fail audit event was emitted for the throwing compensation.
+    expect(audited).toContain('compensate.fail')
+    expect(getStatus()).toBe('RolledBack')
+    expect(run.status).toBe('RolledBack')
+  })
 })

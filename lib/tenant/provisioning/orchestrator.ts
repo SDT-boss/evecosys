@@ -23,10 +23,18 @@ export class ProvisioningOrchestrator {
     private readonly audit: AuditSink = noopAuditSink,
   ) {}
 
+  private async safeAudit(event: Parameters<AuditSink['record']>[0]): Promise<void> {
+    try {
+      await this.audit.record(event)
+    } catch {
+      /* audit is observability — it must never break provisioning */
+    }
+  }
+
   async provision(ctx: ProvisioningContext): Promise<ProvisioningRun> {
     const tenantId = ctx.tenant.id
     const { runId } = await this.runStore.createRun(tenantId)
-    await this.audit.record({ tenantId, runId, action: 'run.start', outcome: 'ok', at: nowIso() })
+    await this.safeAudit({ tenantId, runId, action: 'run.start', outcome: 'ok', at: nowIso() })
 
     const completed: ProvisioningStep[] = []
 
@@ -39,7 +47,7 @@ export class ProvisioningOrchestrator {
         try {
           await step.run(ctx)
           await this.runStore.recordStep(runId, step.name, 'Completed', attempts)
-          await this.audit.record({ tenantId, runId, step: step.name, action: 'step.complete', outcome: 'ok', at: nowIso() })
+          await this.safeAudit({ tenantId, runId, step: step.name, action: 'step.complete', outcome: 'ok', at: nowIso() })
           completed.push(step)
           break
         } catch (err) {
@@ -47,30 +55,30 @@ export class ProvisioningOrchestrator {
           const message = err instanceof Error ? err.message : String(err)
 
           if (retryable && attempts < step.maxAttempts) {
-            await this.audit.record({ tenantId, runId, step: step.name, action: 'step.retry', outcome: 'error', error: message, at: nowIso() })
+            await this.safeAudit({ tenantId, runId, step: step.name, action: 'step.retry', outcome: 'error', error: message, at: nowIso() })
             continue
           }
 
           await this.runStore.recordStep(runId, step.name, 'Failed', attempts, message)
-          await this.audit.record({ tenantId, runId, step: step.name, action: 'step.fail', outcome: 'error', error: message, at: nowIso() })
+          await this.safeAudit({ tenantId, runId, step: step.name, action: 'step.fail', outcome: 'error', error: message, at: nowIso() })
 
           if (manual) {
             await this.runStore.setRunStatus(runId, 'AwaitingManualIntervention')
-            await this.audit.record({ tenantId, runId, step: step.name, action: 'run.manual', outcome: 'error', error: message, at: nowIso() })
-            return this.finalRun(runId, tenantId)
+            await this.safeAudit({ tenantId, runId, step: step.name, action: 'run.manual', outcome: 'error', error: message, at: nowIso() })
+            return this.finalRun(runId, tenantId, 'AwaitingManualIntervention')
           }
 
           await this.rollback(completed, ctx, runId)
           await this.runStore.setRunStatus(runId, 'RolledBack')
-          await this.audit.record({ tenantId, runId, step: step.name, action: 'run.rollback', outcome: 'error', error: message, at: nowIso() })
-          return this.finalRun(runId, tenantId)
+          await this.safeAudit({ tenantId, runId, step: step.name, action: 'run.rollback', outcome: 'error', error: message, at: nowIso() })
+          return this.finalRun(runId, tenantId, 'RolledBack')
         }
       }
     }
 
     await this.runStore.setRunStatus(runId, 'Provisioned')
-    await this.audit.record({ tenantId, runId, action: 'run.complete', outcome: 'ok', at: nowIso() })
-    return this.finalRun(runId, tenantId)
+    await this.safeAudit({ tenantId, runId, action: 'run.complete', outcome: 'ok', at: nowIso() })
+    return this.finalRun(runId, tenantId, 'Provisioned')
   }
 
   private async rollback(completed: ProvisioningStep[], ctx: ProvisioningContext, runId: string): Promise<void> {
@@ -80,7 +88,7 @@ export class ProvisioningOrchestrator {
         await this.runStore.recordStep(runId, step.name, 'Compensated', 0)
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err)
-        await this.audit.record({
+        await this.safeAudit({
           tenantId: ctx.tenant.id, runId, step: step.name,
           action: 'compensate.fail', outcome: 'error', error: message, at: nowIso(),
         })
@@ -88,8 +96,12 @@ export class ProvisioningOrchestrator {
     }
   }
 
-  private async finalRun(runId: string, tenantId: string): Promise<ProvisioningRun> {
+  private async finalRun(
+    runId: string,
+    tenantId: string,
+    status: ProvisioningRun['status'],
+  ): Promise<ProvisioningRun> {
     const run = await this.runStore.getRun(runId)
-    return run ?? { runId, tenantId, status: 'RolledBack', steps: [] }
+    return run ?? { runId, tenantId, status, steps: [] }
   }
 }
