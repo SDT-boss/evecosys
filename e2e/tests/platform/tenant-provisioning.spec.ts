@@ -3,16 +3,21 @@ import { adminClient } from '../../helpers/supabase.admin'
 
 /**
  * EVE-45 — tenant provisioning API.
- * Uses an unreachable BYODB host so bind_byodb fails (retryable → exhausts →
+ * Uses an unreachable BYODB endpoint so bind_byodb fails (retryable → exhausts →
  * rollback), proving a failed provision never leaves a routable (Active) tenant.
+ *
+ * The endpoint is localhost on a closed port: connecting yields an immediate
+ * ECONNREFUSED rather than a 5s connect timeout. bind_byodb retries 3× (5s each),
+ * so a black-hole host would take ~15s and exceed the per-test timeout; a refused
+ * connection keeps all three attempts effectively instant.
  */
 
 const UNREACHABLE_BYODB = {
   kind: 'structured',
   params: {
     engine: 'postgres',
-    host: '203.0.113.1', // TEST-NET-3, guaranteed unroutable
-    port: 5432,
+    host: '127.0.0.1', // localhost, closed port → immediate ECONNREFUSED
+    port: 1,
     database: 'nope',
     user: 'u',
     password: 'p',
@@ -91,6 +96,49 @@ test.describe('provision API — safe failure & isolation', () => {
     } finally {
       await deleteTenant(tenantA)
       await deleteTenant(tenantB)
+    }
+  })
+})
+
+test.describe('provision API — happy path', () => {
+  test.use({ storageState: 'e2e/.auth/platform-admin.json' })
+
+  // A genuinely reachable BYODB whose user can CREATE: the local Supabase Postgres
+  // itself, used here purely as a reachable target so the full success sequence
+  // (bind → seed → flags → metering → readiness → activate) runs end to end.
+  const REACHABLE_BYODB = {
+    kind: 'structured',
+    params: {
+      engine: 'postgres',
+      host: '127.0.0.1',
+      port: 54322,
+      database: 'postgres',
+      user: 'postgres',
+      password: 'postgres',
+    },
+  }
+
+  test('provisions a tenant through to Active with config + metering bootstrapped', async ({ page }) => {
+    const tenantId = await createRegisteredTenant('E2E Provision Success')
+    try {
+      const res = await page.request.post(`/api/platform/tenants/${tenantId}/provision`, {
+        data: REACHABLE_BYODB,
+      })
+      expect(res.status()).toBe(200)
+      const body = await res.json()
+      expect(body.status).toBe('Provisioned')
+
+      const { data: tenant } = await adminClient.from('tenants').select('state').eq('id', tenantId).single()
+      expect(tenant?.state).toBe('Active')
+
+      const { data: cfg } = await adminClient
+        .from('tenant_config').select('tenant_id').eq('tenant_id', tenantId).maybeSingle()
+      const { data: meter } = await adminClient
+        .from('tenant_storage_metering').select('quota_bytes').eq('tenant_id', tenantId).maybeSingle()
+      expect(cfg).not.toBeNull()
+      expect(meter).not.toBeNull()
+    } finally {
+      await deleteTenant(tenantId)
     }
   })
 })

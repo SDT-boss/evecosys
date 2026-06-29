@@ -86,6 +86,14 @@ export default defineConfig({
       dependencies: ['setup'],
     },
 
+    // Platform-admin tests — each spec sets its own storageState per scenario
+    {
+      name: 'platform',
+      testDir: './e2e/tests/platform',
+      use: { ...devices['Desktop Chrome'] },
+      dependencies: ['setup'],
+    },
+
   ],
 
   webServer: process.env.CI
