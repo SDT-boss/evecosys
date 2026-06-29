@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { DispatchEngine } from '@/lib/fleet/dispatch-engine'
 import { MockTelemetryAdapter } from '@/lib/fleet/adapters/mock-telemetry-adapter'
 import { SupabaseFleetRepository } from '@/lib/fleet/supabase-fleet-repository'
+import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 
 const PATROL_START_COORDS = {
@@ -10,9 +11,24 @@ const PATROL_START_COORDS = {
 }
 
 export async function POST() {
+  // This endpoint drives fleet-wide dispatch with the RLS-bypassing service
+  // role, so gate it on an authenticated manager before doing any work.
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { data: profile } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+  if (profile?.role !== 'manager') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
   try {
-    const supabase  = createServiceClient()
-    const repo      = new SupabaseFleetRepository(supabase)
+    const service   = createServiceClient()
+    const repo      = new SupabaseFleetRepository(service)
     const telemetry = new MockTelemetryAdapter()
     const engine    = new DispatchEngine(telemetry, repo, PATROL_START_COORDS)
 
@@ -22,6 +38,6 @@ export async function POST() {
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
     console.error('[fleet/evaluate]', message)
-    return NextResponse.json({ error: 'Fleet evaluation failed', detail: message }, { status: 500 })
+    return NextResponse.json({ error: 'Fleet evaluation failed' }, { status: 500 })
   }
 }

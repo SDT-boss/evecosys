@@ -1,9 +1,9 @@
-import type { Vehicle, Charger, Shift, Coords, ScoredVehicle } from './types'
-import type { TelemetryAdapter } from './adapters/telemetry-adapter'
-import type { FleetRepository } from './fleet-repository'
-import { shouldReroute, classifyReadiness, scoreVehicle } from './battery'
-import { createDispatchEvent } from './state-machine'
-import { isShiftStarting, isShiftEnding } from './shift-manager'
+import type { Vehicle, Charger, Shift, Coords, ScoredVehicle } from '@/lib/fleet/types'
+import type { TelemetryAdapter } from '@/lib/fleet/adapters/telemetry-adapter'
+import type { FleetRepository } from '@/lib/fleet/fleet-repository'
+import { shouldReroute, classifyReadiness, scoreVehicle } from '@/lib/fleet/battery'
+import { createDispatchEvent } from '@/lib/fleet/state-machine'
+import { isShiftStarting, isShiftEnding } from '@/lib/fleet/shift-manager'
 
 export class DispatchEngine {
   constructor(

@@ -1,14 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { planTrip } from '@/lib/trip-planner/trip-planner'
 import { createClient } from '@/lib/supabase/server'
-import type { TripRequest } from '@/lib/trip-planner/types'
-import type { Charger } from '@/lib/trip-planner/types'
+import type { TripRequest, Charger } from '@/lib/trip-planner/types'
 
 const VALID_MODELS: TripRequest['vehicleModel'][] = [
   'AION_Y_PLUS', 'JAC_T9', 'FOTON_E_VIEW', 'FOTON_E_MILLER', 'FOTON_E_TRUCKMATE',
 ]
 
 export async function POST(req: NextRequest) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   let body: unknown
   try {
     body = await req.json()
@@ -32,7 +35,6 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const supabase = await createClient()
     const { data, error } = await supabase
       .from('charging_stations')
       .select('id, latitude, longitude, type, is_occupied')

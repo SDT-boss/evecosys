@@ -1,6 +1,6 @@
-import type { TelemetrySnapshot, VehicleModel, Charger, ReadinessStatus, RerouteResult, Coords } from './types'
-import { VEHICLE_SPECS, REROUTE_THRESHOLD_PERCENT, REROUTE_PROXIMITY_KM } from './constants'
-import { haversineKm, projectPosition, getNearestCharger } from './geo'
+import type { TelemetrySnapshot, VehicleModel, Charger, ReadinessStatus, RerouteResult, Coords } from '@/lib/fleet/types'
+import { VEHICLE_SPECS, REROUTE_THRESHOLD_PERCENT, REROUTE_PROXIMITY_KM } from '@/lib/fleet/constants'
+import { haversineKm, projectPosition, getNearestCharger } from '@/lib/fleet/geo'
 
 export function percentPerKm(model: VehicleModel): number {
   return 100 / VEHICLE_SPECS[model].rangeKm

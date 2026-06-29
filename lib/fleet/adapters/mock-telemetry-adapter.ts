@@ -1,5 +1,5 @@
-import type { TelemetryAdapter } from './telemetry-adapter'
-import type { TelemetrySnapshot } from '../types'
+import type { TelemetryAdapter } from '@/lib/fleet/adapters/telemetry-adapter'
+import type { TelemetrySnapshot } from '@/lib/fleet/types'
 
 type SnapshotInput = Omit<TelemetrySnapshot, 'vehicleId' | 'timestamp'>
 

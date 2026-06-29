@@ -1,5 +1,5 @@
-import type { Shift } from './types'
-import { SHIFT_SCHEDULE } from './constants'
+import type { Shift } from '@/lib/fleet/types'
+import { SHIFT_SCHEDULE } from '@/lib/fleet/constants'
 
 export function getCurrentShiftNumber(now: Date = new Date()): 1 | 2 | 3 {
   const hour = now.getHours()

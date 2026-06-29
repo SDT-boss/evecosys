@@ -1,4 +1,4 @@
-import type { Coords, Charger } from './types'
+import type { Coords, Charger } from '@/lib/fleet/types'
 
 function toRad(deg: number): number {
   return deg * (Math.PI / 180)

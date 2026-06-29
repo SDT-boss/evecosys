@@ -1,4 +1,4 @@
-import type { VehicleStatus, DispatchEvent, DispatchAction } from './types'
+import type { VehicleStatus, DispatchEvent, DispatchAction } from '@/lib/fleet/types'
 import { randomUUID } from 'crypto'
 
 const ALLOWED_TRANSITIONS: Partial<Record<VehicleStatus, VehicleStatus[]>> = {

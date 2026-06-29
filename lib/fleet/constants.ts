@@ -1,4 +1,4 @@
-import type { VehicleModel, VehicleSpec, ShiftScheduleEntry } from './types'
+import type { VehicleModel, VehicleSpec, ShiftScheduleEntry } from '@/lib/fleet/types'
 
 export const VEHICLE_SPECS: Record<VehicleModel, VehicleSpec> = {
   AION_Y_PLUS:       { batteryKwh: 70.8, rangeKm: 600 },

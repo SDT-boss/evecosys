@@ -1,5 +1,5 @@
-import type { VehicleModel, ReadinessStatus } from './types'
-import { VEHICLE_SPECS, MIN_BATTERY_PERCENT } from './constants'
+import type { VehicleModel, ReadinessStatus } from '@/lib/trip-planner/types'
+import { VEHICLE_SPECS, MIN_BATTERY_PERCENT } from '@/lib/trip-planner/constants'
 
 export function percentPerKm(model: VehicleModel): number {
   return 100 / VEHICLE_SPECS[model].rangeKm

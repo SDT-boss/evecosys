@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { FleetRepository } from './fleet-repository'
-import type { Vehicle, Charger, Shift, DispatchEvent } from './types'
+import type { FleetRepository } from '@/lib/fleet/fleet-repository'
+import type { Vehicle, Charger, Shift, DispatchEvent } from '@/lib/fleet/types'
 
 function toVehicle(row: Record<string, unknown>): Vehicle {
   return {
@@ -30,7 +30,7 @@ function toShift(row: Record<string, unknown>): Shift {
     startTime:   new Date(row.start_time as string),
     endTime:     new Date(row.end_time as string),
     vehicleId:   row.vehicle_id as string,
-    driverIds:   row.driver_ids as string[],
+    driverIds:   (row.driver_ids as string[] | null) ?? [],
     status:      row.status as Shift['status'],
   }
 }

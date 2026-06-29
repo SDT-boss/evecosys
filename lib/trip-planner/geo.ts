@@ -1,4 +1,4 @@
-import type { Coords, Charger } from './types'
+import type { Coords, Charger } from '@/lib/trip-planner/types'
 
 export function haversineKm(a: Coords, b: Coords): number {
   const R = 6371

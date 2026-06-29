@@ -1,4 +1,4 @@
-import type { VehicleModel, VehicleSpec } from './types'
+import type { VehicleModel, VehicleSpec } from '@/lib/trip-planner/types'
 
 export const VEHICLE_SPECS: Record<VehicleModel, VehicleSpec> = {
   AION_Y_PLUS:       { batteryKwh: 70.8, rangeKm: 600 },

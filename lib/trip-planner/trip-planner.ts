@@ -1,7 +1,7 @@
-import type { TripRequest, TripPlan, TripSegment, ChargingStop, Coords, Charger, VehicleModel } from './types'
-import { haversineKm, getNearestChargerAlongRoute } from './geo'
-import { percentPerKm, remainingRangeKm } from './battery'
-import { CHARGE_TARGET_PERCENT } from './constants'
+import type { TripRequest, TripPlan, TripSegment, ChargingStop, Coords, Charger, VehicleModel } from '@/lib/trip-planner/types'
+import { haversineKm, getNearestChargerAlongRoute } from '@/lib/trip-planner/geo'
+import { percentPerKm, remainingRangeKm } from '@/lib/trip-planner/battery'
+import { CHARGE_TARGET_PERCENT } from '@/lib/trip-planner/constants'
 
 export function planTrip(request: TripRequest, availableChargers: Charger[]): TripPlan {
   const totalDistanceKm = haversineKm(request.origin, request.destination)

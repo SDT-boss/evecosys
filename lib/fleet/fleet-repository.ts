@@ -1,4 +1,4 @@
-import type { Vehicle, Charger, Shift, DispatchEvent } from './types'
+import type { Vehicle, Charger, Shift, DispatchEvent } from '@/lib/fleet/types'
 
 export interface FleetRepository {
   getVehicle(vehicleId: string): Promise<Vehicle>
