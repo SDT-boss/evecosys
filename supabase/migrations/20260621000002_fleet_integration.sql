@@ -50,10 +50,14 @@ update public.vehicles set status = 'IDLE'              where status = 'Parked';
 update public.vehicles set status = 'CHARGING'          where status = 'Charging';
 update public.vehicles set status = 'OFFLINE'           where status = 'Maintenance';
 
--- 3d. Add new status constraint (IF NOT EXISTS — safe to re-run)
-alter table public.vehicles
-  add constraint if not exists vehicles_status_check
-  check (status in ('IDLE','DISPATCHED','PATROLLING','ROUTING_TO_CHARGER','CHARGING','OFFLINE'));
+-- 3d. Add new status constraint (idempotent — safe to re-run).
+-- Postgres has no ADD CONSTRAINT IF NOT EXISTS, so drop-then-add inside a DO block.
+do $$ begin
+  alter table public.vehicles drop constraint if exists vehicles_status_check;
+  alter table public.vehicles
+    add constraint vehicles_status_check
+    check (status in ('IDLE','DISPATCHED','PATROLLING','ROUTING_TO_CHARGER','CHARGING','OFFLINE'));
+end $$;
 
 -- 3e. Add dispatch columns
 alter table public.vehicles
@@ -61,10 +65,13 @@ alter table public.vehicles
   add column if not exists assigned_charger_id uuid null
     references public.charging_stations(id) on delete set null;
 
--- 3f. Add FK from vehicles.current_shift_id → shifts (IF NOT EXISTS — safe to re-run)
-alter table public.vehicles
-  add constraint if not exists vehicles_current_shift_id_fkey
-  foreign key (current_shift_id) references public.shifts(id) on delete set null;
+-- 3f. Add FK from vehicles.current_shift_id → shifts (idempotent — safe to re-run).
+do $$ begin
+  alter table public.vehicles drop constraint if exists vehicles_current_shift_id_fkey;
+  alter table public.vehicles
+    add constraint vehicles_current_shift_id_fkey
+    foreign key (current_shift_id) references public.shifts(id) on delete set null;
+end $$;
 
 -- ─── 4. Create dispatch_events ────────────────────────────────────────────────
 create table if not exists public.dispatch_events (
