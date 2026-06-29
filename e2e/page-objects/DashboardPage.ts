@@ -22,8 +22,8 @@ export class DashboardPage {
     this.logoutButton = page.getByRole('button', { name: /sign out/i })
     // AlertBell: button with Bell icon — no aria-label. Add aria-label="Notifications" to source.
     this.alertBell = page.locator('button').filter({ has: page.locator('svg') }).nth(1)
-    // User initials circle — first character of full_name
-    this.userInitials = page.locator('.w-7.h-7.rounded-full')
+    // User avatar — AccountBlock renders data-testid="user-avatar" on the initials div or img
+    this.userInitials = page.getByTestId('user-avatar')
   }
 
   async navTo(label: string) {

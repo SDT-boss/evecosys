@@ -24,6 +24,7 @@ function makeDbClient(overrides: {
 const TENANT_A: Tenant = {
   id: 'tenant-a',
   owner_id: 'user-a',
+  name: '',
   state: 'Active',
   created_at: '2026-01-01T00:00:00Z',
   updated_at: '2026-01-01T00:00:00Z',
@@ -32,6 +33,7 @@ const TENANT_A: Tenant = {
 const TENANT_B: Tenant = {
   id: 'tenant-b',
   owner_id: 'user-b',
+  name: '',
   state: 'Active',
   created_at: '2026-01-01T00:00:00Z',
   updated_at: '2026-01-01T00:00:00Z',

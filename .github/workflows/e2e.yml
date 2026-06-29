@@ -71,6 +71,93 @@ jobs:
           cp -r public .next/standalone/public
           cp -r .next/static .next/standalone/.next/static
 
+      # Push any pending migrations to staging so the test DB schema matches
+      # the branch. supabase db push is idempotent — safe to run on every PR.
+      #
+      # ⚠️  SUPABASE_DB_URL must be the SESSION POOLER connection string —
+      #     the direct connection (db.*.supabase.co) requires IPv6, which
+      #     GitHub Actions runners do not support.
+      #
+      #     Get it from: Supabase Dashboard → your project → Connect →
+      #     "Session pooler" tab → copy the connection string.
+      #     Then update the SUPABASE_DB_URL secret in:
+      #     GitHub → repo → Settings → Secrets and variables → Actions →
+      #     Environments → staging → SUPABASE_DB_URL
+      #
+      #     Session pooler URL format:
+      #     postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:5432/postgres
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Push pending migrations to staging
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::warning::SUPABASE_DB_URL is not set — skipping migration push"
+            exit 0
+          fi
+          if echo "$SUPABASE_DB_URL" | grep -q 'db\..*\.supabase\.co'; then
+            echo "::warning::SUPABASE_DB_URL is the IPv6 direct connection URL."
+            echo "::warning::Update it to the session pooler URL (Supabase Dashboard → Connect → Session pooler)"
+            echo "::warning::Skipping migration push — staging schema may be out of date"
+            exit 0
+          fi
+          ENCODED_URL=$(python3 -c 'import os; from urllib.parse import quote; u=os.environ.get("SUPABASE_DB_URL",""); s=u.find("://"); r=u[s+3:] if s>=0 else ""; a=r.rfind("@"); c=r[:a].find(":") if a>=0 else -1; print(u[:s+3]+r[:c+1]+quote(r[c+1:a],safe="")+r[a:] if s>=0 and a>=0 and c>=0 else u)')
+
+          # The staging DB carries a partially-migrated schema with a drifted
+          # migration-history table, so a plain `db push` either re-runs already
+          # applied migrations (dying on "already exists") or — if history is
+          # wrongly marked — skips genuinely-pending schema changes. We can't know
+          # staging's true state ahead of time, so reconcile assumption-free:
+          #
+          #   1. Reset history for every local migration to "reverted" so push
+          #      considers them all pending.
+          #   2. Loop `db push`; let the database itself classify each migration:
+          #        • applies cleanly  -> it was genuinely pending (now applied)
+          #        • "already exists" -> it is already in the schema; mark it
+          #          applied and retry (each migration runs in its own
+          #          transaction, so a conflict leaves no partial state).
+          #
+          # This converges in at most (#migrations) iterations and brings staging
+          # fully up to date regardless of its starting drift.
+          all_versions=()
+          for f in supabase/migrations/*.sql; do
+            all_versions+=("$(basename "$f" | cut -d_ -f1)")
+          done
+          echo "Resetting migration history for ${#all_versions[@]} migration(s)..."
+          for v in "${all_versions[@]}"; do
+            supabase migration repair --status reverted "$v" --db-url "$ENCODED_URL" || true
+          done
+
+          max_attempts=$(( ${#all_versions[@]} + 2 ))
+          attempt=0
+          while :; do
+            attempt=$(( attempt + 1 ))
+            if [ "$attempt" -gt "$max_attempts" ]; then
+              echo "::error::Migration push did not converge after $max_attempts attempts."
+              exit 1
+            fi
+            set +e
+            push_out=$(supabase db push --db-url "$ENCODED_URL" --yes 2>&1)
+            push_code=$?
+            set -e
+            echo "$push_out"
+            if [ "$push_code" -eq 0 ]; then
+              echo "Migration push succeeded (attempt $attempt)."
+              break
+            fi
+            failed=$(echo "$push_out" | grep "Applying migration" | tail -1 | sed -E 's/.*Applying migration ([0-9]+)_.*/\1/')
+            if echo "$push_out" | grep -qi "already exists" && [ -n "$failed" ]; then
+              echo "Migration $failed already present in schema — marking applied and retrying."
+              supabase migration repair --status applied "$failed" --db-url "$ENCODED_URL"
+            else
+              echo "::error::Migration push failed for a reason other than pre-existing objects."
+              exit 1
+            fi
+          done
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+
       # global-setup.ts writes storageState files here before tests run
       - name: Create auth state directory
         run: mkdir -p e2e/.auth

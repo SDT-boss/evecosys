@@ -63,7 +63,7 @@ const DialogContent = React.forwardRef<
         "border border-[var(--ds-color-neutral-grey-20)]",
         "bg-white text-[var(--ds-color-neutral-ink)]",
         "[box-shadow:var(--ds-shadow-lg)]",
-        "duration-[var(--ds-motion-duration-base)]",
+        "duration-(--ds-motion-duration-base)",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -77,7 +77,7 @@ const DialogContent = React.forwardRef<
       <DialogClose className={cn(
         "absolute right-[var(--ds-space-md)] top-[var(--ds-space-md)]",
         "rounded-[var(--ds-radius-sm)] opacity-70",
-        "transition-opacity duration-[var(--ds-motion-duration-fast)]",
+        "transition-opacity duration-(--ds-motion-duration-fast)",
         "hover:opacity-100",
         "focus:outline-none focus:ring-2 focus:ring-[var(--ds-color-brand-primary)] focus:ring-offset-2",
         "text-[var(--ds-color-neutral-grey-60)]"

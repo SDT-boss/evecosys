@@ -7,19 +7,16 @@ export class LoginPage {
   readonly passwordInput: Locator
   readonly signInButton: Locator
   readonly errorMessage: Locator
-  readonly forgotPasswordLink: Locator
-  readonly signUpLink: Locator
+  readonly forgotPasswordButton: Locator
   readonly googleButton: Locator
 
   constructor(page: Page) {
     this.page = page
-    this.emailInput = page.getByPlaceholder(/you@evecosys.com/i)
+    this.emailInput = page.getByPlaceholder(/you@company.com/i)
     this.passwordInput = page.getByPlaceholder(/••••••••/)
     this.signInButton = page.getByRole('button', { name: /sign in/i })
     this.errorMessage = page.getByTestId('auth-error')
-    this.forgotPasswordLink = page.getByRole('link', { name: /forgot password/i })
-    this.signUpLink = page.getByRole('link', { name: /sign up/i })
-    // Should NOT exist after Google SSO removal
+    this.forgotPasswordButton = page.getByRole('button', { name: 'Forgot?' })
     this.googleButton = page.getByRole('button', { name: /continue with google/i })
   }
 

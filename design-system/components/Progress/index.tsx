@@ -44,7 +44,7 @@ const Progress = React.forwardRef<
       className={cn(
         "h-full w-full flex-1 rounded-[var(--ds-radius-full)]",
         "bg-[var(--ds-color-brand-primary)]",
-        "transition-transform duration-[var(--ds-motion-duration-slow)]",
+        "transition-transform duration-(--ds-motion-duration-slow)",
         "[transition-timing-function:var(--ds-motion-easing-standard)]"
       )}
       style={{ transform: `translateX(-${100 - (value ?? 0)}%)` }}

@@ -20,6 +20,18 @@ export const TEST_USERS = {
     name: 'E2E Board',
     role: 'board' as const,
   },
+  board_no_tenant: {
+    email: process.env.E2E_BOARD_NO_TENANT_EMAIL ?? 'e2e-board-no-tenant@evecosys-test.com',
+    password: process.env.E2E_TEST_PASSWORD ?? 'TestPassword123!',
+    name: 'E2E Board No Tenant',
+    role: 'board' as const,
+  },
+  platform_admin: {
+    email: process.env.E2E_PLATFORM_ADMIN_EMAIL ?? 'e2e-platform-admin@evecosys-test.com',
+    password: process.env.E2E_TEST_PASSWORD ?? 'TestPassword123!',
+    name: 'E2E Platform Admin',
+    role: 'platform_admin' as const,
+  },
 } as const
 
 export type RoleKey = keyof typeof TEST_USERS
@@ -41,6 +53,8 @@ export const AUTH_STATE_PATH: Record<RoleKey, string> = {
   manager: 'e2e/.auth/manager.json',
   driver: 'e2e/.auth/driver.json',
   board: 'e2e/.auth/board.json',
+  board_no_tenant: 'e2e/.auth/board-no-tenant.json',
+  platform_admin: 'e2e/.auth/platform-admin.json',
 }
 
 /**
@@ -55,7 +69,7 @@ export async function loginViaUI(
 ): Promise<void> {
   const user = TEST_USERS[role]
   await page.goto('/login')
-  await page.getByPlaceholder(/you@evecosys.com/i).fill(user.email)
+  await page.getByPlaceholder(/you@company.com/i).fill(user.email)
   await page.getByPlaceholder(/••••••••/).fill(user.password)
   await page.getByRole('button', { name: /sign in/i }).click()
 
@@ -68,6 +82,8 @@ export async function loginViaUI(
     manager: '/manager',
     driver: '/driver',
     board: '/board',
+    board_no_tenant: '/board',
+    platform_admin: '/platform',
   }
   await page.waitForURL(destinations[role] + '**', { timeout: 15_000 })
 }
@@ -118,6 +134,8 @@ export async function loginViaAPI(page: Page, role: RoleKey): Promise<void> {
     manager: '/manager',
     driver: '/driver',
     board: '/board',
+    board_no_tenant: '/board',
+    platform_admin: '/platform',
   }
   await page.goto(destinations[role])
   await page.waitForURL(destinations[role] + '**', { timeout: 15_000 })

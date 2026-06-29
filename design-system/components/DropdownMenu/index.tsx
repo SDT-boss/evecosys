@@ -115,7 +115,7 @@ const DropdownMenuItem = React.forwardRef<
       "relative flex cursor-default select-none items-center gap-2",
       "rounded-[var(--ds-radius-sm)] px-2 py-1.5 text-sm outline-none",
       "text-[var(--ds-color-neutral-ink)]",
-      "transition-colors duration-[var(--ds-motion-duration-fast)]",
+      "transition-colors duration-(--ds-motion-duration-fast)",
       "focus:bg-[var(--ds-color-neutral-grey-05)]",
       "data-[disabled]:pointer-events-none data-[disabled]:text-[var(--ds-color-neutral-grey-40)]",
       "[&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-[var(--ds-color-neutral-grey-60)]",

@@ -62,13 +62,9 @@ test.describe('Login', () => {
 
   // ─── Navigation ───────────────────────────────────────────────────────────
 
-  test('forgot password link navigates to /forgot-password', async ({ page }) => {
-    await loginPage.forgotPasswordLink.click()
-    await expect(page).toHaveURL('/forgot-password')
-  })
-
-  test('sign up link navigates to /signup', async ({ page }) => {
-    await loginPage.signUpLink.click()
-    await expect(page).toHaveURL(/signup/)
+  test('forgot password button shows inline reset form', async ({ page }) => {
+    await loginPage.forgotPasswordButton.click()
+    await expect(page.getByRole('heading', { name: /reset your password/i })).toBeVisible()
+    await expect(page).toHaveURL('/login')
   })
 })

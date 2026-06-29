@@ -31,14 +31,15 @@ test.describe('Forgot Password', () => {
     await page_.expectSuccessMessage()
   })
 
-  test('back to sign in link returns to /login', async ({ page }) => {
-    await page_.backLink.click()
+  test('back to sign in button returns to sign-in form', async ({ page }) => {
+    await page_.backButton.click()
     await expect(page).toHaveURL('/login')
+    await expect(page.getByRole('button', { name: /sign in/i })).toBeVisible()
   })
 
   test('empty submit triggers native validation, stays on page', async ({ page }) => {
     await page_.submitButton.click()
-    await expect(page).toHaveURL('/forgot-password')
+    await expect(page).toHaveURL('/login')
     await expect(page_.successMessage).not.toBeVisible()
   })
 })
