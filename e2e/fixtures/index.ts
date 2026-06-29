@@ -51,7 +51,7 @@ export const test = base.extend<E2EFixtures>({
   },
 
   driverVehicle: async ({}, use) => {
-    const vehicle = await createTestVehicle({ status: 'Parked' })
+    const vehicle = await createTestVehicle({ status: 'IDLE' })
     await assignVehicleToDriver(TEST_USERS.driver.email, vehicle.id)
     await use(vehicle)
     await assignVehicleToDriver(TEST_USERS.driver.email, null)

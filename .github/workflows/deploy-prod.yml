@@ -52,6 +52,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # GHCR/Docker require lowercase repository names; github.repository
+      # (SDT-boss/evecosys) is mixed-case, so compute a lowercase image ref.
+      - name: Compute lowercase image ref
+        id: img
+        run: echo "ref=$(echo "${REGISTRY}/${IMAGE_NAME}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
       - name: Resolve image tag
         id: tag
         run: |
@@ -74,8 +80,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.value }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ steps.img.outputs.ref }}:${{ steps.tag.outputs.value }}
+            ${{ steps.img.outputs.ref }}:latest
           build-args: |
             NEXT_PUBLIC_SUPABASE_URL=${{ secrets.SUPABASE_URL }}
             NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
@@ -83,7 +89,7 @@ jobs:
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.value }}
+          image-ref: ${{ steps.img.outputs.ref }}:${{ steps.tag.outputs.value }}
           format: table
           exit-code: '1'
           vuln-type: os,library
@@ -98,6 +104,10 @@ jobs:
     timeout-minutes: 10
 
     steps:
+      - name: Compute lowercase image ref
+        id: img
+        run: echo "ref=$(echo "${REGISTRY}/${IMAGE_NAME}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
       - name: Resolve image tag
         id: tag
         run: |
@@ -116,7 +126,7 @@ jobs:
           script: |
             PREV=$(docker inspect evecosys-prod --format='{{.Config.Image}}' 2>/dev/null || echo "")
             echo "$PREV" > /etc/evecosys/prev_image.txt
-            docker pull ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.value }}
+            docker pull ${{ steps.img.outputs.ref }}:${{ steps.tag.outputs.value }}
             docker stop evecosys-prod 2>/dev/null || true
             docker rm   evecosys-prod 2>/dev/null || true
             docker run -d \
@@ -124,7 +134,7 @@ jobs:
               --restart unless-stopped \
               -p 3000:3000 \
               --env-file /etc/evecosys/prod.env \
-              ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.value }}
+              ${{ steps.img.outputs.ref }}:${{ steps.tag.outputs.value }}
             docker image prune -f
 
   smoke:

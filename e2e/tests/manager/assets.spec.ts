@@ -57,7 +57,7 @@ test.describe('Manager — Assets', () => {
 
   test('status filter shows only vehicles with matching status', async ({ testVehicle }) => {
     await assetsPage.goto()
-    await assetsPage.filterByStatus('Parked')
+    await assetsPage.filterByStatus('IDLE')
     await expect(assetsPage.page.locator('body')).not.toContainText(/error/i)
   })
 

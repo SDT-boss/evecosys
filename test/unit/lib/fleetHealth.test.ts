@@ -4,7 +4,7 @@ import type { Vehicle, Alert } from '@/types'
 function vehicle(overrides: Partial<Vehicle> = {}): Vehicle {
   return {
     id: 'v1', brand: 'Tesla', model: 'Model 3', plate_no: 'ABC123',
-    soc: 80, soh: 90, status: 'Parked', location_name: 'HQ',
+    soc: 80, soh: 90, status: 'IDLE', location_name: 'HQ',
     location_detail: '', coordinates: '', odometer: 10000,
     year: 2023, created_at: '2026-01-01',
     ...overrides,
@@ -48,11 +48,11 @@ describe('calcFleetHealth', () => {
     expect(r.breakdown.batteryHealth).toBe(70)
   })
 
-  it('breakdown.availability decreases when vehicles are in Maintenance', () => {
-    const allActive = [vehicle({ status: 'Moving' }), vehicle({ status: 'Parked' })]
-    const oneMaintenance = [vehicle({ status: 'Moving' }), vehicle({ status: 'Maintenance' })]
+  it('breakdown.availability decreases when vehicles are OFFLINE', () => {
+    const allActive = [vehicle({ status: 'PATROLLING' }), vehicle({ status: 'IDLE' })]
+    const oneOffline = [vehicle({ status: 'PATROLLING' }), vehicle({ status: 'OFFLINE' })]
     const r1 = calcFleetHealth(allActive, [])
-    const r2 = calcFleetHealth(oneMaintenance, [])
+    const r2 = calcFleetHealth(oneOffline, [])
     expect(r1.breakdown.availability).toBeGreaterThan(r2.breakdown.availability)
   })
 

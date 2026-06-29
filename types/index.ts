@@ -19,13 +19,15 @@ export interface Vehicle {
   plate_no: string
   soc: number
   soh: number
-  status: 'Moving' | 'Parked' | 'Charging' | 'Maintenance'
+  status: 'IDLE' | 'DISPATCHED' | 'PATROLLING' | 'ROUTING_TO_CHARGER' | 'CHARGING' | 'OFFLINE'
   location_name: string
   location_detail: string
   coordinates: string
   odometer: number
   year: number
   color?: string
+  current_shift_id?: string | null
+  assigned_charger_id?: string | null
   created_at: string
 }
 
@@ -77,6 +79,10 @@ export interface ChargingStation {
   power_kw: number
   is_active: boolean
   installed_at: string
+  latitude?: number
+  longitude?: number
+  type?: 'DEPOT' | 'HIGHWAY'
+  is_occupied?: boolean
 }
 
 export interface UserPreference {
