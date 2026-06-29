@@ -29,6 +29,7 @@ function makeVault(secretId = 'secret-uuid-1'): VaultStore & {
 const PROVISIONING_TENANT: Tenant = {
   id: 'tenant-abc',
   owner_id: 'owner-abc',
+  name: '',
   state: 'Provisioning',
   created_at: '2026-01-01T00:00:00Z',
   updated_at: '2026-01-01T00:00:00Z',

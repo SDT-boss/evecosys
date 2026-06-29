@@ -7,19 +7,20 @@ export class ForgotPasswordPage {
   readonly submitButton: Locator
   readonly successMessage: Locator
   readonly errorMessage: Locator
-  readonly backLink: Locator
+  readonly backButton: Locator
 
   constructor(page: Page) {
     this.page = page
-    this.emailInput = page.getByPlaceholder(/you@evecosys.com/i)
+    this.emailInput = page.getByPlaceholder(/you@company.com/i)
     this.submitButton = page.getByRole('button', { name: /send reset link/i })
     this.successMessage = page.getByText(/check your inbox/i)
     this.errorMessage = page.locator('[style*="fdeaea"]')
-    this.backLink = page.getByRole('link', { name: /back to sign in/i })
+    this.backButton = page.getByRole('button', { name: /back to sign in/i })
   }
 
   async goto() {
-    await this.page.goto('/forgot-password')
+    await this.page.goto('/login')
+    await this.page.getByRole('button', { name: 'Forgot?' }).click()
     await expect(this.submitButton).toBeVisible()
   }
 

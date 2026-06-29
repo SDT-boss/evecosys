@@ -30,7 +30,7 @@ const badgeVariants = cva(
   [
     "inline-flex items-center rounded-[var(--ds-radius-full)]",
     "border px-2.5 py-0.5 text-xs font-semibold",
-    "transition-colors duration-[var(--ds-motion-duration-fast)]",
+    "transition-colors duration-(--ds-motion-duration-fast)",
     "focus:outline-none focus:ring-2 focus:ring-[var(--ds-color-brand-primary)] focus:ring-offset-2",
   ],
   {

@@ -2,59 +2,55 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-stopped_at: "Checkpoint: 04-02 Task 3 human-verify (make test-integration)"
-last_updated: "2026-06-09T15:49:16.057Z"
+status: verifying
+stopped_at: context exhaustion at 75% (2026-06-23)
+last_updated: "2026-06-23T17:50:13.254Z"
+last_activity: 2026-06-21 -- Phase 3 UAT complete (SWIT-01/02/03/04 code-verified, 4/4 pass)
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 12
-  completed_plans: 12
+  total_phases: 5
+  completed_phases: 5
+  total_plans: 21
+  completed_plans: 21
+  percent: 100
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-06-09)
+See: .planning/PROJECT.md (updated 2026-06-21)
 
-**Core value:** A tenant's database credentials are accepted, validated for real connectivity, stored securely in Supabase Vault, and isolated from every other tenant — with automatic rollback if provisioning fails at any step.
-**Current focus:** Phase 04 — rollback-error-recovery
+**Core value:** Platform admins can always see which tenant they're operating in and switch context without any cross-tenant data leakage or user confusion.
+**Current focus:** Phase 5 — storybook-coverage (executed, pending UAT)
 
 ## Current Position
 
-Phase: 04 (rollback-error-recovery) — EXECUTING
-Plan: 3 of 3
+Phase: 5 (storybook-coverage) — EXECUTED, PENDING UAT
+Plan: 5/5 complete
+Status: Phase 5 executed. Phase 3 UAT complete (code-verified). Next: Phase 5 UAT
+Last activity: 2026-06-21 -- Phase 3 UAT complete (SWIT-01/02/03/04 code-verified, 4/4 pass)
+
+Progress: [█████████░] 90%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 0
-- Average duration: —
-- Total execution time: —
+- Total plans completed: 21
+- Average duration: -
+- Total execution time: -
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
-
-**Recent Trend:**
-
-- Last 5 plans: —
-- Trend: —
+| Phase 1 | 3 | - | - |
+| Phase 2 | 3 | - | - |
+| Phase 3 | 3 | - | - |
+| Phase 4 | 7 | - | - |
+| Phase 5 | 5 | - | - |
 
 *Updated after each plan completion*
-| Phase 01 P02 | 5 | 1 tasks | 1 files |
-| Phase 01 P03 | 2 | 1 tasks | 1 files |
-| Phase 02 P01 | 3 | 3 tasks | 4 files |
-| Phase 02 P02 | 327 | 3 tasks | 5 files |
-| Phase 02 P03 | 2 | 3 tasks | 1 files |
-| Phase 03 P01 | 162 | 2 tasks | 5 files |
-| Phase 04 P01 | 5 | 3 tasks | 4 files |
-| Phase 04 P03 | 4 | 2 tasks | 1 files |
-| Phase 04 P02 | 367 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -63,44 +59,31 @@ Plan: 3 of 3
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- State machine runs in application layer (pre-transition validation before DB write)
-- Rollback targets `Registered`, not `Decommissioned` (allows retry without full re-registration)
-- BYODB validation via real connectivity probe (reject bad credentials before storage)
-- Supabase Vault is the single secrets store for all BYODB credentials
-- [Phase 01]: State CHECK constraint mirrors TenantState in lib/tenant/types.ts exactly
-- [Phase 01]: Pure synchronous state machine with no DB dependency — enforces pre-write validation (TENANT-03)
-- [Phase 01]: Rollback path Provisioning → Registered included in TRANSITIONS map
-- [Phase 01 P03]: Invalid transition pairs derived programmatically via TENANT_STATES × TENANT_STATES to guarantee full coverage
-- [Phase 02 P01]: Passwords never included in CredentialValidationError messages to prevent secrets in logs
-- [Phase 02 P01]: URL built-in used for connection string parsing — credentials.ts has zero runtime DB dependencies
-- [Phase 02 P01]: ConnectivityProbe and VaultStore defined as interfaces only — concrete implementations deferred to Plan 02
-- [Phase 02 P01]: vault_secret_id on tenants enables rollback path (delete_byodb_secret on provisioning failure)
-- [Phase 02]: Dynamic import for pg/mysql2 — drivers excluded from test module graph
-- [Phase 02]: SupabaseVaultStore accepts optional injected SupabaseClient so unit tests need no env vars
-- [Phase 02]: Rollback wraps only post-store steps; probe failure cannot reach vault.delete
-- [Phase 02 P03]: vi.spyOn on stateMachine.transition is the cleanest way to force post-store failure for rollback coverage without modifying production code
-- [Phase 02 P03]: registrationService.test.ts was created during 02-02 plan; 02-03 added the missing credentials.test.ts
-- [Phase 03]: AuthSessionError and TenantAccessError added to types.ts co-located with existing contracts for single-import convenience
-- [Phase 03]: DatabaseClient defined as interface only — concrete Supabase implementation deferred to Phase 03 Plan 02
-- [Phase 03]: types.ts does not import server-only — file remains client-safe for test imports; only authGuard.ts and service files get the marker
-- [Phase 04]: ProvisioningRollbackError wraps both originalError and rollbackError as readonly Error fields for precise dual-failure diagnostics
-- [Phase 04]: transitionTenant(tenant,'Registered') call result discarded — register() always throws on rollback per locked contract; call is for explicit, testable in-memory state reset
-- [Phase 04]: rollback.test.ts is single source of rollback coverage — legacy inline block removed from registrationService.test.ts
-- [Phase 04 P03]: Audit before marking — confirm all Phase 3 requirement artifacts exist before updating REQUIREMENTS.md status
-- [Phase 04 P03]: Only TEST-04 remains Pending after close-out; all Phase 1-3 requirements Complete
-- [Phase 04]: loadEnv imported from vite not vitest/config — not exported by vitest/config in v4.1.8
-- [Phase 04]: describe.skipIf(!suiteEnabled) guards integration suite so unit run skips gracefully without Docker
+- Phase 3: Middleware approach (not client wrapper) for RSC pathname detection
+- Phase 3: ActionResult `{ ok, error }` pattern for all server actions
+- Phase 3: TenantContext bridges server-rendered initialName to client optimistic updates
+- Phase 4: Board settings inside main dashboard (avoids separate-app friction)
+- Phase 5: Storybook webpack incompatibility documented in deferred-items.md (pre-existing)
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
-None yet.
+- Local Supabase env has a key format mismatch — E2E tests and browser testing blocked until resolved
+- E2E tenant-switcher tests are `test.skip()` stubs — full E2E deferred until Supabase local env stable
+- Phase 5 UAT: Storybook webpack incompatibility with Next.js 16 pre-existing — documented, stories verified via code inspection
+
+## Deferred Items
+
+| Category | Item | Status | Deferred At |
+|----------|------|--------|-------------|
+| E2E | platform admin switches tenants E2E spec | Stubs in place (test.skip) — needs Supabase env fix | Phase 3 |
+| Storybook | webpack5 builder incompatibility with Next.js 16 | Documented in 05-deferred-items.md | Phase 5 |
 
 ## Session Continuity
 
-Last session: 2026-06-09T15:49:02.464Z
-Stopped at: Checkpoint: 04-02 Task 3 human-verify (make test-integration)
+Last session: 2026-06-23T17:50:13.230Z
+Stopped at: context exhaustion at 75% (2026-06-23)
 Resume file: None

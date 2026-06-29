@@ -1,0 +1,12 @@
+-- supabase/seed.sql
+-- LOCAL DEVELOPMENT SEED ONLY.
+-- Applied automatically by: make db-reset (supabase db reset)
+-- DO NOT run against production.
+--
+-- Auth users are created via GoTrue admin API in seed-users.mjs (called by make db-reset).
+-- Direct INSERT into auth.users is intentionally omitted — pgcrypto.crypt() produces bcrypt
+-- hashes that GoTrue cannot verify (GoTrue uses argon2id in newer versions).
+
+-- public.users rows are created by the handle_new_user() trigger when
+-- seed-users.mjs creates auth users via the GoTrue admin API (runs after
+-- supabase db reset completes). No direct INSERT needed here.

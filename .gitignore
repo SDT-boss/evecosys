@@ -35,6 +35,7 @@ vscode-extension/out/
 # misc
 .DS_Store
 *.pem
+.planning/
 
 # debug
 npm-debug.log*
@@ -44,6 +45,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+
+# supabase
+supabase/.temp/
 
 # vercel
 .vercel

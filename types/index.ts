@@ -1,4 +1,4 @@
-export type UserRole = 'manager' | 'board' | 'driver'
+export type UserRole = 'manager' | 'board' | 'driver' | 'platform_admin'
 
 export type Theme = 'light' | 'dark'
 

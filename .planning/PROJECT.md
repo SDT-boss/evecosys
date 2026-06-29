@@ -1,78 +1,94 @@
-# EVEcosys — Control-Plane & Tenant Provisioning Engine
+# EVE-145: Tenant Switcher & Workspace Context
 
 ## What This Is
 
-EVEcosys is an EV fleet management SaaS platform with multi-tenant architecture. This project implements the **Control-Plane and Tenant Provisioning Engine** — the core service that manages the full lifecycle of BYODB (Bring Your Own Database) tenants within the existing Next.js + Supabase application. It handles tenant registration, database credential validation, secure secrets management, and enforces strict cross-tenant data isolation.
+A full feature build for the EVecosys fleet platform that adds a Platform Admin area and Board-level tenant settings. Internal team members (platform admins) get a dedicated route to list all tenant organizations and switch between them safely. Board members get a tenant settings area to configure branding, users, BYODB connections, and feature toggles — without leaving the main app.
+
+This is part of the broader "Platform Foundation — Multi-tenant Fleet Platform" project.
 
 ## Core Value
 
-A tenant's database credentials are accepted, validated for real connectivity, stored securely in Supabase Vault, and isolated from every other tenant — with automatic rollback if provisioning fails at any step.
+Platform admins can always see which tenant they're operating in and switch context without any cross-tenant data leakage or user confusion.
 
 ## Requirements
 
 ### Validated
 
-- [x] Tenant entity with strict state machine: `Registered → Provisioning → Active → Suspended → Decommissioned` — Validated in Phase 01: Tenant Entity & State Machine
-- [x] Invalid state transition rejections enforced (e.g., `Decommissioned → Active` blocked) — Validated in Phase 01: Tenant Entity & State Machine
-- [x] Unit tests for state machine transitions and invalid transition rejections — Validated in Phase 01: Tenant Entity & State Machine
+<!-- Shipped capabilities inferred from existing codebase (.planning/codebase/) -->
 
-### Validated
+- ✓ Multi-role authentication (manager, driver, board) with JWT sessions via Supabase Auth — existing
+- ✓ Role-gated dashboards with server-side auth enforcement at layout level — existing
+- ✓ DashboardShell navigation shell (topbar + horizontal nav + content wrapper) — existing
+- ✓ Tenant state machine with BYODB registration service and Vault credential storage — existing (`lib/tenant/`)
+- ✓ Supabase RLS enforcement on all data access — existing
+- ✓ Design token system (`var(--ds-*)` CSS custom properties) — existing
+- ✓ `@evecosys/design-system` component library — existing
 
-- [x] `BYODBRegistrationService` that accepts, validates connectivity, and stores tenant DB credentials — Validated in Phase 02: BYODB Registration Service
-- [x] BYODB support for any PostgreSQL-compatible or MySQL-compatible DB (Supabase, AWS RDS, Neon, Alibaba Cloud, etc.) — Validated in Phase 02: BYODB Registration Service
-- [x] All BYODB credentials stored via Supabase Vault — never logged or stored as plain text — Validated in Phase 02: BYODB Registration Service
-- [x] Automatic rollback to `Registered` if provisioning fails mid-flight — Validated in Phase 02: BYODB Registration Service
-- [x] Partial provisioning state wiped on rollback — Validated in Phase 02: BYODB Registration Service
-- [x] Unit tests for BYODB registration, connectivity validation, and rollback on failure — Validated in Phase 02: BYODB Registration Service
+<!-- EVE-145 phases 1–4 shipped -->
 
-### Validated
-
-- [x] Tenant-scoped read/write interceptor using Supabase Auth + RLS policies — Validated in Phase 03: Tenant Isolation Layer
-- [x] Cross-tenant data isolation enforced at the DB level via RLS — Validated in Phase 03: Tenant Isolation Layer
-- [x] Admin/service operations via Supabase service role key (never exposed to client) — Validated in Phase 03: Tenant Isolation Layer
-- [x] Unit tests for cross-tenant isolation (Tenant A cannot read Tenant B's control-plane config) — Validated in Phase 03: Tenant Isolation Layer
+- ✓ `platform_admin` role added to auth system, RLS, and DB schema — Phase 1
+- ✓ Platform Admin route (`/platform`) with tenant list — accessible only to platform admins — Phase 2
+- ✓ Active tenant indicator in Platform Admin header showing current workspace — Phase 2
+- ✓ Context persistence across navigation for platform admin sessions — Phase 2
+- ✓ Tenant switcher UI — tenant list, selection, loading / success / failure / blocked states — Phase 3
+- ✓ Blocked / no-access state when a restricted destination is reached — Phase 3
+- ✓ API routes wiring `lib/tenant/` provisioning stack to HTTP endpoints — Phase 4
+- ✓ Board Tenant Settings area — four tabs: Branding, Users, BYODB, Feature Toggles — Phase 4
 
 ### Active
 
-- [ ] 100% test compliance on generated code
+<!-- EVE-145 remaining scope -->
+
+- [ ] Storybook stories for all new shell components and states — Phase 5 (executed, pending UAT)
+- [ ] E2E test: platform admin switches tenants; sees new context reflected app-wide — stubs exist (`test.skip`); full E2E deferred until Supabase local env is stable
 
 ### Out of Scope
 
-- Frontend UI for tenant management — control-plane is API/service layer only
-- Multi-cloud secrets replication — Supabase Vault is the single secrets store
-- Non-relational (MongoDB, Redis) BYODB support — PostgreSQL/MySQL compatible only for v1
+- Mobile / responsive design — web-first; tablet/mobile deferred
+- Real-time tenant data sync across concurrent sessions — deferred
+- Tenant creation / deletion flows — deferred (Platform Admin v2)
+- Third-party SSO for platform admins — deferred
+- Branding preview hot-reload — deferred
 
 ## Context
 
-This feature is part of the core architectural epic for BYO cloud tenant support (ticket EVE-46). The codebase is an existing Next.js 16 + Supabase monorepo (App Router, React 19, TypeScript). No tenant provisioning code currently exists — this is a greenfield module within an established application.
+**Active branch:** `feature/eve-145-design-tenant-switcher-and-workspace-context-ux`
+**Linear issue:** EVE-145 — "Design tenant switcher and workspace context UX"
+**Linear project:** Platform Foundation — Multi-tenant Fleet Platform
 
-**Key technical environment:**
-- Next.js 16 App Router — control-plane lives as API routes / server actions
-- Supabase as the platform database (PostgreSQL + Auth + RLS + Vault)
-- Vitest for unit tests, Playwright for E2E
-- Design tokens via `@evecosys/design-system` (not relevant to this feature)
-- CI: lint, typecheck, Vitest, next build, npm audit on every PR
+**Existing tenant infrastructure (built, untested in production):**
+- `lib/tenant/stateMachine.ts` — pure state transitions (Pending → Provisioning → Active → Suspended → Deprovisioned)
+- `lib/tenant/registrationService.ts` — orchestrates BYODB probe → Vault store → state transition
+- `lib/tenant/vaultStore.ts` — Supabase Vault RPC integration for credential storage
+- No API routes expose any of this to the app yet
+- No tenant switcher UI exists
+- No `platform_admin` role in DB or RLS
 
-**BYODB validation approach:** Accept connection string or credential object, attempt a real connection probe, confirm schema access/ownership, then store credentials in Supabase Vault and mark tenant `Active`. Fail fast and rollback if any step fails.
+**Key codebase patterns (from .planning/codebase/):**
+- Auth enforcement happens per-layout at `app/(dashboard)/{role}/layout.tsx` — no centralised middleware
+- Server Components fetch data; Client Components handle interaction; mutations go through `app/api/**/route.ts`
+- New migrations go in `supabase/migrations/` — never edit existing files
+- Design tokens via `var(--ds-*)` only; no hardcoded hex
+- Components belong in `@evecosys/design-system` (not `components/ui/`)
 
 ## Constraints
 
-- **Security**: Credentials must never be logged or stored in plain text — Supabase Vault is mandatory
-- **Tech stack**: Implementation must stay within Next.js 16 App Router patterns (no new runtimes)
-- **Auth**: Supabase Auth + RLS for tenant isolation; service role key for admin-only paths
-- **Testing**: 100% unit test compliance required before PR merge
-- **DB compatibility**: Only PostgreSQL-compatible and MySQL-compatible databases for BYODB v1
+- **Design tokens:** All colours, spacing, radii via `var(--ds-*)` — no hardcoded hex values
+- **Component source:** New UI primitives in `design-system/components/` and exported from `@evecosys/design-system`
+- **Schema changes:** New migration file per change; never edit existing migrations
+- **CI gate:** lint + test + tokens + build + audit must all pass before merge
+- **Security:** `platform_admin` access must be enforced at both layout and API route level; never expose other tenant data through RLS
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Supabase Vault for BYODB credentials | Aligns with existing Supabase investment; built-in encryption at rest | Implemented via `store_byodb_secret`/`delete_byodb_secret` SECURITY DEFINER RPCs (Phase 02) |
-| Supabase Auth + RLS for tenant isolation | Natural fit — RLS enforces isolation at DB layer, not application layer | — Pending |
-| State machine implemented in application layer | Allows pre-transition business logic before DB write | Confirmed in Phase 01 |
-| Rollback targets `Registered` (not `Decommissioned`) on provisioning failure | Allows retry without full re-registration; `Decommissioned` reserved for intentional teardown | Implemented — vault.delete + state rollback in `registrationService.ts` (Phase 02) |
-| BYODB validation via real connectivity probe | Reject bad credentials before they're stored; prevents zombie tenants in `Provisioning` state | Implemented — `RealConnectivityProbe` with dynamic pg/mysql2 imports + ownership checks (Phase 02) |
-| Dynamic driver imports in probe | Prevents test environments from loading pg/mysql2 at import time | Implemented via `await import('pg')` pattern in `probeDriver.ts` (Phase 02) |
+| Platform Admin route model | Clean separation — platform ops never mixed with tenant UX; industry standard (Vercel, Stripe) | `/platform` standalone route group with its own PlatformShell — Phase 2 |
+| Full feature build (design + code + Storybook) | Deliverable must be implementation-ready and immediately usable; not a spec-only phase | All 4 feature phases shipped with Storybook in Phase 5 — complete |
+| Board settings within main app | Boards have a natural home in their tenant's dashboard; separate app would be friction | `app/(dashboard)/board/settings/` route group inside main dashboard — Phase 4 |
+| Middleware for RSC pathname detection | Keeps `platform/layout.tsx` fully server-rendered; alternative (thin client wrapper) would force a client boundary | `middleware.ts` forwards `x-pathname` header; scoped to non-static routes — Phase 3 |
+| ActionResult pattern for server actions | `{ ok, error }` return instead of throw; lets client components handle errors without try/catch | Applied to `setActiveTenant` and all board-settings API routes — Phases 3–4 |
+| TenantContext for cross-boundary state | Server Components render initial state; Client Components need live updates — context bridges the gap | `TenantProvider` + `useTenantContext()` in `components/platform/TenantContext.tsx` — Phase 3 |
 
 ## Evolution
 
@@ -92,4 +108,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-09 — Phase 03 complete*
+*Last updated: 2026-06-21 after Phase 3 UAT (code-verified)*

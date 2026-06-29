@@ -64,7 +64,7 @@ const AlertDialogContent = React.forwardRef<
         "border border-[var(--ds-color-neutral-grey-20)]",
         "bg-white text-[var(--ds-color-neutral-ink)]",
         "[box-shadow:var(--ds-shadow-lg)]",
-        "duration-[var(--ds-motion-duration-base)]",
+        "duration-(--ds-motion-duration-base)",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
