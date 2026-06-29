@@ -39,4 +39,28 @@ describe('classifyError', () => {
   it('classifies an unknown Error as fatal', () => {
     expect(classifyError(new Error('boom'))).toEqual({ retryable: false, manual: false })
   })
+
+  it('classifies a thrown string as fatal', () => {
+    expect(classifyError('something went wrong')).toEqual({ retryable: false, manual: false })
+  })
+
+  it('classifies null as fatal', () => {
+    expect(classifyError(null)).toEqual({ retryable: false, manual: false })
+  })
+
+  it('classifies undefined as fatal', () => {
+    expect(classifyError(undefined)).toEqual({ retryable: false, manual: false })
+  })
+})
+
+describe('error classes', () => {
+  it('RetryableProvisioningError has correct name', () => {
+    expect(new RetryableProvisioningError('x').name).toBe('RetryableProvisioningError')
+  })
+  it('ManualInterventionError has correct name', () => {
+    expect(new ManualInterventionError('x').name).toBe('ManualInterventionError')
+  })
+  it('ReadinessError has correct name', () => {
+    expect(new ReadinessError('x').name).toBe('ReadinessError')
+  })
 })

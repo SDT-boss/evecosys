@@ -33,4 +33,4 @@ export const PROVISIONING_STEP_ORDER: readonly ProvisioningStepName[] = [
   'bootstrap_metering',
   'readiness_gate',
   'activate',
-] as const
+]

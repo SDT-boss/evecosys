@@ -23,8 +23,8 @@ export type StepRecordStatus = 'Running' | 'Completed' | 'Failed' | 'Compensated
  * Credentials live only inside `byodbInput`; never log this object.
  */
 export interface ProvisioningContext {
-  tenant: Tenant
-  byodbInput: BYODBCredentialInput
+  readonly tenant: Tenant
+  readonly byodbInput: BYODBCredentialInput
   secretId?: string
 }
 
