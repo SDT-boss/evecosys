@@ -119,6 +119,12 @@ test.describe('provision API — happy path', () => {
   }
 
   test('provisions a tenant through to Active with config + metering bootstrapped', async ({ page }) => {
+    // Needs a reachable BYODB whose user can CREATE. Locally the Supabase Postgres
+    // on 127.0.0.1:54322 serves that role; CI has no such reachable target, so the
+    // probe can't connect there. Skip in CI — the success path is also covered by
+    // the orchestrator unit tests.
+    test.skip(!!process.env.CI, 'requires a reachable BYODB target (runs locally)')
+
     const tenantId = await createRegisteredTenant('E2E Provision Success')
     try {
       const res = await page.request.post(`/api/platform/tenants/${tenantId}/provision`, {
