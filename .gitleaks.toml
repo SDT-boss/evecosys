@@ -1,0 +1,14 @@
+# gitleaks configuration for EVEcosys.
+# Extends the full default ruleset; adds a narrow allowlist for OpenTofu
+# native test files. Those *.tftest.hcl files run with mock providers and no
+# real credentials, so any `database_password`/token value in them is mock data
+# by construction (e.g. "staging-db-pw-mock", "tenant-pw-from-tfvar"). Real
+# secrets are never placed in tests. Every other path is still scanned.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "OpenTofu mock-provider test files contain only mock credentials"
+paths = [
+  '''.*\.tftest\.hcl$''',
+]

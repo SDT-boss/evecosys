@@ -98,11 +98,14 @@ jobs:
           soft_fail: true
 
       - name: gitleaks (secret scan over infra/)
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          args: detect --no-git --source infra --redact
+        # Use the gitleaks binary directly: gitleaks-action@v2 ignores custom
+        # args and scans PR git history (and trips a SARIF-write permission bug).
+        # A direct working-tree scan of infra/ is exactly what we want here.
+        run: |
+          GL=8.24.3
+          curl -sSL "https://github.com/gitleaks/gitleaks/releases/download/v${GL}/gitleaks_${GL}_linux_x64.tar.gz" \
+            | sudo tar -xz -C /usr/local/bin gitleaks
+          gitleaks detect --no-git --source infra --config .gitleaks.toml --redact --exit-code 1 --verbose
 
   # ---- Gated plan (manual; real credentials via GitHub Environment) -----------
   plan:
