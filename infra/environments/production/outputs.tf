@@ -5,12 +5,12 @@ output "environment" {
 
 output "app_hostname" {
   value       = module.dns.hostname
-  description = "Public hostname of the staging app."
+  description = "Public hostname of the production app."
 }
 
 output "supabase_project_name" {
   value       = module.supabase.project_name
-  description = "Supabase project name for staging."
+  description = "Supabase project name for production."
 }
 
 output "supabase_project_ref" {

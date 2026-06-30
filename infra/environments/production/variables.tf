@@ -24,7 +24,7 @@ variable "supabase_organization_id" {
 variable "database_password" {
   type        = string
   sensitive   = true
-  description = "Staging Supabase DB password (TF_VAR_database_password)."
+  description = "Production Supabase DB password (TF_VAR_database_password)."
 }
 
 variable "cloudflare_api_token" {
@@ -46,18 +46,18 @@ variable "hcloud_token" {
 
 variable "ssh_key_ids" {
   type        = list(string)
-  description = "Hetzner SSH key IDs for the staging server."
+  description = "Hetzner SSH key IDs for the production server."
 }
 
 variable "ssh_allow_cidrs" {
   type        = list(string)
-  description = "CIDRs allowed to SSH into the staging server."
+  description = "CIDRs allowed to SSH into the production server."
 }
 
 variable "region" {
   type        = string
   default     = "eu-central-1"
-  description = "Supabase region for staging."
+  description = "Supabase region for production."
 }
 
 variable "base_domain" {
