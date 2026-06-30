@@ -16,11 +16,11 @@
 | Image registry | GitHub Container Registry (`ghcr.io`) | Free for public/private repos; GITHUB_TOKEN auth, no extra credentials |
 | App hosting | Self-hosted server (SSH + Docker) | Full control; no per-seat or per-deployment cost |
 | Secrets storage | GitHub Environments + server `.env` files | CI tokens in GitHub; runtime secrets stored on server, never in CI logs |
-| Future infra expansion | Terraform (not yet adopted) | Add when managing multiple servers or cloud resources programmatically |
+| Platform infrastructure | OpenTofu (`infra/`) | GitHub config, Supabase projects, Cloudflare DNS, app-server compute, and per-tenant scaffolding declared as code. See docs/IAC.md. |
 
 Vercel has been removed as a cost-saving measure (EVE-100). Build verification that was previously provided by Vercel preview deploys is now replicated by the CI pipeline: the built standalone app is started in CI and health-checked before a PR can merge.
 
-Terraform is deliberately deferred. The current surface (one GHCR registry + two Supabase projects + one server per environment) does not justify the overhead.
+Infrastructure is managed with OpenTofu under `infra/` (adopted in EVE-57; see docs/IAC.md). The Supabase-migrations workflow below remains the source of truth for *schema*; OpenTofu manages the *projects, environments, DNS, and servers* those schemas run on.
 
 ### Repository structure
 
@@ -216,6 +216,8 @@ If enterprise tenants require full data isolation (regulatory or contractual), t
 4. Add a tenant-routing layer to the app that selects the correct Supabase client at request time.
 
 This is not built yet. It is the documented escalation path.
+
+The per-tenant escalation path above is now scaffolded as the `infra/modules/tenant` OpenTofu module (EVE-57); EVE-46's orchestrator instantiates it per tenant.
 
 ---
 

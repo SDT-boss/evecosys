@@ -11,9 +11,18 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 12 : undefined,
-  timeout: 15_000,
-  expect: { timeout: 15_000 },
+  // 12 workers saturated the single standalone server on CI runners (2–4 cores),
+  // so SSR navigations alone exceeded the 15s budget and beforeEach page.goto
+  // calls timed out across the manager/driver suites. Run 4 workers (≈1/core)
+  // and give navigation-heavy pages real headroom.
+  workers: process.env.CI ? 4 : undefined,
+  // Pages stream from async Server Components behind a loading.tsx skeleton
+  // (e.g. /manager/charging), so the real content — and the assertions waiting
+  // on it — can arrive well after navigation under CI load. Give the per-test
+  // and web-assertion budgets headroom; expect stays below the test timeout so
+  // a single slow toBeVisible never consumes the whole budget.
+  timeout: 45_000,
+  expect: { timeout: 25_000 },
 
   reporter: [
     ['list'],
@@ -31,7 +40,7 @@ export default defineConfig({
     screenshot: process.env.CI ? 'only-on-failure' : 'off',
     video: process.env.CI ? 'retain-on-failure' : 'off',
     actionTimeout: 10_000,
-    navigationTimeout: 15_000,
+    navigationTimeout: 30_000,
     locale: 'en-US',
     timezoneId: 'UTC',
   },

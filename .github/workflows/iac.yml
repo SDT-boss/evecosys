@@ -1,0 +1,231 @@
+name: IaC
+
+on:
+  pull_request:
+    branches: [main]
+    paths: ['infra/**', '.github/workflows/iac.yml']
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'plan or apply'
+        required: true
+        default: 'plan'
+        type: choice
+        options: [plan, apply]
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options: [staging, production]
+  schedule:
+    - cron: '0 6 * * 1' # weekly drift check, Mondays 06:00 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  # ---- Credential-free PR gate (always runs) ----------------------------------
+  validate:
+    name: Validate & policy
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.12.3
+
+      - name: Format check
+        run: tofu fmt -check -recursive infra
+
+      - name: Validate modules and environments
+        run: |
+          set -e
+          for d in infra/modules/* infra/environments/*; do
+            [ -d "$d" ] || continue
+            echo "== validate $d =="
+            tofu -chdir="$d" init -backend=false -input=false >/dev/null
+            tofu -chdir="$d" validate
+          done
+
+      - name: OpenTofu native tests (mock providers)
+        run: |
+          set -e
+          for d in infra/modules/* infra/environments/*; do
+            if ls "$d"/tests/*.tftest.hcl >/dev/null 2>&1; then
+              echo "== test $d =="
+              tofu -chdir="$d" init -backend=false -input=false >/dev/null
+              tofu -chdir="$d" test
+            fi
+          done
+
+      - name: Install conftest
+        run: |
+          CONFTEST_VERSION=0.62.0
+          curl -sSL "https://github.com/open-policy-agent/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz" \
+            | sudo tar xz -C /usr/local/bin conftest
+
+      - name: Policy unit tests (Rego)
+        run: conftest verify --policy infra/policy
+
+      - name: Policy checks against IaC source
+        # --ignore skips provider caches that `tofu init` writes into .terraform/
+        # (their LICENSE files are not parseable config).
+        run: conftest test --policy infra/policy --all-namespaces --ignore='\.terraform' infra/modules infra/environments
+
+  security-scan:
+    name: Static security scan
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkov (Terraform static analysis)
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: infra
+          framework: terraform
+          quiet: true
+          # Checkov is supplementary breadth, not the authoritative gate (our
+          # conftest/Rego suite in infra/policy is). Its default GitHub ruleset
+          # encodes opinions (>=2 approvals, signed commits) that conflict with
+          # this project's documented norms (DELIVERY.md §5), so findings are
+          # reported but non-blocking.
+          soft_fail: true
+
+      - name: gitleaks (secret scan over infra/)
+        # Use the gitleaks binary directly: gitleaks-action@v2 ignores custom
+        # args and scans PR git history (and trips a SARIF-write permission bug).
+        # A direct working-tree scan of infra/ is exactly what we want here.
+        run: |
+          # Pin >=8.25: 8.24.x silently ignores the [[allowlists]] path entries
+          # in .gitleaks.toml and flags the mock-credential *.tftest.hcl files.
+          GL=8.30.1
+          curl -sSL "https://github.com/gitleaks/gitleaks/releases/download/v${GL}/gitleaks_${GL}_linux_x64.tar.gz" \
+            | sudo tar -xz -C /usr/local/bin gitleaks
+          gitleaks detect --no-git --source infra --config .gitleaks.toml --redact --exit-code 1 --verbose
+
+  # ---- Gated plan (manual; real credentials via GitHub Environment) -----------
+  plan:
+    name: OpenTofu plan (${{ inputs.environment }})
+    if: github.event_name == 'workflow_dispatch' && inputs.action == 'plan'
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.12.3
+      - name: tofu init
+        working-directory: infra/environments/${{ inputs.environment }}
+        run: |
+          tofu init \
+            -backend-config="endpoints={s3=\"${R2_ENDPOINT}\"}" \
+            -backend-config="access_key=${R2_ACCESS_KEY_ID}" \
+            -backend-config="secret_key=${R2_SECRET_ACCESS_KEY}"
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      - name: tofu plan
+        working-directory: infra/environments/${{ inputs.environment }}
+        run: tofu plan -input=false -out=tfplan
+        env:
+          TF_VAR_github_token: ${{ secrets.IAC_GITHUB_TOKEN }}
+          TF_VAR_supabase_access_token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          TF_VAR_supabase_organization_id: ${{ secrets.SUPABASE_ORGANIZATION_ID }}
+          TF_VAR_database_password: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TF_VAR_cloudflare_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+          TF_VAR_ssh_key_ids: ${{ secrets.HCLOUD_SSH_KEY_IDS }}
+          TF_VAR_ssh_allow_cidrs: ${{ secrets.SSH_ALLOW_CIDRS }}
+          TF_VAR_required_reviewers: ${{ secrets.IAC_REQUIRED_REVIEWERS }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tfplan-${{ inputs.environment }}
+          path: infra/environments/${{ inputs.environment }}/tfplan
+
+  # ---- Gated apply (manual; production requires reviewers on the Environment) --
+  apply:
+    name: OpenTofu apply (${{ inputs.environment }})
+    if: github.event_name == 'workflow_dispatch' && inputs.action == 'apply'
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.12.3
+      - name: tofu init
+        working-directory: infra/environments/${{ inputs.environment }}
+        run: |
+          tofu init \
+            -backend-config="endpoints={s3=\"${R2_ENDPOINT}\"}" \
+            -backend-config="access_key=${R2_ACCESS_KEY_ID}" \
+            -backend-config="secret_key=${R2_SECRET_ACCESS_KEY}"
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      - name: tofu apply
+        working-directory: infra/environments/${{ inputs.environment }}
+        run: tofu apply -input=false -auto-approve
+        env:
+          TF_VAR_github_token: ${{ secrets.IAC_GITHUB_TOKEN }}
+          TF_VAR_supabase_access_token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          TF_VAR_supabase_organization_id: ${{ secrets.SUPABASE_ORGANIZATION_ID }}
+          TF_VAR_database_password: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TF_VAR_cloudflare_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+          TF_VAR_ssh_key_ids: ${{ secrets.HCLOUD_SSH_KEY_IDS }}
+          TF_VAR_ssh_allow_cidrs: ${{ secrets.SSH_ALLOW_CIDRS }}
+          TF_VAR_required_reviewers: ${{ secrets.IAC_REQUIRED_REVIEWERS }}
+
+  # ---- Scheduled drift detection ----------------------------------------------
+  drift:
+    name: OpenTofu drift detection (${{ matrix.environment }})
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      matrix:
+        environment: [staging, production]
+    environment: ${{ matrix.environment }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.12.3
+      - name: tofu init
+        working-directory: infra/environments/${{ matrix.environment }}
+        run: |
+          tofu init \
+            -backend-config="endpoints={s3=\"${R2_ENDPOINT}\"}" \
+            -backend-config="access_key=${R2_ACCESS_KEY_ID}" \
+            -backend-config="secret_key=${R2_SECRET_ACCESS_KEY}"
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      - name: Detect drift
+        working-directory: infra/environments/${{ matrix.environment }}
+        run: tofu plan -input=false -detailed-exitcode
+        env:
+          TF_VAR_github_token: ${{ secrets.IAC_GITHUB_TOKEN }}
+          TF_VAR_supabase_access_token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          TF_VAR_supabase_organization_id: ${{ secrets.SUPABASE_ORGANIZATION_ID }}
+          TF_VAR_database_password: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TF_VAR_cloudflare_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+          TF_VAR_ssh_key_ids: ${{ secrets.HCLOUD_SSH_KEY_IDS }}
+          TF_VAR_ssh_allow_cidrs: ${{ secrets.SSH_ALLOW_CIDRS }}
+          TF_VAR_required_reviewers: ${{ secrets.IAC_REQUIRED_REVIEWERS }}

@@ -14,7 +14,7 @@ env:
 
 jobs:
   migrate:
-    name: Run DB Migrations (staging)
+    name: Run DB migrations
     runs-on: ubuntu-latest
     environment: staging
     timeout-minutes: 10
@@ -34,7 +34,7 @@ jobs:
         run: supabase db push --db-url "${{ secrets.SUPABASE_DB_URL }}"
 
   build-and-push:
-    name: Build & push Docker image (staging)
+    name: Build & push Docker image
     runs-on: ubuntu-latest
     environment: staging
     needs: migrate
@@ -80,7 +80,7 @@ jobs:
           trivyignores: .trivyignore
 
   deploy:
-    name: Deploy to staging server
+    name: Release to server
     runs-on: ubuntu-latest
     environment: staging
     needs: build-and-push
@@ -110,7 +110,7 @@ jobs:
             docker image prune -f
 
   e2e:
-    name: E2E tests (staging)
+    name: E2E tests
     runs-on: ubuntu-latest
     environment: staging
     needs: deploy

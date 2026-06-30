@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   e2e:
-    name: Playwright E2E
+    name: Playwright
     runs-on: ubuntu-latest
     environment: staging
     timeout-minutes: 25

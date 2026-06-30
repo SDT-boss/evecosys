@@ -45,6 +45,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# ...but the committed template IS tracked (consumed by `make setup`):
+!.env.example
 
 # supabase
 supabase/.temp/
@@ -55,3 +57,19 @@ supabase/.temp/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ── OpenTofu / Terraform ──────────────────────────────────────────────────
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+# Local-only secret var files (committed *.auto.tfvars must be non-secret)
+*.secret.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+# Keep the dependency lock file committed:
+!**/.terraform.lock.hcl

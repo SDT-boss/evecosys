@@ -79,6 +79,7 @@ make docker-stop    # stop and remove the container
 - Write tests for new features. Unit tests in `test/`, E2E in `e2e/`.
 - Every schema change must be a new file in `supabase/migrations/` — never edit existing migration files.
 - Design token changes require updating both `DESIGN.md` (human record) and `design-system/tokens/tokens.json` (machine record) in the same commit. Run `make tokens` and commit the output.
+- Infrastructure lives in `infra/` (OpenTofu). Never put secret values in `.tf`/`.tfvars`; supply them via `TF_VAR_*`. Add new infra via a module + its `*.tftest.hcl` test and a passing `make iac-check`. See `docs/IAC.md`.
 
 ## CI checks on every PR
 

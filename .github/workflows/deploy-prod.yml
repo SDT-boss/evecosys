@@ -20,7 +20,7 @@ env:
 
 jobs:
   migrate:
-    name: Run DB Migrations (production)
+    name: Run DB migrations
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 10
@@ -40,7 +40,7 @@ jobs:
         run: supabase db push --db-url "${{ secrets.SUPABASE_DB_URL }}"
 
   build-and-push:
-    name: Build & push Docker image (production)
+    name: Build & push Docker image
     runs-on: ubuntu-latest
     environment: production
     needs: migrate
@@ -97,7 +97,7 @@ jobs:
           trivyignores: .trivyignore
 
   deploy:
-    name: Deploy to production server
+    name: Release to server
     runs-on: ubuntu-latest
     environment: production
     needs: build-and-push
@@ -138,7 +138,7 @@ jobs:
             docker image prune -f
 
   smoke:
-    name: Smoke test (production)
+    name: Smoke test
     runs-on: ubuntu-latest
     environment: production
     needs: deploy
@@ -161,7 +161,7 @@ jobs:
           exit 1
 
   rollback:
-    name: Rollback (smoke failed)
+    name: Rollback on smoke failure
     runs-on: ubuntu-latest
     environment: production
     needs: [deploy, smoke]
