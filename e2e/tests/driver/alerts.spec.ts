@@ -83,7 +83,11 @@ test.describe('Driver — Alerts', () => {
 
   // ─── Edge cases ───────────────────────────────────────────────────────────
 
-  test('empty active state shows no-alerts message when no active alerts', async ({ page }) => {
+  test('empty active state shows no-alerts message when no active alerts', async ({ page, driverVehicle }) => {
+    // Needs an assigned vehicle so the filter tabs render (DriverAlertsClient
+    // only mounts when a vehicle is assigned). The fixture creates no alerts,
+    // so the 'active' filter is genuinely empty — exactly this test's scenario.
+    void driverVehicle
     await alertsPage.gotoDriver()
     await alertsPage.filterBy('active')
     const hasAlerts = await page.getByText(/ago/).count() > 0
