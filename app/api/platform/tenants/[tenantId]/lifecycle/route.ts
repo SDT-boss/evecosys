@@ -5,7 +5,7 @@ import { SupabaseControlPlaneStore } from '@/lib/tenant/controlplane/supabaseSto
 import { TenantLifecycleService } from '@/lib/tenant/controlplane/lifecycleService'
 import { SupabaseVaultStore } from '@/lib/tenant/vaultStore'
 import { TenantNotFoundError, OverrideError } from '@/lib/tenant/controlplane/errors'
-import { InvalidStateTransitionError, type TenantState } from '@/lib/tenant/types'
+import { InvalidStateTransitionError, TENANT_STATES, type TenantState } from '@/lib/tenant/types'
 import type { LifecycleAction } from '@/lib/tenant/controlplane/types'
 
 interface LifecycleBody {
@@ -44,7 +44,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ ten
       case 'reactivate': tenant = await service.reactivate(tenantId, actor); break
       case 'decommission': tenant = await service.decommission(tenantId, actor); break
       case 'override':
-        if (!body.toState) return NextResponse.json({ error: 'override requires toState' }, { status: 400 })
+        if (!body.toState || !TENANT_STATES.includes(body.toState)) {
+          return NextResponse.json(
+            { error: `override requires a valid toState (one of: ${TENANT_STATES.join(', ')})` },
+            { status: 400 },
+          )
+        }
         tenant = await service.override(tenantId, body.toState, actor, body.reason ?? ''); break
       default:
         return NextResponse.json({ error: `Unknown action: ${String(body.action)}` }, { status: 400 })
