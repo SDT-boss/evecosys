@@ -16,8 +16,13 @@ export default defineConfig({
   // calls timed out across the manager/driver suites. Run 4 workers (≈1/core)
   // and give navigation-heavy pages real headroom.
   workers: process.env.CI ? 4 : undefined,
-  timeout: 30_000,
-  expect: { timeout: 15_000 },
+  // Pages stream from async Server Components behind a loading.tsx skeleton
+  // (e.g. /manager/charging), so the real content — and the assertions waiting
+  // on it — can arrive well after navigation under CI load. Give the per-test
+  // and web-assertion budgets headroom; expect stays below the test timeout so
+  // a single slow toBeVisible never consumes the whole budget.
+  timeout: 45_000,
+  expect: { timeout: 25_000 },
 
   reporter: [
     ['list'],
