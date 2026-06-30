@@ -12,25 +12,17 @@ secret_attrs := {
 	"ssh_private_key",
 }
 
-# conftest's HCL2 parser exposes resources under input.resource[type][name].
 # A value is a "literal secret" if it is a non-empty string that is NOT an
-# interpolation/reference (i.e. does not contain "var.", "local.", or "data.").
-is_reference(v) if {
-	contains(v, "var.")
-}
+# interpolation/reference (does not contain "var.", "local.", or "data.").
+is_reference(v) if { contains(v, "var.") }
+is_reference(v) if { contains(v, "local.") }
+is_reference(v) if { contains(v, "data.") }
 
-is_reference(v) if {
-	contains(v, "local.")
-}
-
-is_reference(v) if {
-	contains(v, "data.")
-}
-
+# conftest's HCL2 parser exposes resources as input.resource[type][name] = [ {body}, ... ].
 deny contains msg if {
 	some rtype, rname
-	resource := input.resource[rtype][rname]
-	some attr, value in resource
+	some body in input.resource[rtype][rname]
+	some attr, value in body
 	secret_attrs[attr]
 	is_string(value)
 	value != ""

@@ -4,7 +4,7 @@ world_cidrs := {"0.0.0.0/0", "::/0"}
 
 deny contains msg if {
 	some rname
-	fw := input.resource.hcloud_firewall[rname]
+	some fw in input.resource.hcloud_firewall[rname]
 	some rule in fw.rule
 	rule.direction == "in"
 	rule.port == "22"
