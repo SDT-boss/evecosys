@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
       name: 'integration',
       environment: 'node',
       globals: true,
-      include: ['test/integration/tenant-provisioning.test.ts'],
+      include: ['test/integration/**/*.test.ts'],
       exclude: ['node_modules/**', 'e2e/**'],
       env: {
         NEXT_PUBLIC_SUPABASE_URL: env.NEXT_PUBLIC_SUPABASE_URL,
