@@ -35,6 +35,7 @@ export type AuditAction =
   | 'config.branding'
   | 'config.feature_flags'
   | 'config.byodb_register'
+  | 'config.read'
 
 /** A normalized, ready-to-persist audit record (before hash-chain enrichment). */
 export interface AuditRecordInput {
