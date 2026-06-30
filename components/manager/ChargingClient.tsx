@@ -4,6 +4,7 @@ import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { Plus, Zap } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { AddStationModal } from './AddStationModal'
 import type { ChargingStation } from '@/types'
 
@@ -72,9 +73,21 @@ export function ChargingClient({ initialStations }: { initialStations: ChargingS
         </div>
       )}
 
-      {/* Leaflet map */}
+      {/* Leaflet map — isolated so a map crash degrades to a fallback instead
+          of bubbling to the route error boundary and blanking the page. */}
       <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
-        <StationMap stations={stations} />
+        <ErrorBoundary
+          fallback={
+            <div
+              className="flex items-center justify-center"
+              style={{ height: '400px', background: 'var(--surface2)', color: 'var(--text3)' }}
+            >
+              <p className="text-sm">Map unavailable</p>
+            </div>
+          }
+        >
+          <StationMap stations={stations} />
+        </ErrorBoundary>
       </div>
 
       {/* Add modal */}
