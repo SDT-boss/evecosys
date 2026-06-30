@@ -43,7 +43,10 @@ CREATE INDEX idx_audit_logs_created ON public.audit_logs(created_at);
 -- Defaults (seq, created_at) are applied BEFORE this BEFORE-INSERT trigger fires,
 -- so NEW.seq and NEW.created_at are already populated here.
 CREATE OR REPLACE FUNCTION public.audit_logs_chain()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public, extensions
+AS $$
 DECLARE
   prev TEXT;
   canonical TEXT;
@@ -74,7 +77,7 @@ BEGIN
   NEW.row_hash := encode(digest(prev || canonical, 'sha256'), 'hex');
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 CREATE TRIGGER trg_audit_logs_chain
   BEFORE INSERT ON public.audit_logs
