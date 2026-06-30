@@ -21,6 +21,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ ten
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
+  if (typeof input !== 'object' || input === null || Array.isArray(input)) {
+    return NextResponse.json({ error: 'Request body must be a JSON object' }, { status: 400 })
+  }
+
   const admin = createServiceClient()
   const service = new CredentialRotationService(
     new SupabaseControlPlaneStore(admin),

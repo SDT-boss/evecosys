@@ -27,6 +27,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ ten
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
+  const b = body as unknown
+  if (typeof b !== 'object' || b === null || Array.isArray(b)) {
+    return NextResponse.json({ error: 'Request body must be a JSON object' }, { status: 400 })
+  }
+
   const admin = createServiceClient()
   const store = new SupabaseControlPlaneStore(admin)
   const service = new TenantLifecycleService(store, new SupabaseVaultStore(admin))
