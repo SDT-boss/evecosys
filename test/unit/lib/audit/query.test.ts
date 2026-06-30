@@ -62,4 +62,10 @@ describe('queryAuditLogs', () => {
     const res = await queryAuditLogs(client, { tenantId: 't1', limit: 2 })
     expect(res.nextCursor).toBeNull()
   })
+
+  it('ignores a NaN cursor and does not call lt', async () => {
+    const { client, calls } = makeClient([])
+    await queryAuditLogs(client, { tenantId: 't1', cursor: NaN })
+    expect(calls.some(c => c[0] === 'lt')).toBe(false)
+  })
 })

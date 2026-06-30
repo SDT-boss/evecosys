@@ -47,7 +47,7 @@ export async function queryAuditLogs(
   if (filters.actorId) q = q.eq('actor_id', filters.actorId)
   if (filters.from) q = q.gte('created_at', filters.from)
   if (filters.to) q = q.lte('created_at', filters.to)
-  if (filters.cursor !== undefined) q = q.lt('seq', filters.cursor)
+  if (filters.cursor !== undefined && !Number.isNaN(filters.cursor)) q = q.lt('seq', filters.cursor)
 
   q = q.order('seq', { ascending: false }).limit(limit)
 
