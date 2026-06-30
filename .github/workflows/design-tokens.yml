@@ -1,4 +1,4 @@
-name: Build Design Tokens
+name: Design tokens
 
 on:
   push:
@@ -9,6 +9,7 @@ on:
 
 jobs:
   build-tokens:
+    name: Regenerate & commit on main
     runs-on: ubuntu-latest
     permissions:
       contents: write

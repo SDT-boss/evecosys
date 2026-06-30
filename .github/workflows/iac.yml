@@ -111,7 +111,7 @@ jobs:
 
   # ---- Gated plan (manual; real credentials via GitHub Environment) -----------
   plan:
-    name: Plan (${{ inputs.environment }})
+    name: OpenTofu plan (${{ inputs.environment }})
     if: github.event_name == 'workflow_dispatch' && inputs.action == 'plan'
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
@@ -153,7 +153,7 @@ jobs:
 
   # ---- Gated apply (manual; production requires reviewers on the Environment) --
   apply:
-    name: Apply (${{ inputs.environment }})
+    name: OpenTofu apply (${{ inputs.environment }})
     if: github.event_name == 'workflow_dispatch' && inputs.action == 'apply'
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
@@ -191,7 +191,7 @@ jobs:
 
   # ---- Scheduled drift detection ----------------------------------------------
   drift:
-    name: Drift detection (${{ matrix.environment }})
+    name: OpenTofu drift detection (${{ matrix.environment }})
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 20
