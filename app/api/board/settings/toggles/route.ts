@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
+import { SupabaseAuditRecorder } from '@/lib/audit/supabaseAuditRecorder'
+import { safeRecord } from '@/lib/audit/safeRecord'
 
 const KNOWN_FLAGS = [
   'member_invitations',
@@ -63,9 +66,21 @@ export async function PATCH(req: NextRequest) {
     .update({ feature_flags: flags })
     .eq('id', tenant.id)
 
+  const recorder = new SupabaseAuditRecorder(createServiceClient())
+  const actor = { id: user.id, label: user.email ?? user.id, role: 'board' }
+
   if (error) {
+    await safeRecord(recorder, {
+      tenantId: tenant.id, actor, action: 'config.feature_flags', outcome: 'error',
+      resourceType: 'tenant', resourceId: tenant.id, error: error.message,
+    })
     return NextResponse.json({ error: error.message }, { status: 400 })
   }
 
+  await safeRecord(recorder, {
+    tenantId: tenant.id, actor, action: 'config.feature_flags', outcome: 'ok',
+    resourceType: 'tenant', resourceId: tenant.id,
+    details: { flags }, // booleans only; no sensitive values
+  })
   return NextResponse.json({ ok: true })
 }
