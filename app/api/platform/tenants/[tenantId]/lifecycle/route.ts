@@ -7,6 +7,8 @@ import { SupabaseVaultStore } from '@/lib/tenant/vaultStore'
 import { TenantNotFoundError, OverrideError } from '@/lib/tenant/controlplane/errors'
 import { InvalidStateTransitionError, TENANT_STATES, type TenantState } from '@/lib/tenant/types'
 import type { LifecycleAction } from '@/lib/tenant/controlplane/types'
+import { SupabaseAuditRecorder } from '@/lib/audit/supabaseAuditRecorder'
+import { DurableControlPlaneAuditSink } from '@/lib/audit/controlPlaneAuditSink'
 
 interface LifecycleBody {
   action: LifecycleAction
@@ -34,7 +36,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ ten
 
   const admin = createServiceClient()
   const store = new SupabaseControlPlaneStore(admin)
-  const service = new TenantLifecycleService(store, new SupabaseVaultStore(admin))
+  const auditSink = new DurableControlPlaneAuditSink(new SupabaseAuditRecorder(admin), {
+    id: guard.user.id,
+    label: guard.user.email,
+    role: 'platform_admin',
+  })
+  const service = new TenantLifecycleService(store, new SupabaseVaultStore(admin), auditSink)
   const actor = guard.user.email
 
   try {

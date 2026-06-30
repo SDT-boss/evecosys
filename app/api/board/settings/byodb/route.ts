@@ -8,6 +8,8 @@ import { SupabaseVaultStore } from '@/lib/tenant/vaultStore'
 import { transition } from '@/lib/tenant/stateMachine'
 import { CredentialValidationError } from '@/lib/tenant/credentials'
 import type { TenantState } from '@/lib/tenant/types'
+import { SupabaseAuditRecorder } from '@/lib/audit/supabaseAuditRecorder'
+import { safeRecord } from '@/lib/audit/safeRecord'
 
 export async function POST(req: NextRequest) {
   // Step 1 — auth guard: verify user session
@@ -95,6 +97,15 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    await safeRecord(new SupabaseAuditRecorder(admin), {
+      tenantId: tenant.id,
+      actor: { id: user.id, label: user.email ?? user.id, role: 'board' },
+      action: 'config.byodb_register',
+      outcome: 'ok',
+      resourceType: 'tenant',
+      resourceId: tenant.id,
+      details: { state: result.tenant.state }, // NEVER include credential params
+    })
     return NextResponse.json({ ok: true, state: result.tenant.state })
   } catch (err) {
     if (err instanceof CredentialValidationError) {
@@ -113,6 +124,15 @@ export async function POST(req: NextRequest) {
           )
         }
       }
+      await safeRecord(new SupabaseAuditRecorder(admin), {
+        tenantId: tenant.id,
+        actor: { id: user.id, label: user.email ?? user.id, role: 'board' },
+        action: 'config.byodb_register',
+        outcome: 'error',
+        resourceType: 'tenant',
+        resourceId: tenant.id,
+        error: (err as Error).message, // message only; never the credential
+      })
       return NextResponse.json({ error: (err as Error).message }, { status: 400 })
     }
     if (err instanceof ConnectivityError) {
@@ -131,6 +151,15 @@ export async function POST(req: NextRequest) {
           )
         }
       }
+      await safeRecord(new SupabaseAuditRecorder(admin), {
+        tenantId: tenant.id,
+        actor: { id: user.id, label: user.email ?? user.id, role: 'board' },
+        action: 'config.byodb_register',
+        outcome: 'error',
+        resourceType: 'tenant',
+        resourceId: tenant.id,
+        error: (err as Error).message, // message only; never the credential
+      })
       return NextResponse.json({ error: (err as Error).message }, { status: 400 })
     }
     // Unexpected error — let Next.js 500 handler log it

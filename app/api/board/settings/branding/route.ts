@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
+import { SupabaseAuditRecorder } from '@/lib/audit/supabaseAuditRecorder'
+import { safeRecord } from '@/lib/audit/safeRecord'
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient()
@@ -60,5 +62,18 @@ export async function POST(req: NextRequest) {
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
   }
 
+  await safeRecord(new SupabaseAuditRecorder(admin), {
+    tenantId: tenant.id,
+    actor: { id: user.id, label: user.email ?? user.id, role: 'board' },
+    action: 'config.branding',
+    outcome: 'ok',
+    resourceType: 'tenant',
+    resourceId: tenant.id,
+    details: {
+      changedName: Boolean(name),
+      changedColor: Boolean(primary_color),
+      changedLogo: Boolean(file && file.size > 0),
+    },
+  })
   return NextResponse.json({ ok: true })
 }

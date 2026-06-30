@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { buildOrchestrator } from '@/lib/tenant/provisioning/buildOrchestrator'
+import { SupabaseAuditRecorder } from '@/lib/audit/supabaseAuditRecorder'
+import { DurableProvisioningAuditSink } from '@/lib/audit/provisioningAuditSink'
 import { SupabaseProvisioningRunStore } from '@/lib/tenant/provisioning/supabaseRunStore'
 import { transition } from '@/lib/tenant/stateMachine'
 import type { ProvisioningContext } from '@/lib/tenant/provisioning/types'
@@ -71,7 +73,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ ten
     byodbInput: byodbInput as BYODBCredentialInput,
   }
 
-  const orchestrator = buildOrchestrator(admin)
+  const auditSink = new DurableProvisioningAuditSink(new SupabaseAuditRecorder(admin), {
+    id: guard.user.id,
+    label: guard.user.email ?? guard.user.id,
+    role: 'platform_admin',
+  })
+  const orchestrator = buildOrchestrator(admin, auditSink)
   const run = await orchestrator.provision(ctx)
 
   return NextResponse.json(

@@ -8,6 +8,8 @@ import { RealConnectivityProbe } from '@/lib/tenant/probeDriver'
 import { TenantNotFoundError } from '@/lib/tenant/controlplane/errors'
 import { CredentialValidationError, type BYODBCredentialInput } from '@/lib/tenant/credentials'
 import { ConnectivityError } from '@/lib/tenant/probe'
+import { SupabaseAuditRecorder } from '@/lib/audit/supabaseAuditRecorder'
+import { DurableControlPlaneAuditSink } from '@/lib/audit/controlPlaneAuditSink'
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ tenantId: string }> }) {
   const { tenantId } = await params
@@ -26,10 +28,16 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ ten
   }
 
   const admin = createServiceClient()
+  const auditSink = new DurableControlPlaneAuditSink(new SupabaseAuditRecorder(admin), {
+    id: guard.user.id,
+    label: guard.user.email,
+    role: 'platform_admin',
+  })
   const service = new CredentialRotationService(
     new SupabaseControlPlaneStore(admin),
     new RealConnectivityProbe(),
     new SupabaseVaultStore(admin),
+    auditSink,
   )
 
   try {
