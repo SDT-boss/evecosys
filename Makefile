@@ -1,4 +1,5 @@
 .PHONY: help setup dev build test lint typecheck tokens audit \
+        iac-fmt iac-validate iac-test iac-policy iac-check \
         db-start db-stop db-reset db-status migrate \
         e2e docker-build docker-run docker-stop
 
@@ -41,6 +42,31 @@ tokens: ## Build design tokens (Style Dictionary)
 
 audit: ## Check for high-severity dependency vulnerabilities
 	npm audit --audit-level=high
+
+iac-fmt: ## Check OpenTofu formatting across infra/
+	tofu fmt -check -recursive infra
+
+iac-validate: ## Validate every infra module and environment root (no backend, no creds)
+	@set -e; for d in infra/modules/* infra/environments/*; do \
+		echo "== validate $$d =="; \
+		tofu -chdir=$$d init -backend=false -input=false >/dev/null; \
+		tofu -chdir=$$d validate; \
+	done
+
+iac-test: ## Run OpenTofu native module tests (mock providers, no creds)
+	@set -e; for d in infra/modules/* infra/environments/*; do \
+		if ls $$d/tests/*.tftest.hcl >/dev/null 2>&1; then \
+			echo "== test $$d =="; \
+			tofu -chdir=$$d init -backend=false -input=false >/dev/null; \
+			tofu -chdir=$$d test; \
+		fi; \
+	done
+
+iac-policy: ## Run conftest policy checks + Rego unit tests against infra/
+	conftest verify --policy infra/policy
+	conftest test --policy infra/policy --all-namespaces infra/modules infra/environments
+
+iac-check: iac-fmt iac-validate iac-test iac-policy ## Run all IaC checks locally
 
 check: lint typecheck test tokens build ## Run all CI checks locally
 
