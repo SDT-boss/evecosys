@@ -23,7 +23,11 @@ export function buildOrchestrator(admin: SupabaseClient, audit: AuditSink = noop
   const store = new SupabaseProvisioningRunStore(admin)
 
   const steps = [
-    createBindByodbStep(new RealConnectivityProbe(), new SupabaseVaultStore(admin)),
+    createBindByodbStep(
+      new RealConnectivityProbe(),
+      new SupabaseVaultStore(admin),
+      (tenantId, secretId) => db.setVaultSecretId(tenantId, secretId),
+    ),
     createSeedConfigStep(db),
     createBootstrapFeatureFlagsStep(db),
     createBootstrapMeteringStep(db),

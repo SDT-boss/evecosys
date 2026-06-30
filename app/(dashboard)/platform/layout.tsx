@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { cookies, headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { isRoutable } from '@/lib/tenant/controlplane/types'
 import { PlatformShell } from '@/components/layout/PlatformShell'
 import { BlockedScreen } from '@/components/platform/BlockedScreen'
 import type { AppUser } from '@/types'
@@ -52,10 +53,20 @@ export default async function PlatformLayout({ children }: { children: React.Rea
   if (tenantId) {
     const { data: tenant } = await supabase
       .from('tenants')
-      .select('name')
+      .select('name, state')
       .eq('id', tenantId)
       .single()
     activeTenantName = tenant?.name ?? null
+
+    // Routing enforcement: a selected tenant that is no longer routable
+    // (suspended/decommissioned) must not expose its workspace sub-routes.
+    if (isSubRoute && (!tenant || !isRoutable(tenant.state))) {
+      return (
+        <PlatformShell user={appUser} activeTenantId={tenantId} activeTenantName={activeTenantName}>
+          <BlockedScreen />
+        </PlatformShell>
+      )
+    }
   }
 
   return (

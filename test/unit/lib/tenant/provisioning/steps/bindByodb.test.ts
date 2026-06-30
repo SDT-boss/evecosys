@@ -108,4 +108,23 @@ describe('bind_byodb step', () => {
     await step.compensate(ctx())
     expect(vault.delete).not.toHaveBeenCalled()
   })
+
+  it('calls the optional persist callback with the stored secret id on success', async () => {
+    const persist = vi.fn().mockResolvedValue(undefined)
+    const step = createBindByodbStep(probeOf({ reachable: true, ownsSchema: true }), vaultOf('stored-id'), persist)
+    const c = ctx()
+    await step.run(c)
+    expect(persist).toHaveBeenCalledWith('tenant-1', 'stored-id')
+  })
+
+  it('compensate clears the persisted secret id (null) before deleting the vault secret', async () => {
+    const persist = vi.fn().mockResolvedValue(undefined)
+    const vault = vaultOf()
+    const step = createBindByodbStep(probeOf({ reachable: true, ownsSchema: true }), vault, persist)
+    const c = ctx()
+    c.secretId = 'sec-9'
+    await step.compensate(c)
+    expect(persist).toHaveBeenCalledWith('tenant-1', null)
+    expect(vault.delete).toHaveBeenCalledWith('sec-9')
+  })
 })

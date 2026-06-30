@@ -86,4 +86,11 @@ export class SupabaseProvisioningDb implements ProvisioningDb {
     if (error) throw new Error(`getFeatureFlags failed: ${error.message}`)
     return (data?.feature_flags as Record<string, boolean> | undefined) ?? null
   }
+
+  /** Persist (or clear) the Vault secret reference on the tenant row. */
+  async setVaultSecretId(tenantId: string, secretId: string | null): Promise<void> {
+    const { error } = await this.client
+      .from('tenants').update({ vault_secret_id: secretId }).eq('id', tenantId)
+    if (error) throw new Error(`setVaultSecretId failed: ${error.message}`)
+  }
 }

@@ -8,15 +8,18 @@ import {
 } from '@/lib/tenant/provisioning/errors'
 
 /**
- * bind_byodb — validate + connectivity-probe BYODB credentials, then store them in
- * Vault. Writes the resulting secretId onto ctx. Does NOT change tenant state.
+ * bind_byodb — validate + connectivity-probe BYODB credentials, store them in Vault,
+ * and (optionally) persist the resulting secret id on the tenant so rotation and
+ * decommission can later reference / delete it. Does NOT change tenant state.
  *
- * Error mapping:
- *   - invalid input        → CredentialValidationError (fatal, thrown by normalize)
- *   - unreachable database  → RetryableProvisioningError (transient)
- *   - no schema ownership   → ManualInterventionError (operator must grant access)
+ * `persistSecretId` is optional: when omitted (the EVE-45 default) the step behaves
+ * exactly as before. buildOrchestrator wires it to SupabaseProvisioningDb.setVaultSecretId.
  */
-export function createBindByodbStep(probe: ConnectivityProbe, vault: VaultStore): ProvisioningStep {
+export function createBindByodbStep(
+  probe: ConnectivityProbe,
+  vault: VaultStore,
+  persistSecretId?: (tenantId: string, secretId: string | null) => Promise<void>,
+): ProvisioningStep {
   return {
     name: 'bind_byodb',
     maxAttempts: 3,
@@ -38,10 +41,12 @@ export function createBindByodbStep(probe: ConnectivityProbe, vault: VaultStore)
 
       const stored = await vault.store(`byodb/${ctx.tenant.id}`, JSON.stringify(params))
       ctx.secretId = stored.secretId
+      if (persistSecretId) await persistSecretId(ctx.tenant.id, stored.secretId)
     },
 
     async compensate(ctx: ProvisioningContext): Promise<void> {
       if (ctx.secretId) {
+        if (persistSecretId) await persistSecretId(ctx.tenant.id, null)
         await vault.delete(ctx.secretId)
       }
     },

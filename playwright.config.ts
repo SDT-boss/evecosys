@@ -92,7 +92,7 @@ export default defineConfig({
     {
       name: 'platform',
       testDir: './e2e/tests/platform',
-      testMatch: '**/tenant-provisioning.spec.ts',
+      testMatch: ['**/tenant-provisioning.spec.ts', '**/tenant-lifecycle.spec.ts'],
       use: { ...devices['Desktop Chrome'] },
       dependencies: ['setup'],
     },
