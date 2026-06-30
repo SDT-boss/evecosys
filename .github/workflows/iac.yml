@@ -72,7 +72,9 @@ jobs:
         run: conftest verify --policy infra/policy
 
       - name: Policy checks against IaC source
-        run: conftest test --policy infra/policy --all-namespaces infra/modules infra/environments
+        # --ignore skips provider caches that `tofu init` writes into .terraform/
+        # (their LICENSE files are not parseable config).
+        run: conftest test --policy infra/policy --all-namespaces --ignore='\.terraform' infra/modules infra/environments
 
   security-scan:
     name: Static security scan
@@ -97,6 +99,8 @@ jobs:
 
       - name: gitleaks (secret scan over infra/)
         uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           args: detect --no-git --source infra --redact
 

@@ -66,7 +66,7 @@ iac-test: ## Run OpenTofu native module tests (mock providers, no creds)
 
 iac-policy: ## Run conftest policy checks + Rego unit tests against infra/
 	@conftest verify --policy infra/policy
-	@conftest test --policy infra/policy --all-namespaces infra/modules infra/environments
+	@conftest test --policy infra/policy --all-namespaces --ignore='\.terraform' infra/modules infra/environments
 
 iac-check: iac-fmt iac-validate iac-test iac-policy ## Run all IaC checks locally
 
