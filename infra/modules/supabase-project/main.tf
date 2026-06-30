@@ -8,7 +8,4 @@ resource "supabase_project" "this" {
   database_password = var.database_password
   region            = var.region
 
-  lifecycle {
-    prevent_destroy = true
-  }
 }
