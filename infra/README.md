@@ -1,7 +1,7 @@
 # EVEcosys Infrastructure (OpenTofu)
 
-Declarative infrastructure for the EVEcosys platform. Tooling: **OpenTofu ≥ 1.8** (`tofu`).
-Terraform ≥ 1.8 is a drop-in (`alias tofu=terraform`).
+Declarative infrastructure for the EVEcosys platform. Tooling: **OpenTofu ≥ 1.9** (`tofu`).
+Terraform ≥ 1.9 is a drop-in (`alias tofu=terraform`).
 
 ## Install
 

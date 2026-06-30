@@ -1,6 +1,6 @@
 # Infrastructure as Code (EVEcosys)
 
-> Owner: Platform · Tooling: OpenTofu ≥ 1.8 · Last updated: 2026-06-30
+> Owner: Platform · Tooling: OpenTofu ≥ 1.9 · Last updated: 2026-06-30
 
 ---
 
@@ -10,7 +10,7 @@
 
 EVEcosys uses **OpenTofu** for all cloud infrastructure declarations. OpenTofu is the open-source fork of Terraform maintained by the Linux Foundation after HashiCorp changed Terraform's license from MPL-2.0 to the Business Source License in 2023. OpenTofu is licensed MPL-2.0, uses the same HCL syntax, the same provider ecosystem, and the same state format as Terraform — existing Terraform skills and tooling transfer without modification.
 
-CI pins version 1.8.5 via `infra/.terraform-version` and the `opentofu/setup-opentofu@v1` action. The `required_version` constraint in `infra/versions.tf` is `>= 1.8.0`, which allows local use of newer patch releases (the development machine used during EVE-57 ran 1.12.3) while locking CI to the reproducible pinned version.
+CI pins version 1.9.0 via `infra/.terraform-version` and the `opentofu/setup-opentofu@v1` action. The `required_version` constraint in every `versions.tf` is `>= 1.9.0` — required because the modules use cross-variable references in `validation` blocks (e.g. the `required_reviewers` rule references `var.environment`), a feature added in OpenTofu 1.9. The constraint allows local use of newer releases (the development machine used during EVE-57 ran 1.12.3) while locking CI to the reproducible pinned version.
 
 ### Module / root split
 
@@ -18,7 +18,7 @@ The `infra/` tree separates reusable **modules** from opinionated **environment 
 
 ```
 infra/
-  .terraform-version          # pins OpenTofu 1.8.5 for CI
+  .terraform-version          # pins OpenTofu 1.9.0 for CI
   versions.tf                 # shared provider and version constraints
   modules/
     github-config/            # repo environments + branch protection
