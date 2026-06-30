@@ -85,12 +85,28 @@ describe('TenantLifecycleService', () => {
   })
 
   it('override rejects an empty reason', async () => {
-    const svc = new TenantLifecycleService(makeStore(tenant('Active')), makeVault(), makeAudit())
+    const audit = makeAudit()
+    const svc = new TenantLifecycleService(makeStore(tenant('Active')), makeVault(), audit)
     await expect(svc.override('t1', 'Suspended', 'admin@x', '   ')).rejects.toThrow(OverrideError)
+    expect(audit.events.at(-1)?.outcome).toBe('error')
   })
 
   it('override cannot resurrect a Decommissioned tenant', async () => {
-    const svc = new TenantLifecycleService(makeStore(tenant('Decommissioned')), makeVault(), makeAudit())
+    const audit = makeAudit()
+    const svc = new TenantLifecycleService(makeStore(tenant('Decommissioned')), makeVault(), audit)
     await expect(svc.override('t1', 'Active', 'admin@x', 'oops')).rejects.toThrow(OverrideError)
+    expect(audit.events.at(-1)?.outcome).toBe('error')
+  })
+
+  it('decommission still succeeds (best-effort) when vault.delete throws', async () => {
+    const store = makeStore(tenant('Active'))
+    const vault = makeVault()
+    vault.delete.mockRejectedValueOnce(new Error('vault down'))
+    const svc = new TenantLifecycleService(store, vault, makeAudit())
+
+    const result = await svc.decommission('t1', 'admin@x')
+
+    expect(result.state).toBe('Decommissioned') // primary goal met, no throw
+    expect(store.state).toBe('Decommissioned')
   })
 })

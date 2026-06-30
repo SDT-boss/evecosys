@@ -39,12 +39,13 @@ export class TenantLifecycleService {
     after?: (tenant: Tenant) => Promise<void>,
   ): Promise<Tenant> {
     try {
+      const at = nowIso()
       const tenant = await this.loadOrThrow(tenantId)
       const next = transition(tenant.state, to) // throws InvalidStateTransitionError
       await this.store.setTenantState(tenantId, next)
       if (after) await after(tenant)
-      await this.audit.record({ tenantId, actor, action, outcome: 'ok', at: nowIso() })
-      return { ...tenant, state: next, updated_at: nowIso() }
+      await this.audit.record({ tenantId, actor, action, outcome: 'ok', at })
+      return { ...tenant, state: next, updated_at: at }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err)
       await this.audit.record({ tenantId, actor, action, outcome: 'error', error: message, at: nowIso() })
@@ -62,10 +63,17 @@ export class TenantLifecycleService {
 
   decommission(tenantId: string, actor: string): Promise<Tenant> {
     return this.run(tenantId, actor, 'decommission', 'Decommissioned', async () => {
-      const secretId = await this.store.getVaultSecretId(tenantId)
-      if (secretId) {
-        await this.vault.delete(secretId)
-        await this.store.setVaultSecretId(tenantId, null)
+      // Best-effort secret cleanup: the tenant is already terminal (non-routable),
+      // so a Vault hiccup must not undo or block the decommission. A lingering
+      // encrypted secret is hygiene (not exposure) and can be swept later.
+      try {
+        const secretId = await this.store.getVaultSecretId(tenantId)
+        if (secretId) {
+          await this.vault.delete(secretId)
+          await this.store.setVaultSecretId(tenantId, null)
+        }
+      } catch {
+        /* best-effort: decommission state change already succeeded */
       }
     })
   }
@@ -77,6 +85,7 @@ export class TenantLifecycleService {
     reason: string,
   ): Promise<Tenant> {
     try {
+      const at = nowIso()
       if (!reason || reason.trim() === '') {
         throw new OverrideError('A non-empty reason is required for a privileged override')
       }
@@ -85,8 +94,8 @@ export class TenantLifecycleService {
         throw new OverrideError('Cannot override a Decommissioned tenant (terminal state)')
       }
       await this.store.setTenantState(tenantId, to)
-      await this.audit.record({ tenantId, actor, action: 'override', outcome: 'ok', reason, at: nowIso() })
-      return { ...tenant, state: to, updated_at: nowIso() }
+      await this.audit.record({ tenantId, actor, action: 'override', outcome: 'ok', reason, at })
+      return { ...tenant, state: to, updated_at: at }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err)
       await this.audit.record({ tenantId, actor, action: 'override', outcome: 'error', reason, error: message, at: nowIso() })
